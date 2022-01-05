@@ -212,7 +212,7 @@
             <Label Content="Assemblies" FontWeight="Bold"></Label>
             <Label Content="Segmentation Tasks"></Label>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Image Acquisition"></CheckBox>
+                <CheckBox Content="Image Acquisition" x:Name="Image_Aquisition" Checked="CheckBox_Checked"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -220,7 +220,7 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Images Download"></CheckBox>
+                <CheckBox Content="Images Download" Checked="CheckBox_Checked" x:Name="Images_Download"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -228,7 +228,7 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="SPM8 Autosegmentation"></CheckBox>
+                <CheckBox Content="SPM8 Autosegmentation" Checked="CheckBox_Checked" x:Name="SPM8_Autosegmentation"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -236,7 +236,7 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="MD Volumes Segmented"></CheckBox>
+                <CheckBox Content="MD Volumes Segmented" Checked="CheckBox_Checked" x:Name="MD_Volumes_Segmented"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -244,7 +244,7 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Fully Segmented Model"></CheckBox>
+                <CheckBox Content="Fully Segmented Model" Checked="CheckBox_Checked" x:Name="Fully_Segmented_Model"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -253,7 +253,7 @@
             </DockPanel>
             <Label Content="Segmentation Review and Approval"></Label>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Initial Peer Review"></CheckBox>
+                <CheckBox Content="Initial Peer Review" Checked="CheckBox_Checked" x:Name="Initial_Peer_Review"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -261,7 +261,7 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Segmentation Corrections"></CheckBox>
+                <CheckBox Content="Segmentation Corrections" Checked="CheckBox_Checked" x:Name="Segmentation_Corrections"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -269,7 +269,7 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="2nd Peer Review"></CheckBox>
+                <CheckBox Content="2nd Peer Review" Checked="CheckBox_Checked" x:Name="_2nd_Peer_Review"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -277,7 +277,7 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="2nd Segmentation Corrections"></CheckBox>
+                <CheckBox Content="2nd Segmentation Corrections" Checked="CheckBox_Checked" x:Name="_2nd_Segmentation_Corrections"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -285,7 +285,7 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Full Model Approved"></CheckBox>
+                <CheckBox Content="Full Model Approved" Checked="CheckBox_Checked" x:Name="Full_Model_Approved"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -294,7 +294,7 @@
             </DockPanel>
             <Label Content="Mesh Preperation and Export to Physics"></Label>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Meshed Model"></CheckBox>
+                <CheckBox Content="Meshed Model" Checked="CheckBox_Checked" x:Name="Meshed_Model"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -302,7 +302,7 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Export Model to Physics"></CheckBox>
+                <CheckBox Content="Export Model to Physics" Checked="CheckBox_Checked" x:Name="Export_Model_to_Physics"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -311,7 +311,7 @@
             </DockPanel>
             <Label Content="Physics Modeling and Reports"></Label>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Model Solved"></CheckBox>
+                <CheckBox Content="Model Solved" Checked="CheckBox_Checked" x:Name="Model_Solved"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
@@ -319,15 +319,13 @@
                     Background="LightGray"></TextBox>
             </DockPanel>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Report Generated"></CheckBox>
+                <CheckBox Content="Report Generated" Checked="CheckBox_Checked" x:Name="Report_Generated"></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"
                     HorizontalAlignment="Right"
                     Background="LightGray"></TextBox>
             </DockPanel>
-
-
 
         </StackPanel>
 

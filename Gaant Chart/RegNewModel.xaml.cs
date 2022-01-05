@@ -49,8 +49,9 @@ namespace Gaant_Chart
                 }
             }
 
-            //TODO: insert into database
-
+            ModelDb database = new ModelDb();
+            database.InsertModel(modelID, date);
+           
             this.Close();
 
         }
