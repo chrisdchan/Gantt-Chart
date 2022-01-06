@@ -4,9 +4,39 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gaant_Chart"
-        mc:Ignorable="d"
-        Title="CompleteTask" Height="450" Width="800">
+        mc:Ignorable="d" ResizeMode="NoResize"
+        Title="CompleteTask" Height="350" Width="300">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Width="200"
+                   HorizontalAlignment="Center"
+                   FontSize="25" FontWeight="Bold"
+                   TextWrapping="Wrap" TextAlignment="Center"
+                   Text="Document Completed Task"/>
+        <Label Grid.Row="1" Content="Date"/>
+        <TextBox Grid.Row="1"
+                 Height="40" Width="200"/>
         
+        <Button Grid.Row="3"
+                Height="40" Width="100"
+                HorizontalAlignment="Left"
+                Margin="50, 0, 0, 0"
+                Content="Submit" FontSize="15"
+                Background="#00B6FF" Foreground="White"
+                BorderThickness="0"/>
+
+        <Button Grid.Row="3"
+                Height="40" Width="75"
+                HorizontalAlignment="Right"
+                Margin="0, 0, 50, 0"
+                FontSize="15" Content="Cancel"/>
+        
+
     </Grid>
 </Window>

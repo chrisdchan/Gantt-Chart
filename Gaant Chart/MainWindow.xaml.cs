@@ -20,114 +20,81 @@ namespace Gaant_Chart
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+
+
+    // All DB calls will go through MainWindow
+
     public partial class MainWindow : Window
     {
-        public static String modelName;
-        public static DateTime startDate;
 
-        public static Dictionary<String, (int, List<String>)> taskSettings { get; set; }
-        public static Dictionary<String, int> taskStartDelayPlanned { get; set; }
-        public List<Rectangle> plannedTaskBlocks { get; set; }
-        public List<Rectangle> completedTaskBlocks { get; set; }
-
-        
+        public static DbConnection myDatabase { get; set; }
         public MainWindow()
         {
             InitializeComponent();
-            myCanvas.Visibility = Visibility.Visible;
-
-            DateTime date = new DateTime(2021, 1, 1);
-            InitCanvas("GC007", date);
 
             initSettingsData();
- 
+
+            myDatabase = new DbConnection();
+        }
+
+        public void setExistingModel(int modelId, String modelName, DateTime date)
+        {
+            // update static variables
+            data.ModelId = modelId;
+            data.modelName = modelName;
+            data.startDate = date;
+
+            // Initialize completeTasks dictionary
+            data.initcompletedTasks(modelId);
+
+            // TODO: Reset completed Task Blocks
+
+            // TODO: Redraw blocks
+
+            // TODO: Log out of User
+            
+        }
+
+        public void setNewModel(String modelName, DateTime date)
+        {
+            //update static variables
+            data.modelName = modelName;
+            data.startDate = date;
+
+            // Initialize Canvas
+            myCanvas.Visibility = Visibility.Visible;
+
+            //TODO: uncheck all TaskCheckBoxes and TaskUserLabels
+            
+            // Draw lines with correct modelName and date
+            drawInitialCanvas(modelName, date);
+
+            // Draw planned blocks
+            drawIdealTaskBlocks();
+
+            //TODO: Log out of User
+
+        }
+
+        public static void newModel(String modelName, DateTime date)
+        {
+            // Insert new model to Database
+            data.ModelId = myDatabase.InsertModel(modelName, date);
+             
         }
 
         private void initSettingsData()
         {
             //Eventually this data should be mutable by admin, for now this will be hard coded
 
-            // taskSettings specifies the priority and expected duration of each task
-            // Note: the task plan is constant accross all models
-            taskSettings = new Dictionary<String, (int duration, List<String>)>
-            {
-                {"Image Aquisition", ( 1, null) },
-                {"Images Download", ( 1, new List<String>{"Image Aquisition" }) },
-                { "SPM8 Autosegmentation", (1, new List<String>{"Images Download"}) }, 
-                {"MD Volumes Segmented", ( 4, new List<String>{"Fully Segmented Model" }) },
-                {"Fully Segmented Model", ( 1, new List<String>{"MD Volumes Segmented" }) },
-                {"Inital Peer Review", (1, new List<String>{"Fully Segmented Model"}) },
-                {"Segmentation Corrections", (3, new List<String>{"Inital Peer Review" }) },
-                {"2nd Peer Review", (1, new List<String>{"Segmentation Corrections" }) },
-                {"2nd Segmentation Corrections", (3, new List<String>{"2nd Peer Review" }) },
-                {"Full Model Approved", (1, new List<String>{"2nd Segmentation Corrections" }) },
-                {"Meshed Model", (1, new List<String>{"Full Model Approved" }) },
-                {"Export Model to Physics", (1, new List<String>{"Meshed Model" }) },
-                {"Model Solved", (5, new List<String>{"Export Model to Physics" }) },
-                {"Report Generated", (5, new List<String>{"Report Generated" }) }
-            };
 
             // taskStartDelayPlanned specifies the ideal start date of every task
-            initTaskStartDelayPlanned();
+            data.initTaskStartDelayPlanned();
 
-            // place blocks to show the ideal plan
+            // store (Not display) data for ideal schedule blocks
             initIdealTaskBlocks();
 
-        }
-
-        private static void initTaskStartDelayPlanned()
-        {
-            // Essentially a Topological sort
-            // DFS serach to assign day offests for each start task
-            // This will ensure each task will start to minimize the total time spend working on the project
-            // Runtime O(n)
-            taskStartDelayPlanned = new Dictionary<string, int>();
-            HashSet<String> visited = new HashSet<String>();
-            Stack<String> search = new Stack<String>();
-            Dictionary<string, List<string>> taskSettingsReversed = new Dictionary<string, List<string>>();
-
-
-            foreach(KeyValuePair<String, (int, List<String>)> taskSetting in taskSettings)
-            {
-                if (taskSetting.Value.Item2 != null)
-                {
-                    foreach(String edge in taskSetting.Value.Item2)
-                    {
-                        if (!taskSettingsReversed.ContainsKey(edge)) taskSettingsReversed[edge] = new List<string>();
-                        taskSettingsReversed[edge].Add(taskSetting.Key);
-                    }
-                }
-            }
-
-            //Dictionary<String, (int, String)> tasksSettings = taskSettings; 
-            foreach(KeyValuePair<String, List<String>> node in taskSettingsReversed)
-            {
-                if (visited.Contains(node.Key)) continue;
-
-                taskStartDelayPlanned[node.Key] = 0;
-
-                int offset = taskSettings[node.Key].Item1;
-
-                search.Push(node.Key);
-                
-                while(search.Count != 0)
-                {
-                    String taskName = search.Pop();
-                    visited.Add(taskName);
-                    taskStartDelayPlanned[taskName] = offset;
-                    offset += taskSettings[taskName].Item1;
-
-                    if (!taskSettingsReversed.ContainsKey(taskName)) continue;
-
-                    foreach(String edge in taskSettingsReversed[taskName])
-                    {
-                        if(visited.Contains(edge)) continue;
-                        search.Push(edge);
-                    }
-
-                }
-
-            }
         }
 
         int dayWidth = 19;
@@ -139,32 +106,33 @@ namespace Gaant_Chart
         {
             // Must precede initTaskStartDelayPlanned
 
-            plannedTaskBlocks = new List<Rectangle>();
+            data.plannedTaskBlocks = new List<Rectangle>();
 
             int i = 0;
-            foreach(KeyValuePair<String, int > task in taskStartDelayPlanned)
+            foreach(KeyValuePair<String, int > task in data.taskStartDelayPlanned)
             {
                 Rectangle rect = new Rectangle();
                 rect.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FED49E"));
-                rect.Width = dayWidth * taskSettings[task.Key].Item1;
+                rect.Width = dayWidth * data.taskSettings[task.Key].Item1;
                 rect.Height = blockHeight;
                 Canvas.SetLeft(rect, dateX + task.Value * (dayWidth));
                 Canvas.SetTop(rect, topOffset - 2 + i * (blockHeight + 2));
-                plannedTaskBlocks.Add(rect);
-                myCanvas.Children.Add(rect);
+                data.plannedTaskBlocks.Add(rect);
 
                 i += 1;
             }
-
         }
 
         private void btnRegNewModel_clicked(object sender, RoutedEventArgs e)
         {
+    
             RegNewModel win2 = new RegNewModel();
             win2.Show();
+            
         }
 
-        private void InitCanvas(String model, DateTime date)
+
+        private void drawInitialCanvas(String modelName, DateTime date)
         {
             int leftOffset = 20;
             int labelSpacing = 32;
@@ -273,15 +241,44 @@ namespace Gaant_Chart
             Canvas.SetLeft(label_ModelID, 25);
             Canvas.SetTop(label_ModelID, 50);
 
-            setModel(model);
+            setModel(modelName);
+
+            drawIdealTaskBlocks();
 
         }
-        
-        //code to populate rectangles
-        private void drawIdealSchedule()
+        private void drawIdealTaskBlocks()
         {
-            
+            // Must preced initIdealTaskBlocks
+
+            foreach (Rectangle rect in data.plannedTaskBlocks)
+            {
+                myCanvas.Children.Add(rect);
+            }
         }
+        
+        private void drawAndLoadCompletedTasks()
+        {
+            //must be called once a new model is loaded
+
+
+
+        }
+
+        private void setTaskCheckBoxs()
+        {
+            foreach(DockPanel myDockPanel in taskBarStackPanel.Children)
+            {
+                if (myDockPanel.GetType() != typeof(DockPanel)) continue;
+                String taskName;
+
+                foreach(CheckBox checkbox in myDockPanel.Children)
+                {
+                    taskName = (String)checkbox.Content;
+                    MessageBox.Show(taskName)
+                }
+            }
+        }
+
 
         private void setDate(DateTime date)
         {

@@ -4,9 +4,40 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gaant_Chart"
-        mc:Ignorable="d"
-        Title="LoadExistingModel" Height="450" Width="800">
+        mc:Ignorable="d" ResizeMode="NoResize"
+        Title="LoadExistingModel" Height="450" Width="400">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" 
+               FontWeight="Bold" FontSize="30"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               Content="Select Existing Model"></Label>
+
+        <ComboBox Grid.Row="1"
+                  Height="50" Width="250"
+                  Name="myComboBox"
+                  ></ComboBox>
+
+        <Button Grid.Row="2"
+                Height="50" Width="175"
+                HorizontalAlignment="Left"
+                Margin="50, 0, 0, 0"
+                x:Name="btn_Open" Click="btn_Open_Click"
+                Content="Open" FontSize="20"></Button>
+
+        <Button Grid.Row="2"
+                Height="50" Width="100"
+                HorizontalAlignment="Right"
+                Margin="0, 0, 50, 0"
+                x:Name="btn_Cancel" Click="btn_Cancel_Click"
+                FontSize="20" Content="Cancel">
+                
+        </Button>
         
     </Grid>
 </Window>

@@ -28,19 +28,22 @@ namespace Gaant_Chart
             setSubmitStatus(false);
         }
 
-        private void CreateModel(object sender, RoutedEventArgs e)
+        private void btnCreateModel_Click(object sender, RoutedEventArgs e)
         {
-            String modelID = tbModelID.Text;
-            String date = tbDate.Text;
+            // Only proceed if Model has a Name
+            if (!submitStatus) return;
 
-            if(String.IsNullOrEmpty(date))
+            String modelID = tbModelID.Text;
+            String dateString = tbDate.Text;
+            DateTime date;
+
+            if(String.IsNullOrEmpty(dateString))
             {
+                // If there is no date, allow user to choose to use today's date
                 MessageBoxResult res = System.Windows.MessageBox.Show("Would you like to use today's date as the start date?", "Invalid Date", MessageBoxButton.YesNo);
                 if(res == MessageBoxResult.Yes)
                 {
-                    DateTime now = DateTime.Now;
-                    date = now.ToString("MM-dd-YY");
-                    tbDate.Text = date;
+                    date = DateTime.Now;
                 }
                 else
                 {
@@ -48,10 +51,16 @@ namespace Gaant_Chart
                     return;
                 }
             }
+            else if(!DateTime.TryParse(dateString, out date))
+            {
+                // If date is invalid, return and clear the text field
+                System.Windows.MessageBox.Show("Invalid Date Form, please use MM-dd-yyyy");
+                tbDate.Text = "";
+                return;
+            }
 
-            ModelDb database = new ModelDb();
-            database.InsertModel(modelID, date);
-           
+            MainWindow.newModel(modelID, date);
+            
             this.Close();
 
         }

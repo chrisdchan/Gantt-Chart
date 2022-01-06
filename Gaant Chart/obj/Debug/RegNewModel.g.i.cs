@@ -110,7 +110,7 @@ namespace Gaant_Chart {
             this.btnCreateModel = ((System.Windows.Controls.Button)(target));
             
             #line 57 "..\..\RegNewModel.xaml"
-            this.btnCreateModel.Click += new System.Windows.RoutedEventHandler(this.CreateModel);
+            this.btnCreateModel.Click += new System.Windows.RoutedEventHandler(this.btnCreateModel_Click);
             
             #line default
             #line hidden

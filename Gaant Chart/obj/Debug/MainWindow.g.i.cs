@@ -233,7 +233,7 @@ namespace Gaant_Chart {
         #line hidden
         
         
-        #line 206 "..\..\MainWindow.xaml"
+        #line 205 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
         internal System.Windows.Controls.Label label_ModelID;
         
@@ -241,73 +241,137 @@ namespace Gaant_Chart {
         #line hidden
         
         
+        #line 210 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.StackPanel taskBarStackPanel;
+        
+        #line default
+        #line hidden
+        
+        
         #line 215 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Image_Aquisition;
+        internal System.Windows.Controls.CheckBox c_Image_Aquisition;
         
         #line default
         #line hidden
         
         
-        #line 223 "..\..\MainWindow.xaml"
+        #line 220 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Images_Download;
+        internal System.Windows.Controls.TextBox txt_Image_Aquisition;
         
         #line default
         #line hidden
         
         
-        #line 231 "..\..\MainWindow.xaml"
+        #line 224 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox SPM8_Autosegmentation;
+        internal System.Windows.Controls.CheckBox c_Images_Download;
         
         #line default
         #line hidden
         
         
-        #line 239 "..\..\MainWindow.xaml"
+        #line 228 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox MD_Volumes_Segmented;
+        internal System.Windows.Controls.TextBox txt_Images_Download;
         
         #line default
         #line hidden
         
         
-        #line 247 "..\..\MainWindow.xaml"
+        #line 233 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Fully_Segmented_Model;
+        internal System.Windows.Controls.CheckBox c_SPM8_Autosegmentation;
         
         #line default
         #line hidden
         
         
-        #line 256 "..\..\MainWindow.xaml"
+        #line 237 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Initial_Peer_Review;
+        internal System.Windows.Controls.TextBox txt_SPM8_Autosegmentation;
         
         #line default
         #line hidden
         
         
-        #line 264 "..\..\MainWindow.xaml"
+        #line 242 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Segmentation_Corrections;
+        internal System.Windows.Controls.CheckBox c_MD_Volumes_Segmented;
         
         #line default
         #line hidden
         
         
-        #line 272 "..\..\MainWindow.xaml"
+        #line 246 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox _2nd_Peer_Review;
+        internal System.Windows.Controls.TextBox txt_MD_Volumes_Segmented;
         
         #line default
         #line hidden
         
         
-        #line 280 "..\..\MainWindow.xaml"
+        #line 251 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox _2nd_Segmentation_Corrections;
+        internal System.Windows.Controls.CheckBox c_Fully_Segmented_Model;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 255 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.TextBox txt_Fully_Segmented_Model;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 261 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.CheckBox c_Initial_Peer_Review;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 265 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.TextBox txt_Initial_Peer_Review;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 270 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.CheckBox c_Segmentation_Corrections;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 274 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.TextBox txt_Segmentation_Corrections;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 279 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.CheckBox c_2nd_Peer_Review;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 283 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.TextBox txt_2nd_Peer_Review;
         
         #line default
         #line hidden
@@ -315,15 +379,31 @@ namespace Gaant_Chart {
         
         #line 288 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Full_Model_Approved;
+        internal System.Windows.Controls.CheckBox c_2nd_Segmentation_Corrections;
         
         #line default
         #line hidden
         
         
-        #line 297 "..\..\MainWindow.xaml"
+        #line 291 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Meshed_Model;
+        internal System.Windows.Controls.TextBox txt_2nd_Segmentation_Corrections;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 296 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.CheckBox c_Full_Model_Approved;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 299 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.TextBox txt_Full_Model_Approved;
         
         #line default
         #line hidden
@@ -331,15 +411,31 @@ namespace Gaant_Chart {
         
         #line 305 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Export_Model_to_Physics;
+        internal System.Windows.Controls.CheckBox c_Meshed_Model;
         
         #line default
         #line hidden
         
         
-        #line 314 "..\..\MainWindow.xaml"
+        #line 308 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Model_Solved;
+        internal System.Windows.Controls.TextBox txt_Meshed_Model;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 313 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.CheckBox c_Export_Model_to_Physics;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 316 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.TextBox txt_Export_Model_to_Physics;
         
         #line default
         #line hidden
@@ -347,7 +443,31 @@ namespace Gaant_Chart {
         
         #line 322 "..\..\MainWindow.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.CheckBox Report_Generated;
+        internal System.Windows.Controls.CheckBox c_Model_Solved;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 325 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.TextBox txt_Model_Solved;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 330 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.CheckBox c_Report_Generated;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 333 "..\..\MainWindow.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.TextBox txt_Report_Generated;
         
         #line default
         #line hidden
@@ -466,130 +586,175 @@ namespace Gaant_Chart {
             this.label_ModelID = ((System.Windows.Controls.Label)(target));
             return;
             case 27:
-            this.Image_Aquisition = ((System.Windows.Controls.CheckBox)(target));
-            
-            #line 215 "..\..\MainWindow.xaml"
-            this.Image_Aquisition.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
-            
-            #line default
-            #line hidden
+            this.taskBarStackPanel = ((System.Windows.Controls.StackPanel)(target));
             return;
             case 28:
-            this.Images_Download = ((System.Windows.Controls.CheckBox)(target));
+            this.c_Image_Aquisition = ((System.Windows.Controls.CheckBox)(target));
             
-            #line 223 "..\..\MainWindow.xaml"
-            this.Images_Download.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            #line 215 "..\..\MainWindow.xaml"
+            this.c_Image_Aquisition.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
             
             #line default
             #line hidden
             return;
             case 29:
-            this.SPM8_Autosegmentation = ((System.Windows.Controls.CheckBox)(target));
-            
-            #line 231 "..\..\MainWindow.xaml"
-            this.SPM8_Autosegmentation.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
-            
-            #line default
-            #line hidden
+            this.txt_Image_Aquisition = ((System.Windows.Controls.TextBox)(target));
             return;
             case 30:
-            this.MD_Volumes_Segmented = ((System.Windows.Controls.CheckBox)(target));
+            this.c_Images_Download = ((System.Windows.Controls.CheckBox)(target));
             
-            #line 239 "..\..\MainWindow.xaml"
-            this.MD_Volumes_Segmented.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            #line 224 "..\..\MainWindow.xaml"
+            this.c_Images_Download.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
             
             #line default
             #line hidden
             return;
             case 31:
-            this.Fully_Segmented_Model = ((System.Windows.Controls.CheckBox)(target));
-            
-            #line 247 "..\..\MainWindow.xaml"
-            this.Fully_Segmented_Model.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
-            
-            #line default
-            #line hidden
+            this.txt_Images_Download = ((System.Windows.Controls.TextBox)(target));
             return;
             case 32:
-            this.Initial_Peer_Review = ((System.Windows.Controls.CheckBox)(target));
+            this.c_SPM8_Autosegmentation = ((System.Windows.Controls.CheckBox)(target));
             
-            #line 256 "..\..\MainWindow.xaml"
-            this.Initial_Peer_Review.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            #line 233 "..\..\MainWindow.xaml"
+            this.c_SPM8_Autosegmentation.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
             
             #line default
             #line hidden
             return;
             case 33:
-            this.Segmentation_Corrections = ((System.Windows.Controls.CheckBox)(target));
-            
-            #line 264 "..\..\MainWindow.xaml"
-            this.Segmentation_Corrections.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
-            
-            #line default
-            #line hidden
+            this.txt_SPM8_Autosegmentation = ((System.Windows.Controls.TextBox)(target));
             return;
             case 34:
-            this._2nd_Peer_Review = ((System.Windows.Controls.CheckBox)(target));
+            this.c_MD_Volumes_Segmented = ((System.Windows.Controls.CheckBox)(target));
             
-            #line 272 "..\..\MainWindow.xaml"
-            this._2nd_Peer_Review.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            #line 242 "..\..\MainWindow.xaml"
+            this.c_MD_Volumes_Segmented.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
             
             #line default
             #line hidden
             return;
             case 35:
-            this._2nd_Segmentation_Corrections = ((System.Windows.Controls.CheckBox)(target));
-            
-            #line 280 "..\..\MainWindow.xaml"
-            this._2nd_Segmentation_Corrections.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
-            
-            #line default
-            #line hidden
+            this.txt_MD_Volumes_Segmented = ((System.Windows.Controls.TextBox)(target));
             return;
             case 36:
-            this.Full_Model_Approved = ((System.Windows.Controls.CheckBox)(target));
+            this.c_Fully_Segmented_Model = ((System.Windows.Controls.CheckBox)(target));
             
-            #line 288 "..\..\MainWindow.xaml"
-            this.Full_Model_Approved.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            #line 251 "..\..\MainWindow.xaml"
+            this.c_Fully_Segmented_Model.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
             
             #line default
             #line hidden
             return;
             case 37:
-            this.Meshed_Model = ((System.Windows.Controls.CheckBox)(target));
-            
-            #line 297 "..\..\MainWindow.xaml"
-            this.Meshed_Model.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
-            
-            #line default
-            #line hidden
+            this.txt_Fully_Segmented_Model = ((System.Windows.Controls.TextBox)(target));
             return;
             case 38:
-            this.Export_Model_to_Physics = ((System.Windows.Controls.CheckBox)(target));
+            this.c_Initial_Peer_Review = ((System.Windows.Controls.CheckBox)(target));
             
-            #line 305 "..\..\MainWindow.xaml"
-            this.Export_Model_to_Physics.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            #line 261 "..\..\MainWindow.xaml"
+            this.c_Initial_Peer_Review.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
             
             #line default
             #line hidden
             return;
             case 39:
-            this.Model_Solved = ((System.Windows.Controls.CheckBox)(target));
+            this.txt_Initial_Peer_Review = ((System.Windows.Controls.TextBox)(target));
+            return;
+            case 40:
+            this.c_Segmentation_Corrections = ((System.Windows.Controls.CheckBox)(target));
             
-            #line 314 "..\..\MainWindow.xaml"
-            this.Model_Solved.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            #line 270 "..\..\MainWindow.xaml"
+            this.c_Segmentation_Corrections.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
             
             #line default
             #line hidden
             return;
-            case 40:
-            this.Report_Generated = ((System.Windows.Controls.CheckBox)(target));
+            case 41:
+            this.txt_Segmentation_Corrections = ((System.Windows.Controls.TextBox)(target));
+            return;
+            case 42:
+            this.c_2nd_Peer_Review = ((System.Windows.Controls.CheckBox)(target));
             
-            #line 322 "..\..\MainWindow.xaml"
-            this.Report_Generated.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            #line 279 "..\..\MainWindow.xaml"
+            this.c_2nd_Peer_Review.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
             
             #line default
             #line hidden
+            return;
+            case 43:
+            this.txt_2nd_Peer_Review = ((System.Windows.Controls.TextBox)(target));
+            return;
+            case 44:
+            this.c_2nd_Segmentation_Corrections = ((System.Windows.Controls.CheckBox)(target));
+            
+            #line 288 "..\..\MainWindow.xaml"
+            this.c_2nd_Segmentation_Corrections.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            
+            #line default
+            #line hidden
+            return;
+            case 45:
+            this.txt_2nd_Segmentation_Corrections = ((System.Windows.Controls.TextBox)(target));
+            return;
+            case 46:
+            this.c_Full_Model_Approved = ((System.Windows.Controls.CheckBox)(target));
+            
+            #line 296 "..\..\MainWindow.xaml"
+            this.c_Full_Model_Approved.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            
+            #line default
+            #line hidden
+            return;
+            case 47:
+            this.txt_Full_Model_Approved = ((System.Windows.Controls.TextBox)(target));
+            return;
+            case 48:
+            this.c_Meshed_Model = ((System.Windows.Controls.CheckBox)(target));
+            
+            #line 305 "..\..\MainWindow.xaml"
+            this.c_Meshed_Model.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            
+            #line default
+            #line hidden
+            return;
+            case 49:
+            this.txt_Meshed_Model = ((System.Windows.Controls.TextBox)(target));
+            return;
+            case 50:
+            this.c_Export_Model_to_Physics = ((System.Windows.Controls.CheckBox)(target));
+            
+            #line 313 "..\..\MainWindow.xaml"
+            this.c_Export_Model_to_Physics.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            
+            #line default
+            #line hidden
+            return;
+            case 51:
+            this.txt_Export_Model_to_Physics = ((System.Windows.Controls.TextBox)(target));
+            return;
+            case 52:
+            this.c_Model_Solved = ((System.Windows.Controls.CheckBox)(target));
+            
+            #line 322 "..\..\MainWindow.xaml"
+            this.c_Model_Solved.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            
+            #line default
+            #line hidden
+            return;
+            case 53:
+            this.txt_Model_Solved = ((System.Windows.Controls.TextBox)(target));
+            return;
+            case 54:
+            this.c_Report_Generated = ((System.Windows.Controls.CheckBox)(target));
+            
+            #line 330 "..\..\MainWindow.xaml"
+            this.c_Report_Generated.Checked += new System.Windows.RoutedEventHandler(this.CheckBox_Checked);
+            
+            #line default
+            #line hidden
+            return;
+            case 55:
+            this.txt_Report_Generated = ((System.Windows.Controls.TextBox)(target));
             return;
             }
             this._contentLoaded = true;

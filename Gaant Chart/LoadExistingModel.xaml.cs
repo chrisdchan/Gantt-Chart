@@ -19,9 +19,37 @@ namespace Gaant_Chart
     /// </summary>
     public partial class LoadExistingModel : Window
     {
+
+        private List<(String, int)> ModelNames;
+
         public LoadExistingModel()
         {
             InitializeComponent();
+
+            ModelNames = MainWindow.myDatabase.getModelNames();
+            loadModelNames();
+        }
+
+        private void loadModelNames()
+        {
+            foreach((String, int) modelName in ModelNames)
+            {
+                ComboBoxItem comboBoxItem = new ComboBoxItem();
+                comboBoxItem.Content = modelName.Item1;
+                comboBoxItem.Tag = modelName;
+                myComboBox.Items.Add(comboBoxItem);
+            }
+        }
+
+        private void btn_Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btn_Open_Click(object sender, RoutedEventArgs e)
+        {
+            String ModelName = ((ComboBoxItem)myComboBox.SelectedItem).Tag.ToString();
+            MessageBox.Show(ModelName);
         }
     }
 }

@@ -9,14 +9,14 @@ using System.IO;
 
 namespace Gaant_Chart
 {
-    class ModelDb
+    public class DbConnection
     {
         //NOTE ALL date Strings need to be in MM-dd-YYYY
 
 
         public SQLiteConnection myConnection;
 
-        public ModelDb()
+        public DbConnection()
         {
 
             if (!File.Exists("./GaantDb.db"))
@@ -29,15 +29,18 @@ namespace Gaant_Chart
 
             using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
             {
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Models (Name TEXT NOT NULL, " +
+                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Models (Name TEXT NOT NULL UNIQUE, " +
                     "StartDate TEXT NOT NULL, EndDate TEXT)";
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = "CREATE TABLE IF NOT EXISTS Tasks (ModelId INT NOT NULL, " +
-                    "NAME TEXT NOT NULL, StartDate TEXT NOT NULL, EndDate Text)";
+                    "NAME TEXT NOT NULL, StartDate TEXT NOT NULL, EndDate Text, UserName TEXT)";
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = "CREATE TABLE IF NOT EXISTS Users (Name TEXT NOT NULL, password TEXT)";
+                cmd.ExecuteNonQuery();
+
+                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Authorization (UserID INT NOT NULL, TaskId INT NOT NULL)";
                 cmd.ExecuteNonQuery();
             }
 
@@ -45,39 +48,45 @@ namespace Gaant_Chart
 
         }
 
-        public void InsertModel(String modelName, String startDate)
+        public int InsertModel(String modelName, DateTime date)
         {
+            int modelId;
+
+            String dateString = date.ToString("MM-dd-yyyy");
+
             this.OpenConnection();
             using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
             {
                 cmd.CommandText = "INSERT INTO Models(Name, StartDate, EndDate) VALUES (@Name, @StartDate, @EndDate)";
                 cmd.Parameters.AddWithValue("@Name", modelName);
-                cmd.Parameters.AddWithValue("@StartDate", startDate);
+                cmd.Parameters.AddWithValue("@StartDate", dateString);
                 cmd.Parameters.AddWithValue("@EndDate", null);
                 cmd.Prepare();
                 cmd.ExecuteNonQuery();
 
-                int Id = getModelId(modelName);
+                modelId = getModelId(modelName);
 
 
-                foreach(KeyValuePair<String, int> task in MainWindow.taskStartDelayPlanned)
+                foreach(KeyValuePair<String, int> task in data.taskStartDelayPlanned)
                 {
-                    DateTime date = DateTime.ParseExact(startDate, "MM-dd-yyyy", System.Globalization.CultureInfo.InvariantCulture);
                     date.AddDays(task.Value);
                     String taskStartDate = date.ToString("MM-dd-yyyy");
 
-                    cmd.CommandText = "INSERT INTO Tasks(ModelId, Name, StartDate, EndDate) VALUES (@ModelId, @Name, @StartDate, @EndDate)";
-                    cmd.Parameters.AddWithValue("@ModelId", Id);
+                    cmd.CommandText = "INSERT INTO Tasks(ModelId, Name, StartDate, EndDate, UserName) VALUES (@ModelId, @Name, @StartDate, @EndDate, @UserName)";
+                    cmd.Parameters.AddWithValue("@ModelId", modelId);
                     cmd.Parameters.AddWithValue("@Name", task.Key);
                     cmd.Parameters.AddWithValue("@StartDate", taskStartDate);
                     cmd.Parameters.AddWithValue("@EndDate", null);
+                    cmd.Parameters.AddWithValue(@"UserName", null);
                     cmd.Prepare();
                     cmd.ExecuteNonQuery();
                 }
 
             }
-        }
+            this.CloseConnection();
 
+            return modelId;
+        }
         private int getModelId(String Model)
         {
             int Id;
@@ -93,11 +102,60 @@ namespace Gaant_Chart
                     else Id = -1;
                 }
             }
-
+            this.CloseConnection();
             return Id;
 
         }
+
+        public Dictionary<String, (String, String, String)> getTasks(int ModelId)
+        {
+            Dictionary<String, (String, String, String)> tasksDict = new Dictionary<String, (String, String, String)>();
+
+            this.OpenConnection();
+            using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
+            {
+                cmd.CommandText = "SELECT Name, StartDate, EndDate, UserName FROM Tasks WHERE ModelId = @ModelId";
+                cmd.Parameters.AddWithValue("@ModelId", ModelId);
+                cmd.Prepare();
+                using(SQLiteDataReader rdr = cmd.ExecuteReader())
+                {
+                    while(rdr.Read())
+                    {
+                        String taskName = rdr.GetString(0);
+                        String startDate = rdr.GetString(1);
+                        String endDate = rdr.GetString(2);
+                        String userName = rdr.GetString(3);
+
+                        if (!String.IsNullOrEmpty(endDate)) continue;
+
+                        (String, String, String) completedTask = (startDate, endDate, userName);
+                        tasksDict[taskName] = completedTask;
+                    }
+                }
+            }
+            this.CloseConnection();
+            return tasksDict;
+        }
         
+        public List<(String, int)> getModelNames()
+        {
+            List<(String, int)> modelNames = new List<(String, int)>();
+
+            this.OpenConnection();
+            using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
+            {
+                cmd.CommandText = "SELECT Name, rowid from Models";
+                using(SQLiteDataReader rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        modelNames.Add((rdr.GetString(0), rdr.GetInt32(1)));
+                    }
+                }
+            }
+
+            return modelNames;
+        }
 
         public void OpenConnection()
         {
@@ -115,49 +173,5 @@ namespace Gaant_Chart
             }
         }
 
-        /*
-        public static Boolean initModel(String model, String date)
-        {
-            Boolean connected = false;
-            using(SQLiteConnection con = new SQLiteConnection(cs, true))
-            {
-                con.Open();
-                connected = true;
-            }
-
-            return connected;
-        }
-    
-        public static Dictionary<String, (String, String)> getTasks(String model)
-        {
-            Dictionary<String, (String, String)> tasks = new Dictionary<String, (String, String)>();
-
-            using(SQLiteConnection con = new SQLiteConnection(cs))
-            {
-                con.Open();
-                using(SQLiteCommand cmd = new SQLiteCommand(con))
-                {
-                    cmd.CommandText = $"SELECT Models.name, Models.StartDate, Tasks.Name, Tasks.StartDate, Tasks.EndDate" +
-                                        "FROM Models INNER JOIN Tasks ON Models.Id = Tasks.ModelId" +
-                                        "WHERE Models.name = {model}";
-                    using (SQLiteDataReader rdr = cmd.ExecuteReader())
-                    {
-                        while(rdr.Read())
-                        {
-                            String taskName = rdr.GetString(2);
-                            String taskStartDate = rdr.GetString(3);
-                            String taskEndDate = rdr.GetString(4);
-
-                            tasks.Add(taskName, (taskStartDate, taskEndDate));
-                            
-                        }
-                    }
-
-                }
-            }
-
-            return tasks;
-        }                
-        */
     }
 }

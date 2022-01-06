@@ -49,3 +49,5 @@ C:\Users\chris\Source\Repos\Gaant-Chart\Gaant Chart\obj\Debug\Gaant Chart.csproj
 C:\Users\chris\Source\Repos\Gaant-Chart\Gaant Chart\obj\Debug\Gaant Chart.csproj.CopyComplete
 C:\Users\chris\Source\Repos\Gaant-Chart\Gaant Chart\obj\Debug\Gaant Chart.exe
 C:\Users\chris\Source\Repos\Gaant-Chart\Gaant Chart\obj\Debug\Gaant Chart.pdb
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\CompleteTask.g.cs
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\LoadExistingModel.g.cs
