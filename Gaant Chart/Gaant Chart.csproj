@@ -104,6 +104,9 @@
     <Compile Include="Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\Model.cs" />
+    <Compile Include="Models\Task.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="RegNewModel.xaml.cs">
       <DependentUpon>RegNewModel.xaml</DependentUpon>
     </Compile>

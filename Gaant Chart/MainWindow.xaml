@@ -38,7 +38,7 @@
             <TextBox 
                 Background="#BEB8FE"
                 Margin="15 0 5 0" 
-                Width="200" >
+                Width="200" Name="txtDisplayModelName">
             </TextBox>
             <Button 
                 Width="25"
@@ -76,11 +76,15 @@
                 Margin="5" 
                 Height="30"
                 Content="Load Existing Model Tracker"
+                x:Name="btnLoadExistingModel"
+                Click="btnLoadExistingModel_Click"
                 ></Button>
             <Button
                 Height="35"
                 Margin="5 10 5 0"
-                Content="Edit Current Model Tracker"></Button>
+                Content="Edit Current Model Tracker"
+                x:Name="btnEditCurrentModel"
+                Click="btnEditCurrentModel_Click"></Button>
         </StackPanel>
 
         <Button 

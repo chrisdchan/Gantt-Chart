@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Windows;
 using System.IO;
+using Gaant_Chart.Models;
+using Task = Gaant_Chart.Models.Task;
 
 namespace Gaant_Chart
 {
@@ -19,12 +21,14 @@ namespace Gaant_Chart
         public DbConnection()
         {
 
-            if (!File.Exists("./GaantDb.db"))
+            String dbName = "GaantDb.db";
+
+            if (!File.Exists("./" + dbName))
             {
-                SQLiteConnection.CreateFile("GaantDb1.db");
+                SQLiteConnection.CreateFile(dbName);
             }
 
-            myConnection = new SQLiteConnection("Data Source = GaantDb1.db");
+            myConnection = new SQLiteConnection("Data Source = " + dbName);
             this.OpenConnection();
 
             using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
@@ -34,10 +38,10 @@ namespace Gaant_Chart
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = "CREATE TABLE IF NOT EXISTS Tasks (ModelId INT NOT NULL, " +
-                    "NAME TEXT NOT NULL, StartDate TEXT NOT NULL, EndDate Text, UserName TEXT)";
+                    "NAME TEXT NOT NULL, StartDate TEXT NOT NULL, EndDate Text, UserId INT)";
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Users (Name TEXT NOT NULL, password TEXT)";
+                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Users (Name TEXT NOT NULL UNIQUE, password TEXT)";
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = "CREATE TABLE IF NOT EXISTS Authorization (UserID INT NOT NULL, TaskId INT NOT NULL)";
@@ -48,14 +52,13 @@ namespace Gaant_Chart
 
         }
 
-        public int InsertModel(String modelName, DateTime date)
+        public Model InsertModel(String modelName, DateTime startDate)
         {
-            int modelId;
-
-            String dateString = date.ToString("MM-dd-yyyy");
-
             this.OpenConnection();
-            using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
+            int modelId;
+            String dateString = startDate.ToString("MM-dd-yyyy");
+
+            using (SQLiteCommand cmd = new SQLiteCommand(myConnection))
             {
                 cmd.CommandText = "INSERT INTO Models(Name, StartDate, EndDate) VALUES (@Name, @StartDate, @EndDate)";
                 cmd.Parameters.AddWithValue("@Name", modelName);
@@ -64,77 +67,182 @@ namespace Gaant_Chart
                 cmd.Prepare();
                 cmd.ExecuteNonQuery();
 
-                modelId = getModelId(modelName);
+                cmd.CommandText = "SELECT last_insert_rowid() FROM Models";
+                modelId = (int)((long)cmd.ExecuteScalar());
 
 
-                foreach(KeyValuePair<String, int> task in data.taskStartDelayPlanned)
+                DateTime taskStart = startDate;
+                DateTime taskEnd = startDate;
+                for(int i = 0; i < data.allTasks.Length; i++)
                 {
-                    date.AddDays(task.Value);
-                    String taskStartDate = date.ToString("MM-dd-yyyy");
-
-                    cmd.CommandText = "INSERT INTO Tasks(ModelId, Name, StartDate, EndDate, UserName) VALUES (@ModelId, @Name, @StartDate, @EndDate, @UserName)";
+                    taskStart = taskEnd;
+                    String taskStartString = taskStart.ToString();
+                    
+                    cmd.CommandText = "INSERT INTO Tasks(ModelId, Name, StartDate, EndDate, UserId) VALUES (@ModelId, @Name, @StartDate, @EndDate, @UserId)";
                     cmd.Parameters.AddWithValue("@ModelId", modelId);
-                    cmd.Parameters.AddWithValue("@Name", task.Key);
-                    cmd.Parameters.AddWithValue("@StartDate", taskStartDate);
+                    cmd.Parameters.AddWithValue("@Name", data.allTasks[i]);
+                    cmd.Parameters.AddWithValue("@StartDate", taskStartString);
                     cmd.Parameters.AddWithValue("@EndDate", null);
-                    cmd.Parameters.AddWithValue(@"UserName", null);
+                    cmd.Parameters.AddWithValue(@"UserId", null);
                     cmd.Prepare();
                     cmd.ExecuteNonQuery();
                 }
-
             }
             this.CloseConnection();
+
+            Model model = new Model(modelId, modelName, startDate);
+            return model;
+
+        }
+
+        public int modelExists(String modelName)
+        {
+            // Will return -1 if model DNE, else return the rowId
+            int modelId = -1;
+
+            this.OpenConnection();
+            using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
+            {
+                cmd.CommandText = "SELECT rowId FROM Models WHERE Name = @Name";
+                cmd.Parameters.AddWithValue("@Name", modelName);
+                cmd.Prepare();
+                using(SQLiteDataReader rdr = cmd.ExecuteReader())
+                {
+                    if (rdr.Read()) modelId = rdr.GetInt32(0);
+                }
+            }
 
             return modelId;
         }
-        private int getModelId(String Model)
+
+        public Model GetModel(int modelId)
         {
-            int Id;
+            Model model;
             this.OpenConnection();
             using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
             {
-                cmd.CommandText = "SELECT rowid FROM Models WHERE Name = @Name";
-                cmd.Parameters.AddWithValue("@Name", Model);
+                cmd.CommandText = "SELECT name, startDate FROM Models where rowid = @rowid";
+                cmd.Parameters.AddWithValue("@rowid", modelId);
                 cmd.Prepare();
                 using(SQLiteDataReader rdr = cmd.ExecuteReader())
                 {
-                    if (rdr.Read()) Id = rdr.GetInt32(0);
-                    else Id = -1;
+                    if (rdr.Read())
+                    {
+                        String modelName = rdr.GetString(0);
+                        String startDateString = rdr.GetString(1);
+                        model = new Model(modelId, modelName, DateTime.Parse(startDateString));
+                    }
+                    else
+                    {
+                        this.CloseConnection();
+                        throw new Exception("Cannot retrieve model query");
+                    }
                 }
-            }
-            this.CloseConnection();
-            return Id;
 
-        }
-
-        public Dictionary<String, (String, String, String)> getTasks(int ModelId)
-        {
-            Dictionary<String, (String, String, String)> tasksDict = new Dictionary<String, (String, String, String)>();
-
-            this.OpenConnection();
-            using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
-            {
-                cmd.CommandText = "SELECT Name, StartDate, EndDate, UserName FROM Tasks WHERE ModelId = @ModelId";
-                cmd.Parameters.AddWithValue("@ModelId", ModelId);
+                cmd.CommandText = "SELECT Name, StartDate, EndDate, UserId FROM Tasks Where ModelID = @ModelId";
+                cmd.Parameters.AddWithValue("@ModelId", modelId);
                 cmd.Prepare();
                 using(SQLiteDataReader rdr = cmd.ExecuteReader())
                 {
+                    int taskCount = 0;
                     while(rdr.Read())
                     {
                         String taskName = rdr.GetString(0);
-                        String startDate = rdr.GetString(1);
-                        String endDate = rdr.GetString(2);
-                        String userName = rdr.GetString(3);
+                        String StartDateString = rdr.GetString(1);
+                        String endDateString = null;
+                        if(rdr.GetString(2) != null) endDateString = rdr.GetString(2);
+                        int userId = -1;
+                        if(rdr.GetString(3) != null) userId = rdr.GetInt32(3);
 
-                        if (!String.IsNullOrEmpty(endDate)) continue;
-
-                        (String, String, String) completedTask = (startDate, endDate, userName);
-                        tasksDict[taskName] = completedTask;
+                        if (userId == 0) break;
+                        else
+                        {
+                            DateTime endDate = DateTime.Parse(endDateString);
+                            DateTime startDate = DateTime.Parse(StartDateString);
+                            User user = data.getUser(userId);
+                            model.tasks[taskCount].complete(startDate, endDate, user);
+                        }
                     }
                 }
             }
             this.CloseConnection();
-            return tasksDict;
+            return model;
+        }
+
+        public Model GetModel(String modelName)
+        {
+            Model model;
+            int modelId;
+            this.OpenConnection();
+            using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
+            {
+                cmd.CommandText = "SELECT rowid, startDate FROM Models where name = @name";
+                cmd.Parameters.AddWithValue("@name", modelName);
+                cmd.Prepare();
+                using(SQLiteDataReader rdr = cmd.ExecuteReader())
+                {
+                    if (rdr.Read())
+                    {
+                        modelId = rdr.GetInt32(0);
+                        String startDateString = rdr.GetString(1);
+                        model = new Model(modelId, modelName, DateTime.Parse(startDateString));
+                    }
+                    else
+                    {
+                        this.CloseConnection();
+                        throw new Exception("Cannot retrieve model query");
+                    }
+                }
+
+                cmd.CommandText = "SELECT Name, StartDate, EndDate, UserId FROM Tasks Where ModelID = @ModelId";
+                cmd.Parameters.AddWithValue("@ModelId", modelId);
+                cmd.Prepare();
+                using(SQLiteDataReader rdr = cmd.ExecuteReader())
+                {
+                    int taskCount = 0;
+                    while(rdr.Read())
+                    {
+                        String taskName = rdr.GetString(0);
+                        String StartDateString = rdr.GetString(1);
+                        String endDateString = rdr.GetString(2);
+                        int userId = rdr.GetInt32(3);
+
+                        if (userId == 0) break;
+                        else
+                        {
+                            DateTime endDate = DateTime.Parse(endDateString);
+                            DateTime startDate = DateTime.Parse(StartDateString);
+                            User user = data.getUser(userId);
+                            model.tasks[taskCount].complete(startDate, endDate, user);
+                        }
+                    }
+                }
+            }
+            this.CloseConnection();
+            return model;
+        }
+
+        public List<User> getUsers()
+        {
+            List<User> users = new List<User>();
+
+            this.OpenConnection();
+            using(SQLiteCommand cmd = new SQLiteCommand(myConnection))
+            {
+                cmd.CommandText = "SELECT rowid, Name, Password FROM Users";
+                using(SQLiteDataReader rdr = cmd.ExecuteReader())
+                {
+                    while(rdr.Read())
+                    {
+                        int userId = rdr.GetInt32(0);
+                        User user = new User(userId, rdr.GetString(1), rdr.GetString(2));
+                        users.Add(user);
+                    }
+                }
+            }
+
+            return users;
+
         }
         
         public List<(String, int)> getModelNames()
@@ -157,7 +265,7 @@ namespace Gaant_Chart
             return modelNames;
         }
 
-        public void OpenConnection()
+        private void OpenConnection()
         {
             if(myConnection.State != System.Data.ConnectionState.Open)
             {
@@ -165,7 +273,7 @@ namespace Gaant_Chart
             }
         }
 
-        public void CloseConnection()
+        private void CloseConnection()
         {
             if(myConnection.State != System.Data.ConnectionState.Closed)
             {

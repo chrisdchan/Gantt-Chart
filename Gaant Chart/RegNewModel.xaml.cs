@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gaant_Chart.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,10 +22,11 @@ namespace Gaant_Chart
     public partial class RegNewModel : Window
     {
         private Boolean submitStatus;
-        
+        public Boolean earlyExit { get; set; }
         public RegNewModel()
         {
             InitializeComponent();
+            earlyExit = true;
             setSubmitStatus(false);
         }
 
@@ -33,7 +35,7 @@ namespace Gaant_Chart
             // Only proceed if Model has a Name
             if (!submitStatus) return;
 
-            String modelID = tbModelID.Text;
+            String modelName = tbModelID.Text;
             String dateString = tbDate.Text;
             DateTime date;
 
@@ -59,8 +61,21 @@ namespace Gaant_Chart
                 return;
             }
 
-            MainWindow.newModel(modelID, date);
-            
+            int existingModelId = MainWindow.myDatabase.modelExists(modelName);
+            if(existingModelId != -1)
+            {
+                MessageBoxResult res = System.Windows.MessageBox.Show("This Model Already Exists, would you like to load it instead?", "Existing Model", MessageBoxButton.YesNo);
+                if (res == MessageBoxResult.Yes)
+                {
+                    data.currentModel = MainWindow.myDatabase.GetModel(existingModelId);
+                    earlyExit = false;
+                    this.Close();
+                }
+                else return;
+            }
+
+            data.currentModel = MainWindow.myDatabase.InsertModel(modelName, date);
+            earlyExit = false;
             this.Close();
 
         }

@@ -51,3 +51,16 @@ C:\Users\chris\Source\Repos\Gaant-Chart\Gaant Chart\obj\Debug\Gaant Chart.exe
 C:\Users\chris\Source\Repos\Gaant-Chart\Gaant Chart\obj\Debug\Gaant Chart.pdb
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\CompleteTask.g.cs
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\LoadExistingModel.g.cs
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Buffers.dll
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Collections.Immutable.dll
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Memory.dll
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Buffers.xml
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Collections.Immutable.xml
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Memory.xml
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\CompleteTask.baml
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\LoadExistingModel.baml
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\GeneratedInternalTypeHelper.g.cs

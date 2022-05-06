@@ -22,117 +22,100 @@ namespace Gaant_Chart
     /// </summary>
     /// 
 
-
     // All DB calls will go through MainWindow
 
     public partial class MainWindow : Window
     {
+        // Status : Does not work right now
 
         public static DbConnection myDatabase { get; set; }
+
+        public static EventHandler LoadExistingModelEvent { get; set; }
+        private static Dictionary<int, (CheckBox, TextBox)> taskComponents { get; set; }
+
+
         public MainWindow()
         {
             InitializeComponent();
 
-            initSettingsData();
-
+            // create database connection
             myDatabase = new DbConnection();
-        }
 
-        public void setExistingModel(int modelId, String modelName, DateTime date)
-        {
-            // update static variables
-            data.ModelId = modelId;
-            data.modelName = modelName;
-            data.startDate = date;
+            // set up the canvas
+            drawInitialCanvas();
+            initTaskBlocks();
+            setIdealTaskBlocks();
 
-            // Initialize completeTasks dictionary
-            data.initcompletedTasks(modelId);
-
-            // TODO: Reset completed Task Blocks
-
-            // TODO: Redraw blocks
-
-            // TODO: Log out of User
+            taskComponents = new Dictionary<int, (CheckBox, TextBox)>
+            {
+                {0, (c_Image_Aquisition, txt_Image_Aquisition) },
+                {1, (c_Images_Download, txt_Images_Download) },
+                {2, (c_SPM8_Autosegmentation, txt_SPM8_Autosegmentation) },
+                {3, (c_MD_Volumes_Segmented, txt_MD_Volumes_Segmented)},
+                {4, (c_Fully_Segmented_Model, txt_Fully_Segmented_Model) },
+                {5, (c_Initial_Peer_Review, txt_Initial_Peer_Review)},
+                {6, (c_Segmentation_Corrections, txt_Segmentation_Corrections)},
+                {7, (c_2nd_Peer_Review, txt_2nd_Peer_Review)},
+                {8, (c_2nd_Segmentation_Corrections, txt_2nd_Segmentation_Corrections) },
+                {9, (c_Full_Model_Approved, txt_Full_Model_Approved) },
+                {10, (c_Meshed_Model, txt_Meshed_Model) },
+                {11, (c_Export_Model_to_Physics, txt_Export_Model_to_Physics) },
+                {12, (c_Model_Solved, txt_Model_Solved) },
+                {13, (c_Report_Generated, txt_Report_Generated) }
+            };
             
         }
 
-        public void setNewModel(String modelName, DateTime date)
+        private void displayCurrentModel()
         {
-            //update static variables
-            data.modelName = modelName;
-            data.startDate = date;
-
-            // Initialize Canvas
             myCanvas.Visibility = Visibility.Visible;
-
-            //TODO: uncheck all TaskCheckBoxes and TaskUserLabels
-            
-            // Draw lines with correct modelName and date
-            drawInitialCanvas(modelName, date);
-
-            // Draw planned blocks
-            drawIdealTaskBlocks();
-
-            //TODO: Log out of User
-
+            setModel(data.currentModel.modelName);
+            setDate(data.currentModel.startDate);
+            txtDisplayModelName.Text = data.currentModel.modelName;
         }
 
-        public static void newModel(String modelName, DateTime date)
+        private void resetTaskComponents()
         {
-            // Insert new model to Database
-            data.ModelId = myDatabase.InsertModel(modelName, date);
-             
+            for(int i = 0; i < taskComponents.Count; i++)
+            {
+                taskComponents[i].Item1.IsChecked = false;
+                taskComponents[i].Item2.Text = "";
+            }
         }
-
-        private void initSettingsData()
+        private void setTaskBlocksAndComponents()
         {
-            //Eventually this data should be mutable by admin, for now this will be hard coded
+            //Can only be called after initialized Tasks
+            if (data.completedTasks == null) throw new Exception("cannot call setTaskComponents() before initializing completedTasks");
 
+            for (int i = 0; i < data.allTasks.Length; i++)
+            {
+                String modelName = data.allTasks[i];
+                if (!data.completedTasks.ContainsKey(modelName)) break;
+                
+                // TODO: set checkbox to True
+                // TODO: set textbox to the correct person
+                // TODO: set textbox to readonly
+                // TODO: Resize and move Green Boxes to correct positions  
 
-            // taskStartDelayPlanned specifies the ideal start date of every task
-            data.initTaskStartDelayPlanned();
-
-            // store (Not display) data for ideal schedule blocks
-            initIdealTaskBlocks();
+            }
 
         }
+        
+        private void setTaskComponentsReadOnly(Boolean status)
+        {
+            for(int i = 0; i < taskComponents.Count; i++)
+            {
+                taskComponents[i].Item2.IsReadOnly = status;
+            }
+        }
+
 
         int dayWidth = 19;
         int blockHeight = 30;
         int topOffset = 120;
         int dateX = 210;
 
-        private void initIdealTaskBlocks()
-        {
-            // Must precede initTaskStartDelayPlanned
-
-            data.plannedTaskBlocks = new List<Rectangle>();
-
-            int i = 0;
-            foreach(KeyValuePair<String, int > task in data.taskStartDelayPlanned)
-            {
-                Rectangle rect = new Rectangle();
-                rect.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FED49E"));
-                rect.Width = dayWidth * data.taskSettings[task.Key].Item1;
-                rect.Height = blockHeight;
-                Canvas.SetLeft(rect, dateX + task.Value * (dayWidth));
-                Canvas.SetTop(rect, topOffset - 2 + i * (blockHeight + 2));
-                data.plannedTaskBlocks.Add(rect);
-
-                i += 1;
-            }
-        }
-
-        private void btnRegNewModel_clicked(object sender, RoutedEventArgs e)
-        {
-    
-            RegNewModel win2 = new RegNewModel();
-            win2.Show();
-            
-        }
-
-
-        private void drawInitialCanvas(String modelName, DateTime date)
+        private void drawInitialCanvas()
         {
             int leftOffset = 20;
             int labelSpacing = 32;
@@ -236,34 +219,51 @@ namespace Gaant_Chart
             date4.LayoutTransform = new RotateTransform(dateRotation);
             date5.LayoutTransform = new RotateTransform(dateRotation);
 
-            setDate(date);
-
             Canvas.SetLeft(label_ModelID, 25);
             Canvas.SetTop(label_ModelID, 50);
 
-            setModel(modelName);
-
-            drawIdealTaskBlocks();
-
         }
-        private void drawIdealTaskBlocks()
+        private void setIdealTaskBlocks()
         {
-            // Must preced initIdealTaskBlocks
+            // Probably only needs to be called once at the beginning
+            int dayOffset = 0;
 
-            foreach (Rectangle rect in data.plannedTaskBlocks)
+            for(int i = 0; i < data.allTasks.Length; i++)
             {
-                myCanvas.Children.Add(rect);
+                Rectangle rect = data.plannedTaskBlocks[i];
+
+                rect.Width = dayWidth * data.taskSettingsDuration[i];
+                rect.Height = blockHeight;
+
+                Canvas.SetLeft(rect, dateX + dayOffset * dayWidth);
+                Canvas.SetTop(rect, topOffset + i * blockHeight);
+
+                dayOffset += data.taskSettingsDuration[i];
             }
         }
-        
-        private void drawAndLoadCompletedTasks()
+        private void initTaskBlocks()
         {
-            //must be called once a new model is loaded
+            // This method should only be called once at start of app
+            data.plannedTaskBlocks = new List<Rectangle>();
+            data.completedTaskBlocks = new List<Rectangle>();
+            for(int i=0; i < data.allTasks.Length; i++)
+            {
+                Rectangle rectP = new Rectangle();
+                Rectangle rectC = new Rectangle();
 
+                rectP.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FED49E"));
+                rectC.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9EEEA2"));
 
+                data.plannedTaskBlocks.Add(rectP);
+                data.completedTaskBlocks.Add(rectC);
+                myCanvas.Children.Add(rectP);
+                myCanvas.Children.Add(rectC);
 
+            }
         }
 
+
+       
         private void setTaskCheckBoxs()
         {
             foreach(DockPanel myDockPanel in taskBarStackPanel.Children)
@@ -274,7 +274,7 @@ namespace Gaant_Chart
                 foreach(CheckBox checkbox in myDockPanel.Children)
                 {
                     taskName = (String)checkbox.Content;
-                    MessageBox.Show(taskName)
+                    MessageBox.Show(taskName);
                 }
             }
         }
@@ -312,6 +312,35 @@ namespace Gaant_Chart
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(((CheckBox)sender).Name);
+        }
+        private void btnRegNewModel_clicked(object sender, RoutedEventArgs e)
+        {
+            RegNewModel win2 = new RegNewModel();
+            win2.ShowDialog();
+            if(!win2.earlyExit) displayCurrentModel();
+        }
+
+        private void btnEditCurrentModel_Click(object sender, RoutedEventArgs e)
+        {
+            Login win2 = new Login();
+            win2.ShowDialog();
+        }
+
+        private void btnLoadExistingModel_Click(object sender, RoutedEventArgs e)
+        {
+            List<(String, int)> ModelNames = new List<(string, int)>();
+            if(myDatabase != null)
+            {
+                ModelNames = MainWindow.myDatabase.getModelNames();
+            }
+
+            if (ModelNames.Count > 0)
+            {
+                LoadExistingModel win2 = new LoadExistingModel(ModelNames);
+                win2.ShowDialog();
+                if (win2.earlyExist) displayCurrentModel();
+            }
+            else MessageBox.Show("No Models Created");
         }
 
     }
