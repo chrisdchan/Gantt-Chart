@@ -53,15 +53,32 @@ namespace Gaant_Chart
         {
             if(comboBox.SelectedItem == null)
             {
-                MessageBox.Show("Please select a model");
+                MessageBox.Show("Please select a user");
+                return;
+            }
+
+            
+            int userIndex = (int)((ComboBox)comboBox.SelectedItem).SelectedIndex;
+            User currentUser = users[userIndex];
+            string passwordAttempt = passwordTxt.Text;
+            if(currentUser == null)
+            {
+                MessageBox.Show("User does not exist");
+                return;
+            }
+            else if(!currentUser.correctPassword(passwordAttempt))
+            {
+                MessageBox.Show("Incorrect Password");
+                passwordTxt.Text = "";
             }
             else
             {
-                int userIndex = (int)((ComboBox)comboBox.SelectedItem).SelectedIndex;
                 data.currentUser = users[userIndex];
                 earlyExit = false;
                 this.Close();
             }
+            
+
         }
     }
 }
