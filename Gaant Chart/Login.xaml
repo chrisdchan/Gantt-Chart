@@ -17,10 +17,10 @@
         <Label Grid.Row="0"
                FontWeight="Bold" FontSize="30"
                HorizontalAlignment="Center" VerticalAlignment="Center"
-            Content="Signin"></Label>
+            Content="Login"></Label>
 
         <Label Grid.Row="1" Content="Name"></Label>
-        <ComboBox Grid.Row="1"
+        <ComboBox Grid.Row="1" x:Name="comboBox"
                   Height="40" Width="300">
 
         </ComboBox>
@@ -29,7 +29,8 @@
         <TextBox Grid.Row="2"
                  Height="40" Width="300"></TextBox>
 
-        <Button Grid.Row="3"
+        <Button x:Name="submitBtn" Click="submitBtn_Click"
+                Grid.Row="3"
                 Height="40" Width="175"
                 HorizontalAlignment="Left"
                 Margin="50, 0, 0, 0"
@@ -41,7 +42,9 @@
                 Height="40" Width="100"
                 HorizontalAlignment="Right"
                 Margin="0, 0, 50, 0"
-                FontSize="25" Content="Cancel"/>
+                FontSize="25" Content="Cancel"
+                x:Name="cancelBtn" Click="cancelBtn_Click"/>
+
 
 
     </Grid>

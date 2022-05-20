@@ -9,7 +9,7 @@ namespace Gaant_Chart.Models
     public class User
     {
         public int userId { get; set; } 
-        private String name;
+        public String name;
         private String password;
 
         public User(int userId, string name, string password)
@@ -17,6 +17,11 @@ namespace Gaant_Chart.Models
             this.userId = userId;
             this.name = name;
             this.password = password;
+        }
+
+        public Boolean correctPassword(string _password)
+        {
+            return password == _password;
         }
     }
 }

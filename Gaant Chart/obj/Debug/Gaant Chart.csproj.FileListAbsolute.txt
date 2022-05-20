@@ -64,3 +64,28 @@ C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\System.Runtime.Com
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\CompleteTask.baml
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\LoadExistingModel.baml
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\EntityFramework.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Buffers.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Collections.Immutable.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Data.SQLite.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Data.SQLite.EF6.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Data.SQLite.Linq.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Memory.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\EntityFramework.xml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Buffers.xml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Collections.Immutable.xml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Data.SQLite.xml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Memory.xml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Gaant Chart.csproj.SuggestedBindingRedirects.cache
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\CompleteTask.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\LoadExistingModel.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Login.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\CompleteTask.baml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\LoadExistingModel.baml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Login.baml
