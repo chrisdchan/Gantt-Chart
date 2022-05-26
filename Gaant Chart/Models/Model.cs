@@ -33,19 +33,6 @@ namespace Gaant_Chart.Models
             }
         }
 
-        public void completeTask(int taskId, DateTime endDate, User user)
-        {
-            if (taskId <= lastCompletedTaskId) throw new Exception("Attempting to complete an already completed task");
-
-            lastCompletedTaskId = taskId;
-
-            DateTime taskStartDate = startDate;
-
-            if (taskId != 0) taskStartDate = tasks[taskId - 1].endDate;
-
-            tasks[taskId].complete(taskStartDate, endDate, user);
-        }
-
         public void removeTask(int taskId)
         {
             for(int i = lastCompletedTaskId; i >= taskId; i--)

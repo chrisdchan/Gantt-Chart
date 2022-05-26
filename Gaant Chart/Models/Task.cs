@@ -15,6 +15,8 @@ namespace Gaant_Chart.Models
         public DateTime plannedStartDate { get; set; }
         public DateTime plannedEndDate { get; set; }
 
+        public Boolean completed = false;
+
         public Task(string name, DateTime plannedStartDate, DateTime plannedEndDate)
         {
             this.name = name;
@@ -26,11 +28,13 @@ namespace Gaant_Chart.Models
             this.user = null;
         }
 
-        public void complete(DateTime startDate, DateTime endDate, User user)
+        public void complete(TaskCompletor taskCompletor)
         {
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.user = user;
+            this.user = taskCompletor.user;
+            this.startDate = taskCompletor.startDate;
+            this.endDate = taskCompletor.endDate;
+
+            completed = true;
         }
 
         public void remove()
@@ -39,6 +43,19 @@ namespace Gaant_Chart.Models
             this.startDate = DateTime.MinValue;
             this.endDate = DateTime.MinValue;
         }
-
      }
+
+    public class TaskCompletor
+    {
+        public User user { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
+
+        public TaskCompletor(User user, DateTime startDate, DateTime endDate)
+        {
+            this.user = user;
+            this.startDate = startDate;
+            this.endDate = endDate;
+        }
+    }
 }
