@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Data.SQLite;
-
+using Gaant_Chart.Models;
 
 namespace Gaant_Chart
 {
@@ -33,6 +33,25 @@ namespace Gaant_Chart
         public static EventHandler LoadExistingModelEvent { get; set; }
         private static Dictionary<int, (CheckBox, TextBox)> taskComponents { get; set; }
 
+        private static int numDaysInView { get; set; }
+        private static double heightPerTask { get; set; }
+
+        double WIDTH = 850;
+        double HEIGHT = 592;
+
+        int blockHeight = 30;
+        int topOffset = 120;
+
+        int dateX = 210;
+        int verticalLabelSpace = 32;
+
+        int labelLeftMargin = 20;
+
+        int leftOuterBorder = -80;
+        int leftInnerBorder = 125;
+        int rightOuterBorder = 713;
+        int topBorder = 15;
+        int bottomBorder = 465;
 
         public MainWindow()
         {
@@ -42,9 +61,15 @@ namespace Gaant_Chart
             myDatabase = new DbConnection();
 
             // set up the canvas
+
+            numDaysInView = 7 * 4;
+            heightPerTask = (bottomBorder + 5 - topBorder) / 14.0;
+
             drawInitialCanvas();
             initTaskBlocks();
             setIdealTaskBlocks();
+            
+
 
             taskComponents = new Dictionary<int, (CheckBox, TextBox)>
             {
@@ -63,6 +88,8 @@ namespace Gaant_Chart
                 {12, (c_Model_Solved, txt_Model_Solved) },
                 {13, (c_Report_Generated, txt_Report_Generated) }
             };
+
+            myCanvas.Visibility = Visibility.Visible;
             
         }
 
@@ -109,75 +136,87 @@ namespace Gaant_Chart
             }
         }
 
-
-        int dayWidth = 19;
-        int blockHeight = 30;
-        int topOffset = 120;
-        int dateX = 210;
+        // NOTE: The top left corner for lines is (-100, -100), Components start at (0, 0)
 
         private void drawInitialCanvas()
         {
-            int leftOffset = 20;
-            int labelSpacing = 32;
 
-            // Set the position of each task label
-            Canvas.SetLeft(l1, leftOffset);
-            Canvas.SetLeft(l2, leftOffset);
-            Canvas.SetLeft(l3, leftOffset);
-            Canvas.SetLeft(l4, leftOffset);
-            Canvas.SetLeft(l5, leftOffset);
-            Canvas.SetLeft(l6, leftOffset);
-            Canvas.SetLeft(l7, leftOffset);
-            Canvas.SetLeft(l8, leftOffset);
-            Canvas.SetLeft(l9, leftOffset);
-            Canvas.SetLeft(l10, leftOffset);
-            Canvas.SetLeft(l11, leftOffset);
-            Canvas.SetLeft(l12, leftOffset);
-            Canvas.SetLeft(l13, leftOffset);
-            Canvas.SetLeft(l14, leftOffset);
+            Canvas.SetLeft(l1, labelLeftMargin);
+            Canvas.SetLeft(l2, labelLeftMargin);
+            Canvas.SetLeft(l3, labelLeftMargin);
+            Canvas.SetLeft(l4, labelLeftMargin);
+            Canvas.SetLeft(l5, labelLeftMargin);
+            Canvas.SetLeft(l6, labelLeftMargin);
+            Canvas.SetLeft(l7, labelLeftMargin);
+            Canvas.SetLeft(l8, labelLeftMargin);
+            Canvas.SetLeft(l9, labelLeftMargin);
+            Canvas.SetLeft(l10, labelLeftMargin);
+            Canvas.SetLeft(l11, labelLeftMargin);
+            Canvas.SetLeft(l12, labelLeftMargin);
+            Canvas.SetLeft(l13, labelLeftMargin);
+            Canvas.SetLeft(l14, labelLeftMargin);
 
-            Canvas.SetTop(l1, topOffset + labelSpacing * 0);
-            Canvas.SetTop(l2, topOffset + labelSpacing * 1);
-            Canvas.SetTop(l3, topOffset + labelSpacing * 2);
-            Canvas.SetTop(l4, topOffset + labelSpacing * 3);
-            Canvas.SetTop(l5, topOffset + labelSpacing * 4);
-            Canvas.SetTop(l6, topOffset + labelSpacing * 5);
-            Canvas.SetTop(l7, topOffset + labelSpacing * 6);
-            Canvas.SetTop(l8, topOffset + labelSpacing * 7);
-            Canvas.SetTop(l9, topOffset + labelSpacing * 8);
-            Canvas.SetTop(l10, topOffset + labelSpacing * 9);
-            Canvas.SetTop(l11, topOffset + labelSpacing * 10);
-            Canvas.SetTop(l12, topOffset + labelSpacing * 11);
-            Canvas.SetTop(l13, topOffset + labelSpacing * 12);
-            Canvas.SetTop(l14, topOffset + labelSpacing * 13);
+            Canvas.SetTop(l1, topOffset + verticalLabelSpace * 0);
+            Canvas.SetTop(l2, topOffset + verticalLabelSpace * 1);
+            Canvas.SetTop(l3, topOffset + verticalLabelSpace * 2);
+            Canvas.SetTop(l4, topOffset + verticalLabelSpace * 3);
+            Canvas.SetTop(l5, topOffset + verticalLabelSpace * 4);
+            Canvas.SetTop(l6, topOffset + verticalLabelSpace * 5);
+            Canvas.SetTop(l7, topOffset + verticalLabelSpace * 6);
+            Canvas.SetTop(l8, topOffset + verticalLabelSpace * 7);
+            Canvas.SetTop(l9, topOffset + verticalLabelSpace * 8);
+            Canvas.SetTop(l10, topOffset + verticalLabelSpace * 9);
+            Canvas.SetTop(l11, topOffset + verticalLabelSpace * 10);
+            Canvas.SetTop(l12, topOffset + verticalLabelSpace * 11);
+            Canvas.SetTop(l13, topOffset + verticalLabelSpace * 12);
+            Canvas.SetTop(l14, topOffset + verticalLabelSpace * 13);
 
-            Canvas.SetLeft(L1, leftOffset + 15);
-            Canvas.SetLeft(L2, leftOffset + 10);
-            Canvas.SetLeft(L3, leftOffset + 10);
-            Canvas.SetLeft(L4, leftOffset);
+            Canvas.SetLeft(L1, labelLeftMargin + 15);
+            Canvas.SetLeft(L2, labelLeftMargin + 10);
+            Canvas.SetLeft(L3, labelLeftMargin + 10);
+            Canvas.SetLeft(L4, labelLeftMargin);
 
-            Canvas.SetTop(L1, topOffset + labelSpacing * 1.5);
-            Canvas.SetTop(L2, topOffset + labelSpacing * 6);
-            Canvas.SetTop(L3, topOffset + labelSpacing * 10.15);
-            Canvas.SetTop(L4, topOffset + labelSpacing * 12.05);
+            Canvas.SetTop(L1, topOffset + verticalLabelSpace * 1.5);
+            Canvas.SetTop(L2, topOffset + verticalLabelSpace * 6);
+            Canvas.SetTop(L3, topOffset + verticalLabelSpace * 10.15);
+            Canvas.SetTop(L4, topOffset + verticalLabelSpace * 12.05);
 
-            int minX = -80;
-            int labelX = 125;
-            int minY = 15;
-            int maxY = 465;
-            int maxX = 713;
-            
+
             // Draw a boarder around the data
-            newLine(minX, labelX, 180, 180, "#FF0000");
-            newLine(minX, labelX, 340, 340, "#FF0000");
-            newLine(minX, labelX, 400, 400, "#FF0000");
-            newLine(minX, labelX, maxY, maxY, "#FF0000");
-            newLine(minX, minX, minY, maxY, "#FF0000");
-            newLine(minX, labelX, minY, minY, "#FF0000");
-            newLine(labelX, labelX, minY, maxY, "#FF0000");
+            double segmentationBottomBorder = topBorder + heightPerTask * 5;
+            double reviewBottomBorder = segmentationBottomBorder + heightPerTask * 5;
+            double meshBottomBorder = reviewBottomBorder + heightPerTask * 2;
 
-            newLine(labelX, maxX, maxY, maxY, "#32EC00");
-            newLine(maxX, maxX, minY, maxY, "#32EC00");
+            drawLine(new Point(leftOuterBorder, segmentationBottomBorder),
+                     new Point(leftInnerBorder, segmentationBottomBorder),
+                     Color.FromRgb(255, 0, 0));
+
+            drawLine(new Point(leftInnerBorder, segmentationBottomBorder),
+                     new Point(rightOuterBorder, segmentationBottomBorder),
+                     Color.FromRgb(252, 180, 180));
+
+            drawLine(new Point(leftOuterBorder, reviewBottomBorder),
+                     new Point(leftInnerBorder, reviewBottomBorder),
+                     Color.FromRgb(255, 0, 0));
+            drawLine(new Point(leftInnerBorder, reviewBottomBorder),
+                     new Point(rightOuterBorder, reviewBottomBorder),
+                     Color.FromRgb(252, 180, 180));
+
+            drawLine(new Point(leftOuterBorder, meshBottomBorder),
+                     new Point(leftInnerBorder, meshBottomBorder),
+                     Color.FromRgb(255, 0, 0));
+            drawLine(new Point(leftInnerBorder, meshBottomBorder),
+                     new Point(rightOuterBorder, meshBottomBorder),
+                     Color.FromRgb(252, 180, 180));
+
+
+            newLine(leftOuterBorder, leftInnerBorder, bottomBorder, bottomBorder, "#FF0000");
+            newLine(leftOuterBorder, leftOuterBorder, topBorder, bottomBorder, "#FF0000");
+            newLine(leftOuterBorder, leftInnerBorder, topBorder, topBorder, "#FF0000");
+            newLine(leftInnerBorder, leftInnerBorder, topBorder, bottomBorder, "#FF0000");
+
+            newLine(leftInnerBorder, rightOuterBorder, bottomBorder, bottomBorder, "#32EC00");
+            newLine(rightOuterBorder, rightOuterBorder, topBorder, bottomBorder, "#32EC00");
 
             L1.LayoutTransform = new RotateTransform(270);
             L2.LayoutTransform = new RotateTransform(270);
@@ -185,15 +224,15 @@ namespace Gaant_Chart
             L4.LayoutTransform = new RotateTransform(270);
 
 
-            newLine(labelX, maxX, minY, minY, "#F2DA2E");
+            newLine(leftInnerBorder, rightOuterBorder, topBorder, topBorder, "#F2DA2E");
 
-            for (int i = labelX; i < maxX; i += 147)
+            for (int i = leftInnerBorder; i < rightOuterBorder; i += 147)
             {
-                if (i != labelX) newLine(i, i, minY, maxY, "#DFDFDF");
+                if (i != leftInnerBorder) newLine(i, i, topBorder, bottomBorder, "#DFDFDF");
 
                 for (int j = i; j < i + 147; j += 21)
                 {
-                    if (j != i) newLine(j, j, minY, minY + 5, "#F2DA2E");
+                    if (j != i) newLine(j, j, topBorder, topBorder + 5, "#F2DA2E");
                 }
             }
 
@@ -223,24 +262,6 @@ namespace Gaant_Chart
             Canvas.SetTop(label_ModelID, 50);
 
         }
-        private void setIdealTaskBlocks()
-        {
-            // Probably only needs to be called once at the beginning
-            int dayOffset = 0;
-
-            for(int i = 0; i < data.allTasks.Length; i++)
-            {
-                Rectangle rect = data.plannedTaskBlocks[i];
-
-                rect.Width = dayWidth * data.taskSettingsDuration[i];
-                rect.Height = blockHeight;
-
-                Canvas.SetLeft(rect, dateX + dayOffset * dayWidth);
-                Canvas.SetTop(rect, topOffset + i * blockHeight);
-
-                dayOffset += data.taskSettingsDuration[i];
-            }
-        }
         private void initTaskBlocks()
         {
             // This method should only be called once at start of app
@@ -261,9 +282,27 @@ namespace Gaant_Chart
 
             }
         }
+        private void setIdealTaskBlocks()
+        {
+            double pixelsPerDay = (rightOuterBorder - leftInnerBorder) / numDaysInView;
+            // Probably only needs to be called once at the beginning
+            int dayOffset = 0;
 
+            for(int i = 0; i < data.allTasks.Length; i++)
+            {
+                Rectangle rect = data.plannedTaskBlocks[i];
 
-       
+                rect.Width = pixelsPerDay * data.taskSettingsDuration[i] - 2;
+                rect.Height = blockHeight;
+
+                Canvas.SetLeft(rect, leftInnerBorder + 100 + dayOffset * pixelsPerDay);
+                Canvas.SetTop(rect, topBorder + 105 + i * 32);
+
+                dayOffset += data.taskSettingsDuration[i];
+            }
+
+        }
+
         private void setTaskCheckBoxs()
         {
             foreach(DockPanel myDockPanel in taskBarStackPanel.Children)
@@ -309,6 +348,23 @@ namespace Gaant_Chart
 
             myCanvas.Children.Add(newLine);
         }
+
+        private void drawLine(Point p1, Point p2, Color color)
+        {
+            Line newLine = new Line();
+            Thickness thickness = new Thickness(100);
+            newLine.Margin = thickness;
+            SolidColorBrush brush = new SolidColorBrush(color);
+            newLine.Stroke = brush;
+            newLine.X1 = p1.X;
+            newLine.Y1 = p1.Y;
+            newLine.X2 = p2.X;
+            newLine.Y2 = p2.Y;
+
+            myCanvas.Children.Add(newLine);
+
+        }
+
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(((CheckBox)sender).Name);
@@ -328,20 +384,22 @@ namespace Gaant_Chart
 
         private void btnLoadExistingModel_Click(object sender, RoutedEventArgs e)
         {
-            List<(String, int)> ModelNames = new List<(string, int)>();
-            if(myDatabase != null)
-            {
-                ModelNames = MainWindow.myDatabase.getModelNames();
-            }
+            List<ModelTag> modelTags = MainWindow.myDatabase.getModelTags();
 
-            if (ModelNames.Count > 0)
+            if (modelTags.Count > 0)
             {
-                LoadExistingModel win2 = new LoadExistingModel(ModelNames);
+                LoadExistingModel win2 = new LoadExistingModel(modelTags);
                 win2.ShowDialog();
-                if (win2.earlyExist) displayCurrentModel();
+                if (!win2.earlyExist) displayCurrentModel();
             }
             else MessageBox.Show("No Models Created");
         }
 
+        private void adminBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Admin win2 = new Admin();
+            win2.ShowDialog();
+
+        }
     }
 }

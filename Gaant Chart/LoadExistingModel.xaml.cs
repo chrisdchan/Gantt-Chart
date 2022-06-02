@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gaant_Chart.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,8 +21,6 @@ namespace Gaant_Chart
 
     public partial class LoadExistingModel : Window
     {
-
-
         private List<(String, int)> ModelNames;
 
         private int modelId;
@@ -33,20 +32,22 @@ namespace Gaant_Chart
             return modelId;
         }
        
-        public LoadExistingModel(List<(String, int)> ModelNames)
+        public LoadExistingModel(List<ModelTag> modelTags)
         {
             InitializeComponent();
             earlyExist = true;
+
             
-            if (ModelNames == null) return;
-            foreach((String, int) modelName in ModelNames)
+            if (modelTags == null) return;
+            foreach(ModelTag modelTag in modelTags)
             {
                 ComboBoxItem comboBoxItem = new ComboBoxItem();
-                comboBoxItem.Content = modelName.Item1;
-                comboBoxItem.Tag = modelName.Item2;
+                comboBoxItem.Content = modelTag.name;
+                comboBoxItem.Tag = modelTag.id;
                 myComboBox.Items.Add(comboBoxItem);
             }
         }
+
         private void btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
             earlyExist = true;
@@ -61,7 +62,7 @@ namespace Gaant_Chart
             }
             else 
             {
-                int modelId = (int)((ComboBoxItem)myComboBox.SelectedItem).Tag;
+                int modelId = (int)(myComboBox.SelectedItem as ComboBoxItem).Tag;
                 data.currentModel = MainWindow.myDatabase.GetModel(modelId);
                 earlyExist = false;
                 this.Close();

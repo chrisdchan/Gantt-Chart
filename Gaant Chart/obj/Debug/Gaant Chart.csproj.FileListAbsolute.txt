@@ -89,3 +89,5 @@ C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Login.g.cs
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\CompleteTask.baml
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\LoadExistingModel.baml
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Login.baml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Admin.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Admin.baml

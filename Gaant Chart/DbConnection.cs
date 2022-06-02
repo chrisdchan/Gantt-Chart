@@ -15,7 +15,6 @@ namespace Gaant_Chart
     {
         //NOTE ALL date Strings need to be in MM-dd-YYYY
 
-
         public SQLiteConnection myConnection;
         public SQLiteCommand myCommand;
         public SQLiteDataReader myDataReader;
@@ -135,7 +134,7 @@ namespace Gaant_Chart
         {
             Model model;
             myCommand.CommandText = "SELECT name, startDate FROM Models where rowid = @rowid";
-            myCommand.Parameters.AddWithValue("@rowid", modelId);
+            myCommand.Parameters.AddWithValue("@rowid", modelId + 1);
             myCommand.Prepare();
 
             using (myDataReader = myCommand.ExecuteReader())
@@ -177,28 +176,25 @@ namespace Gaant_Chart
         }
         private Model fillModelwithCompletedTasksFromDataReader(Model model)
         {
-            int taskCount = 0;
             while(myDataReader.Read())
             {
-                Boolean taskCompleted;
-                taskCompleted = (myDataReader["endDate"] == DBNull.Value) ? false : true;
-
-                String taskName = (String)myDataReader["name"];
-                DateTime startDate = (DateTime)myDataReader["startDate"];
-
-                if(taskCompleted)
+                if(myDataReader["endDate"] != DBNull.Value)
                 {
-                    int userId = (int)myDataReader["userId"];
-                    DateTime endDate = (DateTime)myDataReader["endDate"];
-                    User user = data.getUser(userId);
-
-                    TaskCompletor taskCompletor = new TaskCompletor(user, startDate, endDate);
-                    model.tasks[taskCount].complete(taskCompletor);
+                    completeTaskFromDataReader(model);
                 }
-                taskCount++;
             }
             return model;
+        }
 
+        private void completeTaskFromDataReader(Model model)
+        {
+            int taskCount = myDataReader.StepCount - 1;
+            int userId = (int)myDataReader["userId"];
+            DateTime startDate = (DateTime)myDataReader["startDate"];
+            DateTime endDate = (DateTime)myDataReader["endDate"];
+            User user = data.getUser(userId);
+            TaskCompletor taskCompletor = new TaskCompletor(user, startDate, endDate);
+            model.tasks[taskCount].complete(taskCompletor);
         }
 
         public Model GetModel(String modelName)
@@ -278,24 +274,55 @@ namespace Gaant_Chart
 
         }
         
-        public List<(String, int)> getModelNames()
+        public List<ModelTag> getModelTags()
         {
-            List<(String, int)> modelNames = new List<(String, int)>();
+            List<ModelTag> modelTags = new List<ModelTag>();
 
             this.OpenConnection();
             using(SQLiteCommand myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT Name, rowid from Models";
+                myCommand.CommandText = "SELECT rowid, name from Models";
                 using(myDataReader = myCommand.ExecuteReader())
                 {
                     while (myDataReader.Read())
                     {
-                        modelNames.Add((myDataReader.GetString(0), myDataReader.GetInt32(1)));
+                        int rowid = myDataReader.GetInt32(0);
+                        String name = (String) myDataReader["name"];
+
+                        modelTags.Add(new ModelTag(rowid, name));
                     }
                 }
             }
 
-            return modelNames;
+            return modelTags;
+        }
+
+        public void deleteModel(int modelId)
+        {
+            this.OpenConnection();
+            using(myCommand = new SQLiteCommand(myConnection))
+            {
+                deleteModelFromModelDB(modelId);
+                deleteModelFromTasksDB(modelId);
+            }
+
+
+        }
+
+        private void deleteModelFromModelDB(int modelId)
+        {
+            myCommand.CommandText = "DELETE FROM Models WHERE rowid = @rowid";
+            myCommand.Parameters.AddWithValue("@rowid", modelId);
+            myCommand.Prepare();
+            myCommand.ExecuteNonQuery();
+        }
+
+        private void deleteModelFromTasksDB(int modelId)
+        {
+            myCommand.CommandText = "DELETE FROM Tasks WHERE modelId = @modelId";
+            myCommand.Parameters.AddWithValue("@modelId", modelId);
+            myCommand.Prepare();
+            myCommand.ExecuteNonQuery();
         }
 
         private void OpenConnection()
