@@ -1,4 +1,4 @@
-# Gaant-Chart
+# Gantt Chart
 
 An app that documents the work flow of TTField Treatment
 
