@@ -9,6 +9,7 @@ namespace Gaant_Chart.Models
     public class Task
     {
         private readonly String name;
+        public int typeInd { get; set; }
         private User user { get; set; }
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
@@ -17,9 +18,10 @@ namespace Gaant_Chart.Models
 
         public Boolean completed = false;
 
-        public Task(string name, DateTime plannedStartDate, DateTime plannedEndDate)
+        public Task(int typeInd, DateTime plannedStartDate, DateTime plannedEndDate)
         {
-            this.name = name;
+            this.typeInd = typeInd;
+            this.name = data.allTasks[typeInd];
             this.plannedStartDate = plannedStartDate;
             this.plannedEndDate = plannedEndDate;
 

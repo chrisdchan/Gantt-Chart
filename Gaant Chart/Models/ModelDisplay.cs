@@ -15,32 +15,16 @@ namespace Gaant_Chart.Models
 
         public Model model { get; }
 
-        private int numDaysInView { get; set; }
+        private CanvasView view { get; set; }
 
-        private double pixelsPerDay { get; set; }
-
-        private DateTime startDisplayDate { get; set; }
-        private DateTime endDisplayDate { get; set; }
-
-        public ModelDisplay(Model model, int numDaysInView, double pixelsPerDay)
+        
+        public ModelDisplay(Model model, CanvasView view)
         {
             this.model = model;
-            this.numDaysInView = numDaysInView;
-            this.pixelsPerDay = pixelsPerDay;
-
-            startDisplayDate = model.startDate;
-            endDisplayDate = startDisplayDate.AddDays(numDaysInView);
-
+            this.view = view;
 
             initCompletedBlocks();
             initPlannedBlocks();
-        }
-        
-        public ModelDisplay(Model model, CanvasView canvasView)
-        {
-            this.model = model;
-            numDaysInView = (int)(canvasView.startDate - canvasView.endDate).TotalDays;
-            pixelsPerDay = canvasView.pixelsPerDay;
         }
 
         private void initCompletedBlocks()
@@ -49,8 +33,7 @@ namespace Gaant_Chart.Models
             {
                 if(task.completed)
                 {
-                    TaskDisplay taskDisplay = new CompletedTaskDisplay(task, pixelsPerDay);
-                    taskDisplay.cutOffIfNecessary(endDisplayDate);
+                    TaskDisplay taskDisplay = new CompletedTaskDisplay(task, view);
                     completedBlocks.Add(taskDisplay);
                 }
                 else
@@ -64,8 +47,7 @@ namespace Gaant_Chart.Models
         {
             foreach(Task task in model.tasks)
             {
-                TaskDisplay taskDisplay = new PlannedTaskDisplay(task, pixelsPerDay);
-                taskDisplay.cutOffIfNecessary(endDisplayDate);
+                TaskDisplay taskDisplay = new PlannedTaskDisplay(task, view);
                 plannedBlocks.Add(taskDisplay);
             }
         }
