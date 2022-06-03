@@ -99,8 +99,6 @@ namespace Gaant_Chart
 
         private void displayCurrentModel()
         {
-            
-
             myCanvas.Visibility = Visibility.Visible;
             setModel(data.currentModel.modelName);
             setDate(data.currentModel.startDate);
@@ -109,6 +107,12 @@ namespace Gaant_Chart
             initTaskBlocks();
 
             view = new CanvasView(data.currentModel, 28);
+        }
+
+        private void displayCurrentUser()
+        {
+            userLabel.Content = "Hello " + data.currentUser.name;
+
         }
 
         private void resetTaskComponents()
@@ -379,6 +383,7 @@ namespace Gaant_Chart
         {
             Login win2 = new Login();
             win2.ShowDialog();
+            if (!win2.earlyExit) displayCurrentUser();
 
         }
 

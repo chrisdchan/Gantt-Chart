@@ -29,6 +29,7 @@ namespace Gaant_Chart
             InitializeComponent();
 
             users = MainWindow.myDatabase.getUsers();
+            displayUsers();
             earlyExit = true;
 
         }
@@ -57,7 +58,6 @@ namespace Gaant_Chart
                 return;
             }
 
-            
             int userIndex = (int)((ComboBox)comboBox.SelectedItem).SelectedIndex;
             User currentUser = users[userIndex];
             string passwordAttempt = passwordTxt.Text;

@@ -12,6 +12,12 @@ namespace Gaant_Chart.Models
         public String name;
         public String password;
         public Boolean reqPass;
+        public User(string name, string password, bool reqPass)
+        {
+            this.name = name;
+            this.password = password;
+            this.reqPass = reqPass;
+        }
         public User(int userId, string name, string password, bool reqPass)
         {
             this.userId = userId;

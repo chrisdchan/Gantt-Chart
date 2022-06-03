@@ -42,26 +42,21 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Border CornerRadius="5,5,5,5" BorderBrush="Black" 
-                    Grid.Column="0" Grid.Row="1"
-                    BorderThickness="0.5" Height="25" Width="110" Background="White">
-                <TextBlock Text="First Name" x:Name="nameTxt" 
-                       FontFamily="Microsoft JhengHei UI Light"
-                       Height="25" Width="100" FontWeight="Normal" Foreground="Gray"/>
-            </Border>
 
-            <Border CornerRadius="5" BorderBrush="Black"
-                    BorderThickness="0.5" Grid.Column="0" Grid.Row="2"
-                    Height="25" Width="110"
-                    Background="White">
-                <TextBlock Text="Password" x:Name="passwordTxt"
-                           Foreground="Gray"
-                           Height="25" Width="100"/>
-            </Border>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
+                <Label Content="Full Name" VerticalAlignment="Center"/>
+                <TextBox x:Name="nameTxt" Width="100" Height="30" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0">
+                <Label Content="Password" VerticalAlignment="Center"/>
+                <TextBox x:Name="passwordTxt" Width="100" Height="30"/>
+            </StackPanel>
+
             <StackPanel Orientation="Horizontal" 
                         Grid.Column="1" Grid.Row="2"
                         Height="30">
-                <CheckBox VerticalAlignment="Center"/>
+                <CheckBox VerticalAlignment="Center" x:Name="reqPassCheckBox"/>
                 <Label Content="Require Password On Login"/>
             </StackPanel>
 

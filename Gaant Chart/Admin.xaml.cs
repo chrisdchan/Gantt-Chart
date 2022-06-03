@@ -36,10 +36,28 @@ namespace Gaant_Chart
 
         private void createUserBtn_Click(object sender, RoutedEventArgs e)
         {
+            String name = nameTxt.Text;
+            String password = passwordTxt.Text;
+            Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
 
+            if(name == String.Empty)
+            {
+                MessageBox.Show("Name cannot be blank");
+                return;
+            }
             
+            if(password == String.Empty)
+            {
+                MessageBox.Show("Password cannot be blank");
+                return;
+            }
 
+            User tempUser = new User(name, password, reqPass);
+
+            MainWindow.myDatabase.insertUser(tempUser);
+            MessageBox.Show("User Added to Database");
         }
+
 
         private void navAddTeamMemberBtn_Click(object sender, RoutedEventArgs e)
         {

@@ -284,7 +284,9 @@ namespace Gaant_Chart
                         int userId = myDataReader.GetInt32(0);
                         String name = (String) myDataReader["name"];
                         String password = (String)myDataReader["password"];
-                        Boolean reqPass = (Boolean)myDataReader["requirePassword"];
+                        int reqPassInt = (int) myDataReader["requirePassword"];
+
+                        Boolean reqPass = (reqPassInt != 0);
 
                         User user = new User(userId, name, password, reqPass);
                         users.Add(user);
@@ -293,7 +295,6 @@ namespace Gaant_Chart
             }
 
             return users;
-
         }
         
         public List<ModelTag> getModelTags()
