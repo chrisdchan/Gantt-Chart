@@ -125,8 +125,9 @@ namespace Gaant_Chart
                 // TODO: Resize and move Green Boxes to correct positions  
 
             }
-
         }
+
+
         
         private void setTaskComponentsReadOnly(Boolean status)
         {
