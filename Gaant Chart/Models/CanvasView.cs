@@ -16,7 +16,7 @@ namespace Gaant_Chart.Models
         public double LEFT_START_OFF = 225;
         public double TOP_START_OFF = 120;
         public double BlOCK_HEIGHT = 30;
-        public double TASK_HEIGHT = 32;
+        public double TASK_HEIGHT = 31.9;
 
         public double RIGHT_OUTER_BORDER = 713;
         public double LEFT_INNER_BORDER = 125;

@@ -60,7 +60,7 @@ namespace Gaant_Chart.Models
 
         private void setOffsets()
         {
-            double dayOffset = (view.startDate - startDate).TotalDays;
+            double dayOffset = (startDate - view.startDate).TotalDays;
             leftOffset = view.LEFT_START_OFF + dayOffset * view.pixelsPerDay;
 
             topOffset = view.TOP_START_OFF + task.typeInd * view.TASK_HEIGHT;

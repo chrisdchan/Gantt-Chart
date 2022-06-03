@@ -29,7 +29,7 @@ namespace Gaant_Chart.Models
                 plannedEnd = plannedStart.AddDays(data.taskSettingsDuration[i]);
                 Task newTask = new Task(i, plannedStart, plannedEnd);
                 tasks.Add(newTask);
-                plannedStart = plannedEnd.AddDays(1);
+                plannedStart = plannedEnd;
             }
         }
 

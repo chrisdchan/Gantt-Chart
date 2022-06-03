@@ -46,17 +46,17 @@ namespace Gaant_Chart
            1,  // "Image Aquisition",
            1,  // "Images Download",
            1,  // "SMP8 Autosegmentation",
-           4,  // "MD Volumes Segmented",
-           1,  // "Fully Segmented Model",
-           1,  // "Initial Peer Review",
+           2,  // "MD Volumes Segmented",
+           3,  // "Fully Segmented Model",
+           2,  // "Initial Peer Review",
            1,  // "Segmentation Corrections",
-           3,  // "2nd Peer Review",
-           4,  // "2nd Segmentation Corrections",
-           3,  // "Full Model Approved",
-           4,  // "Meshed Model",
+           1,  // "2nd Peer Review",
+           1,  // "2nd Segmentation Corrections",
+           1,  // "Full Model Approved",
+           1,  // "Meshed Model",
            1,  // "Export Model to Physics",
-           5,  // "Model Solved",
-           5,  // "Report Generated"
+           1,  // "Model Solved",
+           1,  // "Report Generated"
         };
 
         public static List<Rectangle> plannedTaskBlocks { get; set; }

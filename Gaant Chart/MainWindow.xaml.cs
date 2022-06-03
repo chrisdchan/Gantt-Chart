@@ -292,17 +292,6 @@ namespace Gaant_Chart
             {
                 addRectToCanvas(taskDisplay);
             }
-
-            Rectangle sampleRect = new Rectangle();
-            sampleRect.Width = 20;
-            sampleRect.Height = 10;
-            sampleRect.Fill = new SolidColorBrush(Colors.Red);
-            myCanvas.Children.Add(sampleRect);
-            Canvas.SetLeft(sampleRect, 100);
-            Canvas.SetTop(sampleRect, 200);
-
-
-
         }
 
         private void addRectToCanvas(TaskDisplay taskDisplay)
