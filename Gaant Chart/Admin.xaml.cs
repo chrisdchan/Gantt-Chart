@@ -34,8 +34,9 @@ namespace Gaant_Chart
             populateDelteModelComoboBox();
         }
 
-        private void submitBtn_Click(object sender, RoutedEventArgs e)
+        private void createUserBtn_Click(object sender, RoutedEventArgs e)
         {
+
             
 
         }

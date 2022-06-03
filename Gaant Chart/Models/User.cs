@@ -10,13 +10,14 @@ namespace Gaant_Chart.Models
     {
         public int userId { get; set; } 
         public String name;
-        private String password;
-
-        public User(int userId, string name, string password)
+        public String password;
+        public Boolean reqPass;
+        public User(int userId, string name, string password, bool reqPass)
         {
             this.userId = userId;
             this.name = name;
             this.password = password;
+            this.reqPass = reqPass;
         }
 
         public Boolean correctPassword(string _password)

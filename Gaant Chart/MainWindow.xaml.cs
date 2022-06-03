@@ -43,7 +43,6 @@ namespace Gaant_Chart
         // double WIDTH = 850;
         // double HEIGHT = 592;
 
-        int blockHeight = 30;
         int topOffset = 120;
 
         int dateX = 210;
@@ -303,12 +302,6 @@ namespace Gaant_Chart
 
         }
 
-        private void setCompletedTaskBlocks()
-        {
-            double pixelsPerDay = (rightOuterBorder - leftInnerBorder) / numDaysInView;
-            int dayOffset = 0;
-        }
-
         private void setTaskCheckBoxs()
         {
             foreach(DockPanel myDockPanel in taskBarStackPanel.Children)
@@ -386,6 +379,7 @@ namespace Gaant_Chart
         {
             Login win2 = new Login();
             win2.ShowDialog();
+
         }
 
         private void btnLoadExistingModel_Click(object sender, RoutedEventArgs e)

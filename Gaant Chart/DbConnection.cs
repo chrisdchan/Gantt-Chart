@@ -42,7 +42,7 @@ namespace Gaant_Chart
                     "name TEXT NOT NULL, startDate DATETIME NOT NULL, endDate DATETIME, userId INT)";
                 myCommand.ExecuteNonQuery();
 
-                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Users (name TEXT NOT NULL UNIQUE, password TEXT)";
+                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Users (name TEXT NOT NULL UNIQUE, password TEXT, requirePassword INT)";
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Authorization (userId INT NOT NULL, taskId INT NOT NULL)";
@@ -53,7 +53,7 @@ namespace Gaant_Chart
 
         }
 
-        public Model InsertModel(String modelName, DateTime startDate)
+        public Model insertModel(String modelName, DateTime startDate)
         {
             this.OpenConnection();
             int modelId;
@@ -94,6 +94,24 @@ namespace Gaant_Chart
             Model model = new Model(modelId, modelName, startDate);
             return model;
 
+        }
+
+        public void insertUser(User user)
+        {
+            this.OpenConnection();
+
+            int reqPass = (user.reqPass) ? 1 : 0;
+
+            using(myCommand = new SQLiteCommand(myConnection))
+            {
+                myCommand.CommandText = "INSERT INTO USERS(name, password, requirePassword) VALUES (@name, @password, @requirePassword)";
+                myCommand.Parameters.AddWithValue("@name", user.name);
+                myCommand.Parameters.AddWithValue("@password", user.password);
+                myCommand.Parameters.AddWithValue("@requirePassword", reqPass);
+                myCommand.Prepare();
+                myCommand.ExecuteNonQuery();
+            }
+            this.CloseConnection();
         }
 
         public int modelExists(String modelName)
@@ -258,13 +276,17 @@ namespace Gaant_Chart
             this.OpenConnection();
             using(SQLiteCommand myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT rowid, Name, Password FROM Users";
+                myCommand.CommandText = "SELECT rowid, Name, password, requirePassword FROM Users";
                 using(myDataReader = myCommand.ExecuteReader())
                 {
                     while(myDataReader.Read())
                     {
                         int userId = myDataReader.GetInt32(0);
-                        User user = new User(userId, myDataReader.GetString(1), myDataReader.GetString(2));
+                        String name = (String) myDataReader["name"];
+                        String password = (String)myDataReader["password"];
+                        Boolean reqPass = (Boolean)myDataReader["requirePassword"];
+
+                        User user = new User(userId, name, password, reqPass);
                         users.Add(user);
                     }
                 }

@@ -30,7 +30,7 @@
         </Grid>
 
         <Grid Grid.Column="1" Background="AliceBlue" 
-              x:Name="addTeamMemberGrid" Visibility="Hidden">
+              x:Name="addTeamMemberGrid" Visibility="Visible">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -65,7 +65,7 @@
                 <Label Content="Require Password On Login"/>
             </StackPanel>
 
-            <Button x:Name="submitBtn" Click="submitBtn_Click"
+            <Button x:Name="createUserBtn" Click="createUserBtn_Click"
                     Content="Create New User"
                     Grid.Row="3" Grid.Column="0"
                     Grid.ColumnSpan="2"
