@@ -26,17 +26,18 @@ namespace Gaant_Chart
 
     public partial class MainWindow : Window
     {
-        // Status : Does not work right now
 
         public static DbConnection myDatabase { get; set; }
 
         public static EventHandler LoadExistingModelEvent { get; set; }
         private static Dictionary<int, (CheckBox, TextBox)> taskComponents { get; set; }
 
-        private static int numDaysInView { get; set; }
         private static double heightPerTask { get; set; }
 
         private const int DEFAULT_DAYS_IN_VIEW = 28;
+
+        private List<CheckBox> taskBarCheckBoxes { get; set; }
+        private List<TextBox> taskBarTextBoxes { get; set; }
 
         private CanvasView view { get; set; }
 
@@ -65,16 +66,12 @@ namespace Gaant_Chart
 
             // set up the canvas
 
-            numDaysInView = 7 * 4;
-            heightPerTask = (bottomBorder + 5 - topBorder) / 14.0;
 
             drawInitialCanvas();
             initTaskBlocks();
 
             view = new CanvasView(DateTime.Now, DEFAULT_DAYS_IN_VIEW);
             
-
-
             taskComponents = new Dictionary<int, (CheckBox, TextBox)>
             {
                 {0, (c_Image_Aquisition, txt_Image_Aquisition) },
@@ -94,6 +91,10 @@ namespace Gaant_Chart
             };
 
             myCanvas.Visibility = Visibility.Visible;
+
+            initTaskBarLists();
+
+            setTaskComponentsReadOnly();
             
         }
 
@@ -115,38 +116,16 @@ namespace Gaant_Chart
 
         }
 
-        private void resetTaskComponents()
+        private void setTaskComponentsReadOnly()
         {
-            for(int i = 0; i < taskComponents.Count; i++)
+            foreach(CheckBox checkBox in taskBarCheckBoxes)
             {
-                taskComponents[i].Item1.IsChecked = false;
-                taskComponents[i].Item2.Text = "";
+                checkBox.IsHitTestVisible = false;
             }
-        }
-        private void setTaskBlocksAndComponents()
-        {
-            //Can only be called after initialized Tasks
-            if (data.completedTasks == null) throw new Exception("cannot call setTaskComponents() before initializing completedTasks");
 
-            for (int i = 0; i < data.allTasks.Length; i++)
+            foreach(TextBox textBox in taskBarTextBoxes)
             {
-                String modelName = data.allTasks[i];
-                if (!data.completedTasks.ContainsKey(modelName)) break;
-                
-                // TODO: set checkbox to True
-                // TODO: set textbox to the correct person
-                // TODO: set textbox to readonly
-                // TODO: Resize and move Green Boxes to correct positions  
-
-            }
-        }
-
-        
-        private void setTaskComponentsReadOnly(Boolean status)
-        {
-            for(int i = 0; i < taskComponents.Count; i++)
-            {
-                taskComponents[i].Item2.IsReadOnly = status;
+                textBox.IsReadOnly = true;
             }
         }
 
@@ -154,6 +133,8 @@ namespace Gaant_Chart
 
         private void drawInitialCanvas()
         {
+
+            heightPerTask = (bottomBorder + 5 - topBorder) / 14.0;
 
             Canvas.SetLeft(l1, labelLeftMargin);
             Canvas.SetLeft(l2, labelLeftMargin);
@@ -199,7 +180,7 @@ namespace Gaant_Chart
             // Draw a boarder around the data
             double segmentationBottomBorder = topBorder + heightPerTask * 5;
             double reviewBottomBorder = segmentationBottomBorder + heightPerTask * 5;
-            double meshBottomBorder = reviewBottomBorder + heightPerTask * 2;
+            double meshBottomBorder = reviewBottomBorder + heightPerTask * 2 - 5;
 
             drawLine(new Point(leftOuterBorder, segmentationBottomBorder),
                      new Point(leftInnerBorder, segmentationBottomBorder),
@@ -306,17 +287,47 @@ namespace Gaant_Chart
 
         }
 
-        private void setTaskCheckBoxs()
+        private void initTaskBarLists()
         {
-            foreach(DockPanel myDockPanel in taskBarStackPanel.Children)
-            {
-                if (myDockPanel.GetType() != typeof(DockPanel)) continue;
-                String taskName;
+            taskBarTextBoxes = new List<TextBox>();
+            taskBarCheckBoxes = new List<CheckBox>();
 
-                foreach(CheckBox checkbox in myDockPanel.Children)
+            foreach(Object outerObj in taskBarStackPanel.Children)
+            {
+                if(outerObj.GetType() != typeof(DockPanel)) continue;
+
+                DockPanel dockPanel = outerObj as DockPanel;
+
+                foreach(Object innerObj in dockPanel.Children)
                 {
-                    taskName = (String)checkbox.Content;
-                    MessageBox.Show(taskName);
+                    if(innerObj.GetType() == typeof(CheckBox))
+                    {
+                        CheckBox checkBox = innerObj as CheckBox;
+                        taskBarCheckBoxes.Add(checkBox);
+                    }
+                    else if(innerObj.GetType() == typeof(TextBox))
+                    {
+                        TextBox textBox = innerObj as TextBox;
+                        taskBarTextBoxes.Add(textBox);
+                    }
+
+                }
+
+            }
+        }
+        
+        private void initTaskBarWithModel(Model model)
+        {
+            Models.Task nextTask;
+
+            for(int i = 0; i < model.tasks.Count; i++)
+            {
+                Models.Task task = model.tasks[i];
+
+                if(task.completed)
+                {
+                     
+
                 }
             }
         }
@@ -384,7 +395,6 @@ namespace Gaant_Chart
             Login win2 = new Login();
             win2.ShowDialog();
             if (!win2.earlyExit) displayCurrentUser();
-
         }
 
         private void btnLoadExistingModel_Click(object sender, RoutedEventArgs e)

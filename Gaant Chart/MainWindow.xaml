@@ -226,7 +226,8 @@
             <Label Content="Assemblies" FontWeight="Bold"></Label>
             <Label Content="Segmentation Tasks"></Label>
             <DockPanel Background="#EDF156" Margin="5 2.5 5 2.5">
-                <CheckBox Content="Image Acquisition" x:Name="c_Image_Aquisition" Checked="CheckBox_Checked"></CheckBox>
+                <CheckBox Content="Image Acquisition" x:Name="c_Image_Aquisition" Checked="CheckBox_Checked"
+                          ></CheckBox>
                 <TextBox
                     Width="50"
                     Margin="0 0 5 0"

@@ -152,7 +152,7 @@ namespace Gaant_Chart
         {
             Model model;
             myCommand.CommandText = "SELECT name, startDate FROM Models where rowid = @rowid";
-            myCommand.Parameters.AddWithValue("@rowid", modelId + 1);
+            myCommand.Parameters.AddWithValue("@rowid", modelId);
             myCommand.Prepare();
 
             using (myDataReader = myCommand.ExecuteReader())
