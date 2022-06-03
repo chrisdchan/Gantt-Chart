@@ -16,7 +16,9 @@ namespace Gaant_Chart.Models
         public Rectangle rectangle { get; set; }
         public SolidColorBrush color { get; }
         public double leftOffset { get; set; }
-        public double rightOffset { get; set; }
+        public double topOffset { get; set; }
+        public double width;
+        public double height;
 
         public Boolean inView { get; set; }
 
@@ -36,25 +38,24 @@ namespace Gaant_Chart.Models
         }
         protected void finishInit()
         {
-            sizeTask();
+            numDays = (endDate - startDate).TotalDays;
             setInView();
+            sizeTask();
             setOffsets();
-            cutOffIfNecessary();
-            numDays = (startDate - endDate).TotalDays;
         }
         private void sizeTask()
         {
             rectangle.Width = view.pixelsPerDay * numDays;
+            rectangle.Height = view.BlOCK_HEIGHT;
             cutOffIfNecessary();
         }
 
         public void resize(CanvasView view)
         {
             this.view = view;
-            sizeTask();
             setInView();
+            sizeTask();
             setOffsets();
-            cutOffIfNecessary();
         }
 
         private void setOffsets()
@@ -62,12 +63,12 @@ namespace Gaant_Chart.Models
             double dayOffset = (view.startDate - startDate).TotalDays;
             leftOffset = view.LEFT_START_OFF + dayOffset * view.pixelsPerDay;
 
-            rightOffset = view.TOP_START_OFF + task.typeInd * view.TASK_HEIGHT;
+            topOffset = view.TOP_START_OFF + task.typeInd * view.TASK_HEIGHT;
         }
 
         private void setInView()
         {
-            inView = (startDate <= view.endDate || endDate >= view.startDate);
+            inView = (startDate <= view.endDate && endDate >= view.startDate);
             if(inView)
             {
                 rectangle.Visibility = System.Windows.Visibility.Visible;
@@ -94,7 +95,7 @@ namespace Gaant_Chart.Models
             if(endDate > view.endDate)
             {
                 numDaysInView = (view.endDate - startDate).TotalDays;
-                rectangle.Width = view.pixelsPerDay * numDaysInView; 
+                rectangle.Width = view.pixelsPerDay * numDaysInView;
             }
         }
 

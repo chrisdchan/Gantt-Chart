@@ -36,8 +36,12 @@ namespace Gaant_Chart
         private static int numDaysInView { get; set; }
         private static double heightPerTask { get; set; }
 
-        double WIDTH = 850;
-        double HEIGHT = 592;
+        private const int DEFAULT_DAYS_IN_VIEW = 28;
+
+        private CanvasView view { get; set; }
+
+        // double WIDTH = 850;
+        // double HEIGHT = 592;
 
         int blockHeight = 30;
         int topOffset = 120;
@@ -67,7 +71,8 @@ namespace Gaant_Chart
 
             drawInitialCanvas();
             initTaskBlocks();
-            setIdealTaskBlocks();
+
+            view = new CanvasView(DateTime.Now, DEFAULT_DAYS_IN_VIEW);
             
 
 
@@ -95,10 +100,16 @@ namespace Gaant_Chart
 
         private void displayCurrentModel()
         {
+            
+
             myCanvas.Visibility = Visibility.Visible;
             setModel(data.currentModel.modelName);
             setDate(data.currentModel.startDate);
             txtDisplayModelName.Text = data.currentModel.modelName;
+
+            initTaskBlocks();
+
+            view = new CanvasView(data.currentModel, 28);
         }
 
         private void resetTaskComponents()
@@ -264,48 +275,43 @@ namespace Gaant_Chart
         }
         private void initTaskBlocks()
         {
-            // This method should only be called once at start of app
-            data.plannedTaskBlocks = new List<Rectangle>();
-            data.completedTaskBlocks = new List<Rectangle>();
-            for(int i=0; i < data.allTasks.Length; i++)
+            Model model = data.currentModel;
+
+            if (model == null) return;
+
+            view.changeStartDate(model.startDate);
+
+            ModelDisplay modelDisplay = new ModelDisplay(model, view);
+
+            foreach(TaskDisplay taskDisplay in modelDisplay.plannedBlocks)
             {
-                Rectangle rectP = new Rectangle();
-                Rectangle rectC = new Rectangle();
-
-                rectP.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FED49E"));
-                rectC.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#9EEEA2"));
-
-                data.plannedTaskBlocks.Add(rectP);
-                data.completedTaskBlocks.Add(rectC);
-                myCanvas.Children.Add(rectP);
-                myCanvas.Children.Add(rectC);
-
+                addRectToCanvas(taskDisplay);
             }
+
+            foreach(TaskDisplay taskDisplay in modelDisplay.completedBlocks)
+            {
+                addRectToCanvas(taskDisplay);
+            }
+
+            Rectangle sampleRect = new Rectangle();
+            sampleRect.Width = 20;
+            sampleRect.Height = 10;
+            sampleRect.Fill = new SolidColorBrush(Colors.Red);
+            myCanvas.Children.Add(sampleRect);
+            Canvas.SetLeft(sampleRect, 100);
+            Canvas.SetTop(sampleRect, 200);
+
+
+
         }
 
-        private void setIdealTaskBlocks()
+        private void addRectToCanvas(TaskDisplay taskDisplay)
         {
-            double pixelsPerDay = (rightOuterBorder - leftInnerBorder) / numDaysInView;
-            // Probably only needs to be called once at the beginning
-            int dayOffset = 0;
+            Rectangle rect = taskDisplay.rectangle;
+            myCanvas.Children.Add(rect);
+            Canvas.SetLeft(rect, taskDisplay.leftOffset);
+            Canvas.SetTop(rect, taskDisplay.topOffset);
 
-            for(int i = 0; i < data.allTasks.Length; i++)
-            {
-
-                int taskDuration = data.taskSettingsDuration[i];
-
-                
-
-                Rectangle rect = data.plannedTaskBlocks[i];
-
-                rect.Width = pixelsPerDay * data.taskSettingsDuration[i] - 2;
-                rect.Height = blockHeight;
-
-                Canvas.SetLeft(rect, leftInnerBorder + 100 + dayOffset * pixelsPerDay);
-                Canvas.SetTop(rect, topBorder + 105 + i * 32);
-
-                dayOffset += data.taskSettingsDuration[i];
-            }
         }
 
         private void setCompletedTaskBlocks()

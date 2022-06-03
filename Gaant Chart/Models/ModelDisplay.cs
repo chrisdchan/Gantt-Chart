@@ -23,6 +23,9 @@ namespace Gaant_Chart.Models
             this.model = model;
             this.view = view;
 
+            plannedBlocks = new List<TaskDisplay>();
+            completedBlocks = new List<TaskDisplay>();
+
             initCompletedBlocks();
             initPlannedBlocks();
         }
