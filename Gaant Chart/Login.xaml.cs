@@ -40,6 +40,7 @@ namespace Gaant_Chart
             {
                 ComboBoxItem newComboBoxItem = new ComboBoxItem();
                 newComboBoxItem.Content = user.name;
+                newComboBoxItem.Tag = user;
                 comboBox.Items.Add(newComboBoxItem);
             }
         }
@@ -58,25 +59,29 @@ namespace Gaant_Chart
                 return;
             }
 
-            int userIndex = (int)((ComboBox)comboBox.SelectedItem).SelectedIndex;
-            User currentUser = users[userIndex];
+            User currentUser = (comboBox.SelectedItem as ComboBoxItem).Tag as User;
+
             string passwordAttempt = passwordTxt.Text;
+
             if(currentUser == null)
             {
                 MessageBox.Show("User does not exist");
                 return;
             }
-            else if(!currentUser.correctPassword(passwordAttempt))
+
+            if(currentUser.reqPass)
             {
-                MessageBox.Show("Incorrect Password");
-                passwordTxt.Text = "";
+                if(!currentUser.correctPassword(passwordAttempt))
+                {
+                    MessageBox.Show("Incorrect Password");
+                    passwordTxt.Text = "";
+                    return;
+                }
             }
-            else
-            {
-                data.currentUser = users[userIndex];
-                earlyExit = false;
-                this.Close();
-            }
+
+            data.currentUser = currentUser;
+            earlyExit = false;
+            this.Close();
             
 
         }
