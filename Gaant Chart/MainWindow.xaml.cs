@@ -127,7 +127,6 @@ namespace Gaant_Chart
             }
         }
 
-
         
         private void setTaskComponentsReadOnly(Boolean status)
         {
@@ -283,6 +282,7 @@ namespace Gaant_Chart
 
             }
         }
+
         private void setIdealTaskBlocks()
         {
             double pixelsPerDay = (rightOuterBorder - leftInnerBorder) / numDaysInView;
@@ -291,6 +291,11 @@ namespace Gaant_Chart
 
             for(int i = 0; i < data.allTasks.Length; i++)
             {
+
+                int taskDuration = data.taskSettingsDuration[i];
+
+                
+
                 Rectangle rect = data.plannedTaskBlocks[i];
 
                 rect.Width = pixelsPerDay * data.taskSettingsDuration[i] - 2;
@@ -301,7 +306,12 @@ namespace Gaant_Chart
 
                 dayOffset += data.taskSettingsDuration[i];
             }
+        }
 
+        private void setCompletedTaskBlocks()
+        {
+            double pixelsPerDay = (rightOuterBorder - leftInnerBorder) / numDaysInView;
+            int dayOffset = 0;
         }
 
         private void setTaskCheckBoxs()

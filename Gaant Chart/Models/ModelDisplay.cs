@@ -15,15 +15,32 @@ namespace Gaant_Chart.Models
 
         public Model model { get; }
 
-        public int numDaysInView { get; set; }
+        private int numDaysInView { get; set; }
 
-        private SolidColorBrush COMPLETED_COLOR = new SolidColorBrush(Color.FromRgb(149, 219, 139));
-        private SolidColorBrush PLANNED_COLOR = new SolidColorBrush(Color.FromRgb(254, 212, 158));
+        private double pixelsPerDay { get; set; }
 
-        public ModelDisplay(Model model, int numDaysInView)
+        private DateTime startDisplayDate { get; set; }
+        private DateTime endDisplayDate { get; set; }
+
+        public ModelDisplay(Model model, int numDaysInView, double pixelsPerDay)
         {
+            this.model = model;
+            this.numDaysInView = numDaysInView;
+            this.pixelsPerDay = pixelsPerDay;
+
+            startDisplayDate = model.startDate;
+            endDisplayDate = startDisplayDate.AddDays(numDaysInView);
 
 
+            initCompletedBlocks();
+            initPlannedBlocks();
+        }
+        
+        public ModelDisplay(Model model, CanvasView canvasView)
+        {
+            this.model = model;
+            numDaysInView = (int)(canvasView.startDate - canvasView.endDate).TotalDays;
+            pixelsPerDay = canvasView.pixelsPerDay;
         }
 
         private void initCompletedBlocks()
@@ -32,11 +49,26 @@ namespace Gaant_Chart.Models
             {
                 if(task.completed)
                 {
-                    TaskDisplay taskDisplay = new TaskDisplay(model.startDate, COMPLETED_COLOR);
-                    plannedBlocks.Add(taskDisplay);
-
+                    TaskDisplay taskDisplay = new CompletedTaskDisplay(task, pixelsPerDay);
+                    taskDisplay.cutOffIfNecessary(endDisplayDate);
+                    completedBlocks.Add(taskDisplay);
+                }
+                else
+                {
+                    break;
                 }
             }
         }
+
+        private void initPlannedBlocks()
+        {
+            foreach(Task task in model.tasks)
+            {
+                TaskDisplay taskDisplay = new PlannedTaskDisplay(task, pixelsPerDay);
+                taskDisplay.cutOffIfNecessary(endDisplayDate);
+                plannedBlocks.Add(taskDisplay);
+            }
+        }
+
     }
 }

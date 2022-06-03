@@ -10,11 +10,15 @@ namespace Gaant_Chart.Models
 {
     public abstract class TaskDisplay
     {
-        private double pixelsPerDay { get; set; }
-        Task task { get; }
-
         public Rectangle rectangle { get; set; }
         public SolidColorBrush color { get; }
+
+        public double leftOffset { get; set; }
+        public double topOffset { get; set; }
+
+        private double pixelsPerDay { get; set; }
+        private Task task { get; }
+
         private double numDays { get; set; }
 
         protected DateTime start { get; set; }
@@ -26,11 +30,15 @@ namespace Gaant_Chart.Models
         protected SolidColorBrush COMPLETED_COLOR = new SolidColorBrush(Color.FromRgb(149, 219, 139));
         protected SolidColorBrush PLANNED_COLOR = new SolidColorBrush(Color.FromRgb(254, 212, 158));
 
-        public TaskDisplay(Task task, double pixelsPerDay)
+        public TaskDisplay(Task task, double pixelsPerDay )
         {
             this.task = task;
             this.pixelsPerDay = pixelsPerDay;
             rectangle = new Rectangle();
+        }
+
+        protected void finishInit()
+        {
             numDays = (start - end).TotalDays;
             resizeTask(pixelsPerDay);
         }
@@ -40,7 +48,7 @@ namespace Gaant_Chart.Models
             rectangle.Width = pixelsPerDay * numDays;
         }
 
-        public void cutOffTask(DateTime lastDateDisplayed)
+        public void cutOffIfNecessary(DateTime lastDateDisplayed)
         {
             if(isCutOff(lastDateDisplayed))
             {
@@ -53,8 +61,6 @@ namespace Gaant_Chart.Models
         {
             return (start < lastDateDisplayed && lastDateDisplayed < end);
         }
-
-
     }
 
     public class PlannedTaskDisplay : TaskDisplay 
@@ -64,6 +70,8 @@ namespace Gaant_Chart.Models
             rectangle.Fill = PLANNED_COLOR;
             start = task.plannedStartDate;
             end = task.plannedEndDate;
+
+            finishInit();
         }
 
     }
@@ -75,6 +83,8 @@ namespace Gaant_Chart.Models
             rectangle.Fill = COMPLETED_COLOR;
             start = task.startDate;
             end = task.endDate;
+
+            finishInit();
         }
     }
 
