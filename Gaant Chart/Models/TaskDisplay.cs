@@ -8,7 +8,7 @@ using System.Windows.Shapes;
 
 namespace Gaant_Chart.Models
 {
-    public class TaskDisplay
+    public abstract class TaskDisplay
     {
         private double pixelsPerDay { get; set; }
         Task task { get; }
@@ -17,47 +17,22 @@ namespace Gaant_Chart.Models
         public SolidColorBrush color { get; }
         private double numDays { get; set; }
 
-        private DateTime start { get; set; }
-        private DateTime end { get; set; }
+        protected DateTime start { get; set; }
+        protected DateTime end { get; set; }
 
         const double DEFAULT_WIDTH = 23;
         const double DEFAULT_HEIGHT = 30;
 
-        private SolidColorBrush COMPLETED_COLOR = new SolidColorBrush(Color.FromRgb(149, 219, 139));
-        private SolidColorBrush PLANNED_COLOR = new SolidColorBrush(Color.FromRgb(254, 212, 158));
+        protected SolidColorBrush COMPLETED_COLOR = new SolidColorBrush(Color.FromRgb(149, 219, 139));
+        protected SolidColorBrush PLANNED_COLOR = new SolidColorBrush(Color.FromRgb(254, 212, 158));
 
         public TaskDisplay(Task task, double pixelsPerDay)
         {
             this.task = task;
             this.pixelsPerDay = pixelsPerDay;
             rectangle = new Rectangle();
-
-            if (task.completed)
-            {
-                initCompletedTask();
-            }
-            else
-            {
-                initPlannedTask();
-            }
-
             numDays = (start - end).TotalDays;
-
             resizeTask(pixelsPerDay);
-        }
-
-        private void initCompletedTask()
-        {
-            rectangle.Fill = COMPLETED_COLOR;
-            start = task.startDate;
-            end = task.endDate;
-        }
-
-        private void initPlannedTask()
-        {
-            rectangle.Fill = PLANNED_COLOR;
-            start = task.plannedStartDate;
-            end = task.plannedEndDate;
         }
 
         public void resizeTask(double pixelsPerDay)
@@ -72,7 +47,6 @@ namespace Gaant_Chart.Models
                 double numDaysDisplay = (lastDateDisplayed - start).TotalDays;
                 rectangle.Width = pixelsPerDay * numDaysDisplay;
             }
-
         }
 
         private Boolean isCutOff(DateTime lastDateDisplayed)
@@ -81,8 +55,33 @@ namespace Gaant_Chart.Models
         }
 
 
+    }
+
+    public class PlannedTaskDisplay : TaskDisplay 
+    { 
+        public PlannedTaskDisplay(Task task, double pixelsPerDay) : base(task, pixelsPerDay)
+        {
+            rectangle.Fill = PLANNED_COLOR;
+            start = task.plannedStartDate;
+            end = task.plannedEndDate;
+        }
 
     }
+
+    public class CompletedTaskDisplay : TaskDisplay
+    {
+        public CompletedTaskDisplay(Task task, double pixelsPerDay) : base(task, pixelsPerDay)
+        {
+            rectangle.Fill = COMPLETED_COLOR;
+            start = task.startDate;
+            end = task.endDate;
+        }
+    }
+
+
+
+
+
 
 
 }
