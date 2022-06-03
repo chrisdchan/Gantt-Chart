@@ -52,5 +52,9 @@ namespace Gaant_Chart.Models
             }
         }
 
+        public void resize(CanvasView view)
+        {
+        }
+
     }
 }

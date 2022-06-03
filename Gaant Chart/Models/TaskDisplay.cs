@@ -18,9 +18,10 @@ namespace Gaant_Chart.Models
         public double leftOffset { get; set; }
         public double rightOffset { get; set; }
 
+        public Boolean inView { get; set; }
 
-        protected DateTime start { get; set; }
-        protected DateTime end { get; set; }
+        protected DateTime startDate { get; set; }
+        protected DateTime endDate { get; set; }
         private double numDays { get; set; }
 
 
@@ -33,33 +34,70 @@ namespace Gaant_Chart.Models
             this.view = view;
             rectangle = new Rectangle();
         }
-
         protected void finishInit()
         {
-            numDays = (start - end).TotalDays;
-            resizeTask(view);
+            sizeTask();
+            setInView();
+            setOffsets();
+            cutOffIfNecessary();
+            numDays = (startDate - endDate).TotalDays;
         }
-
-        public void resizeTask(CanvasView view)
+        private void sizeTask()
         {
-            this.view = view;
             rectangle.Width = view.pixelsPerDay * numDays;
             cutOffIfNecessary();
         }
 
-        public void cutOffIfNecessary()
+        public void resize(CanvasView view)
         {
-            if(isCutOff())
+            this.view = view;
+            sizeTask();
+            setInView();
+            setOffsets();
+            cutOffIfNecessary();
+        }
+
+        private void setOffsets()
+        {
+            double dayOffset = (view.startDate - startDate).TotalDays;
+            leftOffset = view.LEFT_START_OFF + dayOffset * view.pixelsPerDay;
+
+            rightOffset = view.TOP_START_OFF + task.typeInd * view.TASK_HEIGHT;
+        }
+
+        private void setInView()
+        {
+            inView = (startDate <= view.endDate || endDate >= view.startDate);
+            if(inView)
             {
-                double numDaysDisplay = (view.endDate - start).TotalDays;
-                rectangle.Width = view.pixelsPerDay * numDaysDisplay;
+                rectangle.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                rectangle.Visibility = System.Windows.Visibility.Hidden;
             }
         }
 
-        private Boolean isCutOff()
+
+        private void cutOffIfNecessary()
         {
-            return (start < view.endDate && view.endDate < end);
+            if (!inView) return;
+
+            double numDaysInView;
+            if(startDate < view.startDate)
+            {
+                numDaysInView = (endDate - view.startDate).TotalDays;
+                leftOffset = view.LEFT_START_OFF;
+                rectangle.Width = view.pixelsPerDay * numDaysInView;
+            }
+            
+            if(endDate > view.endDate)
+            {
+                numDaysInView = (view.endDate - startDate).TotalDays;
+                rectangle.Width = view.pixelsPerDay * numDaysInView; 
+            }
         }
+
     }
 
     public class PlannedTaskDisplay : TaskDisplay 
@@ -67,8 +105,8 @@ namespace Gaant_Chart.Models
         public PlannedTaskDisplay(Task task, CanvasView view) : base(task, view)
         {
             rectangle.Fill = PLANNED_COLOR;
-            start = task.plannedStartDate;
-            end = task.plannedEndDate;
+            startDate = task.plannedStartDate;
+            endDate = task.plannedEndDate;
 
             finishInit();
         }
@@ -80,8 +118,8 @@ namespace Gaant_Chart.Models
         public CompletedTaskDisplay(Task task, CanvasView view) : base(task, view)
         {
             rectangle.Fill = COMPLETED_COLOR;
-            start = task.startDate;
-            end = task.endDate;
+            startDate = task.startDate;
+            endDate = task.endDate;
 
             finishInit();
         }
