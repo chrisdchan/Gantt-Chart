@@ -100,12 +100,17 @@ namespace Gaant_Chart
 
         private void displayCurrentModel()
         {
+
+            Model model = data.currentModel;
+
             myCanvas.Visibility = Visibility.Visible;
-            setModel(data.currentModel.modelName);
+            adjustLabels(model);
             setDate(data.currentModel.startDate);
+
             txtDisplayModelName.Text = data.currentModel.modelName;
 
             initTaskBlocks();
+            initTaskBarWithModel(data.currentModel);
 
             view = new CanvasView(data.currentModel, 28);
         }
@@ -292,6 +297,8 @@ namespace Gaant_Chart
             taskBarTextBoxes = new List<TextBox>();
             taskBarCheckBoxes = new List<CheckBox>();
 
+            int i = 0;
+
             foreach(Object outerObj in taskBarStackPanel.Children)
             {
                 if(outerObj.GetType() != typeof(DockPanel)) continue;
@@ -303,6 +310,7 @@ namespace Gaant_Chart
                     if(innerObj.GetType() == typeof(CheckBox))
                     {
                         CheckBox checkBox = innerObj as CheckBox;
+                        checkBox.Tag = i; 
                         taskBarCheckBoxes.Add(checkBox);
                     }
                     else if(innerObj.GetType() == typeof(TextBox))
@@ -310,26 +318,45 @@ namespace Gaant_Chart
                         TextBox textBox = innerObj as TextBox;
                         taskBarTextBoxes.Add(textBox);
                     }
-
                 }
-
+                i++;
             }
         }
         
         private void initTaskBarWithModel(Model model)
         {
-            Models.Task nextTask;
+
+            SolidColorBrush unavalibleColor = new SolidColorBrush(Color.FromRgb(194, 194, 194));
 
             for(int i = 0; i < model.tasks.Count; i++)
             {
                 Models.Task task = model.tasks[i];
 
+                CheckBox checkbox = taskBarCheckBoxes[i];
+                TextBox textbox = taskBarTextBoxes[i];
+
                 if(task.completed)
                 {
-                     
-
+                    checkbox.IsChecked = true; 
+                    DateTime endDate = task.endDate;
+                    textbox.Text = endDate.ToString();
+                }
+                else
+                {
+                    checkbox.Foreground = unavalibleColor;
                 }
             }
+
+            enableTaskEditing(model.lastCompletedTaskId + 1);
+
+        }
+
+        private void enableTaskEditing(int taskId)
+        {
+            CheckBox checkbox = taskBarCheckBoxes[taskId];
+            TextBox textbox = taskBarTextBoxes[taskId];
+            checkbox.Foreground = new SolidColorBrush(Colors.Black);
+            checkbox.IsHitTestVisible = true;
         }
 
 
@@ -342,9 +369,9 @@ namespace Gaant_Chart
             date5.Content = date.AddDays(28).ToString("MM-dd-yy");
         }
 
-        private void setModel(String model)
+        private void adjustLabels(Model model)
         {
-            label_ModelID.Content = model;
+            label_ModelID.Content = model.modelName;
         }
 
 
@@ -381,8 +408,36 @@ namespace Gaant_Chart
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(((CheckBox)sender).Name);
+            CheckBox checkbox = sender as CheckBox;
+
+            if (!isCurrentModel())
+            {
+                MessageBox.Show("No Model is selected");
+                checkbox.IsChecked = false;
+                return;
+            }
+
+            if(!isCurrentUser())
+            {
+                MessageBox.Show("No User Logged In");
+                checkbox.IsChecked = false;
+                return;
+            }
+
+            CompleteTask win2 = new CompleteTask();
+            win2.ShowDialog();
         }
+
+        private Boolean isCurrentModel()
+        {
+            return data.currentModel != null;
+        }
+
+        private Boolean isCurrentUser()
+        {
+            return data.currentUser != null;
+        }
+
         private void btnRegNewModel_clicked(object sender, RoutedEventArgs e)
         {
             RegNewModel win2 = new RegNewModel();
