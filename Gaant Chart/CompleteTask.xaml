@@ -20,10 +20,11 @@
                    TextWrapping="Wrap" TextAlignment="Center"
                    Text="Document Completed Task"/>
         <Label Grid.Row="1" Content="Date"/>
-        <TextBox Grid.Row="1"
+        <TextBox Name="dateTbx" Grid.Row="1"
                  Height="40" Width="200"/>
         
-        <Button Grid.Row="3"
+        <Button x:Name="cancelBtn" Click="cancelBtn_Click"
+                Grid.Row="3"
                 Height="40" Width="100"
                 HorizontalAlignment="Left"
                 Margin="50, 0, 0, 0"
@@ -31,7 +32,8 @@
                 Background="#00B6FF" Foreground="White"
                 BorderThickness="0"/>
 
-        <Button Grid.Row="3"
+        <Button x:Name="completeTaskBtn" Click="completeTaskBtn_Click"
+                Grid.Row="3"
                 Height="40" Width="75"
                 HorizontalAlignment="Right"
                 Margin="0, 0, 50, 0"
