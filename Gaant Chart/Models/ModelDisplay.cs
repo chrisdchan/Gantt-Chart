@@ -55,6 +55,14 @@ namespace Gaant_Chart.Models
             }
         }
 
+        public TaskDisplay addAndGetCompletedTask(Task task)
+        {
+            TaskDisplay taskDisplay = new CompletedTaskDisplay(task, view);
+            completedBlocks.Add(taskDisplay);
+            return taskDisplay;
+        }
+
+
         public void resize(CanvasView view)
         {
         }

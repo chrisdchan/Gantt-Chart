@@ -41,6 +41,8 @@ namespace Gaant_Chart
 
         private CanvasView view { get; set; }
 
+        private  ModelDisplay modelDisplay { get; set; }
+
         // double WIDTH = 850;
         // double HEIGHT = 592;
 
@@ -68,51 +70,33 @@ namespace Gaant_Chart
 
 
             drawInitialCanvas();
-            initTaskBlocks();
 
             view = new CanvasView(DateTime.Now, DEFAULT_DAYS_IN_VIEW);
             
-            taskComponents = new Dictionary<int, (CheckBox, TextBox)>
-            {
-                {0, (c_Image_Aquisition, txt_Image_Aquisition) },
-                {1, (c_Images_Download, txt_Images_Download) },
-                {2, (c_SPM8_Autosegmentation, txt_SPM8_Autosegmentation) },
-                {3, (c_MD_Volumes_Segmented, txt_MD_Volumes_Segmented)},
-                {4, (c_Fully_Segmented_Model, txt_Fully_Segmented_Model) },
-                {5, (c_Initial_Peer_Review, txt_Initial_Peer_Review)},
-                {6, (c_Segmentation_Corrections, txt_Segmentation_Corrections)},
-                {7, (c_2nd_Peer_Review, txt_2nd_Peer_Review)},
-                {8, (c_2nd_Segmentation_Corrections, txt_2nd_Segmentation_Corrections) },
-                {9, (c_Full_Model_Approved, txt_Full_Model_Approved) },
-                {10, (c_Meshed_Model, txt_Meshed_Model) },
-                {11, (c_Export_Model_to_Physics, txt_Export_Model_to_Physics) },
-                {12, (c_Model_Solved, txt_Model_Solved) },
-                {13, (c_Report_Generated, txt_Report_Generated) }
-            };
-
             myCanvas.Visibility = Visibility.Visible;
 
             initTaskBarLists();
 
             setTaskComponentsReadOnly();
-            
+
         }
 
         private void displayCurrentModel()
         {
 
             Model model = data.currentModel;
+            view = new CanvasView(data.currentModel, 28);
 
             myCanvas.Visibility = Visibility.Visible;
+
+            //refactor into view object
             adjustLabels(model);
             setDate(data.currentModel.startDate);
-
             txtDisplayModelName.Text = data.currentModel.modelName;
 
             initTaskBlocks();
-            initTaskBarWithModel(data.currentModel);
+            initTaskBarWithModel();
 
-            view = new CanvasView(data.currentModel, 28);
         }
 
         private void displayCurrentUser()
@@ -268,9 +252,14 @@ namespace Gaant_Chart
 
             if (model == null) return;
 
-            view.changeStartDate(model.startDate);
+            if(modelDisplay != null)
+            {
+                removeAllTaskBlocks();
+            }
 
-            ModelDisplay modelDisplay = new ModelDisplay(model, view);
+            modelDisplay = new ModelDisplay(model, view);
+            
+            view.changeStartDate(model.startDate);
 
             foreach(TaskDisplay taskDisplay in modelDisplay.plannedBlocks)
             {
@@ -283,13 +272,32 @@ namespace Gaant_Chart
             }
         }
 
+        private void removeAllTaskBlocks()
+        {
+            foreach(TaskDisplay taskDisplay in modelDisplay.plannedBlocks)
+            {
+                removeRectFromCanvas(taskDisplay);
+            }
+
+            foreach(TaskDisplay taskDisplay in modelDisplay.completedBlocks)
+            {
+                removeRectFromCanvas(taskDisplay);
+            }
+
+        }
+
+        private void removeRectFromCanvas(TaskDisplay taskDisplay)
+        {
+            Rectangle rect = taskDisplay.rectangle;
+            myCanvas.Children.Remove(rect);
+        }
+
         private void addRectToCanvas(TaskDisplay taskDisplay)
         {
             Rectangle rect = taskDisplay.rectangle;
             myCanvas.Children.Add(rect);
             Canvas.SetLeft(rect, taskDisplay.leftOffset);
             Canvas.SetTop(rect, taskDisplay.topOffset);
-
         }
 
         private void initTaskBarLists()
@@ -323,41 +331,52 @@ namespace Gaant_Chart
             }
         }
         
-        private void initTaskBarWithModel(Model model)
+        private void initTaskBarWithModel()
         {
+            resetTaskBar();
+            setTaskBar();
 
+        }
+
+        private void resetTaskBar()
+        {
             SolidColorBrush unavalibleColor = new SolidColorBrush(Color.FromRgb(194, 194, 194));
 
-            for(int i = 0; i < model.tasks.Count; i++)
+            for(int i = 0; i < data.allTasks.Length; i++)
             {
-                Models.Task task = model.tasks[i];
-
                 CheckBox checkbox = taskBarCheckBoxes[i];
                 TextBox textbox = taskBarTextBoxes[i];
 
+                checkbox.Foreground = unavalibleColor;
+                checkbox.IsChecked = false;
+                checkbox.IsHitTestVisible = false;
+
+                textbox.Text = "";
+            }
+        }
+
+        private void setTaskBar()
+        {
+            SolidColorBrush completedColor = new SolidColorBrush(Colors.Black);
+            Model model = data.currentModel;
+
+            for(int i = 0; i < data.allTasks.Length; i++)
+            {
+                CheckBox checkbox = taskBarCheckBoxes[i];
+                TextBox textbox = taskBarTextBoxes[i];
+                Models.Task task = model.tasks[i];
+
                 if(task.completed)
                 {
-                    checkbox.IsChecked = true; 
-                    DateTime endDate = task.endDate;
-                    textbox.Text = endDate.ToString();
-                }
-                else
-                {
-                    checkbox.Foreground = unavalibleColor;
+                    checkbox.IsChecked = true;
+                    checkbox.IsHitTestVisible = true;
+                    checkbox.Foreground = completedColor;
+
+                    textbox.Text = "Completed by " + task.user.name + " on " + task.endDate.ToString();
                 }
             }
-
-            enableTaskEditing(model.lastCompletedTaskId + 1);
-
         }
 
-        private void enableTaskEditing(int taskId)
-        {
-            CheckBox checkbox = taskBarCheckBoxes[taskId];
-            TextBox textbox = taskBarTextBoxes[taskId];
-            checkbox.Foreground = new SolidColorBrush(Colors.Black);
-            checkbox.IsHitTestVisible = true;
-        }
 
 
         private void setDate(DateTime date)
@@ -409,11 +428,18 @@ namespace Gaant_Chart
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             CheckBox checkbox = sender as CheckBox;
+            int taskTypeId = (int)checkbox.Tag;
+
 
             if (!isCurrentModel())
             {
                 MessageBox.Show("No Model is selected");
                 checkbox.IsChecked = false;
+                return;
+            }
+
+            if (checkboxTaskCompleted(taskTypeId))
+            {
                 return;
             }
 
@@ -423,8 +449,6 @@ namespace Gaant_Chart
                 checkbox.IsChecked = false;
                 return;
             }
-
-            int taskTypeId = (int)checkbox.Tag;
 
             Models.Task task = data.currentModel.tasks[taskTypeId];
 
@@ -437,10 +461,15 @@ namespace Gaant_Chart
             }
             else
             {
-                addCompletedTaskBlock();
-
+                addCompletedTaskBlock(task);
             }
 
+        }
+
+        private Boolean checkboxTaskCompleted(int taskTypeId)
+        {
+            Model model = data.currentModel;
+            return (model.tasks[taskTypeId].completed);
         }
 
         private Boolean isCurrentModel()
@@ -453,9 +482,10 @@ namespace Gaant_Chart
             return data.currentUser != null;
         }
 
-        private void addCompletedTaskBlock()
+        private void addCompletedTaskBlock(Models.Task task)
         {
-            MessageBox.Show("We would add a block but we can't do that yet");
+            TaskDisplay taskDisplay = modelDisplay.addAndGetCompletedTask(task);
+            addRectToCanvas(taskDisplay);
         }
 
         private void btnRegNewModel_clicked(object sender, RoutedEventArgs e)

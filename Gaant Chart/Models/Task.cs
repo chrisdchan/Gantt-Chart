@@ -11,7 +11,7 @@ namespace Gaant_Chart.Models
         public long rowid { get; set; }
         private readonly String name;
         public int typeInd { get; set; }
-        private User user { get; set; }
+        public User user { get; set; }
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
         public DateTime plannedStartDate { get; set; }
