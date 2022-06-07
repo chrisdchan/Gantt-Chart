@@ -55,17 +55,4 @@ namespace Gaant_Chart.Models
         }
      }
 
-    public class TaskCompletor
-    {
-        public User user { get; set; }
-        public DateTime startDate { get; set; }
-        public DateTime endDate { get; set; }
-
-        public TaskCompletor(User user, DateTime startDate, DateTime endDate)
-        {
-            this.user = user;
-            this.startDate = startDate;
-            this.endDate = endDate;
-        }
-    }
 }

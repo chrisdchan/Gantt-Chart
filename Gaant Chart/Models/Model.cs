@@ -41,5 +41,30 @@ namespace Gaant_Chart.Models
             }
             lastCompletedTaskId = taskId - 1;
         }
+
+        public void completeTask(TaskCompletor taskCompletor)
+        {
+            tasks[taskCompletor.taskTypeId].complete(taskCompletor);
+            lastCompletedTaskId = taskCompletor.taskTypeId;
+        }
+    }
+
+    public class TaskCompletor
+    {
+        public User user { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
+
+        public int taskTypeId { get; set; }
+
+        public TaskCompletor(int taskTypeId, User user, DateTime startDate, DateTime endDate)
+        {
+            this.user = user;
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.taskTypeId = taskTypeId;
+        }
+
+       public TaskCompletor(Task task, User user, DateTime startDate, DateTime endDate) : this(task.typeInd, user, startDate, endDate) { }
     }
 }

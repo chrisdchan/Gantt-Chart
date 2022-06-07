@@ -335,7 +335,16 @@ namespace Gaant_Chart
         {
             resetTaskBar();
             setTaskBar();
+            setNextCheckbox();
+        }
 
+        private void setNextCheckbox()
+        {
+            SolidColorBrush completedColor = new SolidColorBrush(Colors.Black);
+            Model model = data.currentModel;
+            CheckBox nextCheckbox = taskBarCheckBoxes[model.lastCompletedTaskId + 1];
+            nextCheckbox.Foreground = completedColor;
+            nextCheckbox.IsHitTestVisible = true;
         }
 
         private void resetTaskBar()

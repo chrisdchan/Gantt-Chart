@@ -241,8 +241,9 @@ namespace Gaant_Chart
                     Boolean reqPass = (reqPassInt == 1) ? true : false;
 
                     User user = new User(userName, password, reqPass);
-                    TaskCompletor taskCompletor = new TaskCompletor(user, startDate, endDate);
-                    model.tasks[typeId].complete(taskCompletor);
+                    TaskCompletor taskCompletor = new TaskCompletor(typeId, user, startDate, endDate);
+
+                    model.completeTask(taskCompletor);
                     model.tasks[typeId].rowid = rowid;
                 }
             }

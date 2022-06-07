@@ -89,8 +89,8 @@ namespace Gaant_Chart
         private void completeTaskLocally()
         {
             startDate = computeStartDate();
-            TaskCompletor taskCompletor = new TaskCompletor(user, startDate, endDate);
-            task.complete(taskCompletor);
+            TaskCompletor taskCompletor = new TaskCompletor(task, user, startDate, endDate);
+            model.completeTask(taskCompletor);
         }
 
         private void updateDatabase()
