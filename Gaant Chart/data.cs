@@ -35,6 +35,15 @@ namespace Gaant_Chart
             "Report Generated"
         };
 
+        public static List<(String, int)> taskLabelGroups = new List<(String, int)>
+        {
+            ("Assemblies", 0),
+            ("Segmentation Tasks", 1),
+            ("Segmentation Review and Approval", 7),
+            ("Mesh Preperation and Export to Physics", 13),
+            ("Physics Modeling and Reports", 16)
+        };
+
         // Tasks that are completed
         public static Dictionary<String, (String, String, String)> completedTasks { get; set; }
         public static Dictionary<String, int> taskStartDelayPlanned { get; set; }

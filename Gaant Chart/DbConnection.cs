@@ -113,7 +113,7 @@ namespace Gaant_Chart
                     myCommand.CommandText = "INSERT INTO Tasks(modelId, typeId, startDate, endDate, userId) VALUES (@ModelId, @typeId, @StartDate, @EndDate, @UserId)";
                     myCommand.Parameters.AddWithValue("@ModelId", modelId);
                     myCommand.Parameters.AddWithValue("@typeID", i);
-                    myCommand.Parameters.AddWithValue("@StartDate", taskStart);
+                    myCommand.Parameters.AddWithValue("@StartDate", null);
                     myCommand.Parameters.AddWithValue("@EndDate", null);
                     myCommand.Parameters.AddWithValue(@"UserId", null);
                     myCommand.Prepare();

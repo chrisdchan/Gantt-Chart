@@ -68,6 +68,7 @@ namespace Gaant_Chart
 
             // set up the canvas
 
+            createTaskBar();
 
             drawInitialCanvas();
 
@@ -117,6 +118,48 @@ namespace Gaant_Chart
                 textBox.IsReadOnly = true;
             }
         }
+
+
+        private void createTaskBar()
+        {
+            foreach(String taskname in data.allTasks)
+            {
+                CheckBox checkbox = new CheckBox();
+                checkbox.Content = taskname;
+                checkbox.Checked += new RoutedEventHandler(CheckBox_Checked);
+
+                TextBox textbox = new TextBox();
+                textbox.Width = 100;
+                textbox.Margin = new Thickness(0, 0, 5, 0);
+                textbox.HorizontalAlignment = HorizontalAlignment.Right;
+                textbox.Background = new SolidColorBrush(Colors.LightGray);
+
+                DockPanel dockpanel = new DockPanel();
+                dockpanel.Background = new SolidColorBrush(Color.FromRgb(237, 241, 86));
+                dockpanel.Margin = new Thickness(5, 2.5, 5, 2.5);
+
+                dockpanel.Children.Add(checkbox);
+                dockpanel.Children.Add(textbox);
+
+                taskBarStackPanel.Children.Add(dockpanel);
+            }
+
+            foreach((String groupname, int index) in data.taskLabelGroups)
+            {
+                Label label = new Label();
+                label.Content = groupname;
+
+                if(groupname == "Assemblies")
+                {
+                    label.FontWeight = FontWeights.Bold;
+                }
+
+                taskBarStackPanel.Children.Insert(index, label);
+            }
+            
+        }
+
+
 
         // NOTE: The top left corner for lines is (-100, -100), Components start at (0, 0)
 
@@ -495,6 +538,7 @@ namespace Gaant_Chart
         {
             TaskDisplay taskDisplay = modelDisplay.addAndGetCompletedTask(task);
             addRectToCanvas(taskDisplay);
+            initTaskBarWithModel();
         }
 
         private void btnRegNewModel_clicked(object sender, RoutedEventArgs e)
