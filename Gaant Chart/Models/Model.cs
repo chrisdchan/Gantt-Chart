@@ -8,16 +8,16 @@ namespace Gaant_Chart.Models
 {
     public class Model
     {
-        public int modelId { get; set; }
+        public int rowid { get; set; }
         public String modelName { get; set; }
         public DateTime startDate { get; }
 
         public List<Task> tasks = new List<Task>();
         public int lastCompletedTaskId { get; set; }
 
-        public Model(int modelId, String modelName, DateTime startDate)
+        public Model(int rowid, String modelName, DateTime startDate)
         {
-            this.modelId = modelId; 
+            this.rowid = rowid; 
             this.modelName = modelName;
             this.startDate = startDate;
             this.lastCompletedTaskId = -1;

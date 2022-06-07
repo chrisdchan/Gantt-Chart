@@ -424,8 +424,23 @@ namespace Gaant_Chart
                 return;
             }
 
-            CompleteTask win2 = new CompleteTask();
+            int taskTypeId = (int)checkbox.Tag;
+
+            Models.Task task = data.currentModel.tasks[taskTypeId];
+
+            CompleteTask win2 = new CompleteTask(task);
             win2.ShowDialog();
+
+            if(win2.earlyExit)
+            {
+                checkbox.IsChecked = false;
+            }
+            else
+            {
+                addCompletedTaskBlock();
+
+            }
+
         }
 
         private Boolean isCurrentModel()
@@ -436,6 +451,11 @@ namespace Gaant_Chart
         private Boolean isCurrentUser()
         {
             return data.currentUser != null;
+        }
+
+        private void addCompletedTaskBlock()
+        {
+            MessageBox.Show("We would add a block but we can't do that yet");
         }
 
         private void btnRegNewModel_clicked(object sender, RoutedEventArgs e)

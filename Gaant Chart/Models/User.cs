@@ -8,7 +8,7 @@ namespace Gaant_Chart.Models
 {
     public class User
     {
-        public int userId { get; set; } 
+        public int rowid { get; set; } 
         public String name;
         public String password;
         public Boolean reqPass;
@@ -18,9 +18,9 @@ namespace Gaant_Chart.Models
             this.password = password;
             this.reqPass = reqPass;
         }
-        public User(int userId, string name, string password, bool reqPass)
+        public User(int rowid, string name, string password, bool reqPass)
         {
-            this.userId = userId;
+            this.rowid = rowid;
             this.name = name;
             this.password = password;
             this.reqPass = reqPass;

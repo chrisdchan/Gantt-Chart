@@ -8,7 +8,7 @@ namespace Gaant_Chart.Models
 {
     public class Task
     {
-        public int rowId { get; set; }
+        public long rowid { get; set; }
         private readonly String name;
         public int typeInd { get; set; }
         private User user { get; set; }
@@ -19,9 +19,9 @@ namespace Gaant_Chart.Models
 
         public Boolean completed = false;
 
-        public Task(int rowId, int typeInd, DateTime plannedStartDate, DateTime plannedEndDate) : this(typeInd, plannedStartDate, plannedEndDate)
+        public Task(int rowid, int typeInd, DateTime plannedStartDate, DateTime plannedEndDate) : this(typeInd, plannedStartDate, plannedEndDate)
         {
-            this.rowId = rowId;
+            this.rowid = rowid;
         }
 
         public Task(int typeInd, DateTime plannedStartDate, DateTime plannedEndDate)
@@ -34,6 +34,8 @@ namespace Gaant_Chart.Models
             this.startDate = DateTime.MinValue;
             this.endDate = DateTime.MinValue;
             this.user = null;
+
+            rowid = -1;
         }
 
         public void complete(TaskCompletor taskCompletor)

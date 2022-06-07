@@ -24,25 +24,27 @@ namespace Gaant_Chart
         private DateTime startDate;
         private Model model;
 
-        private int taskId;
+        private Models.Task task;
 
         private User user;
 
-        public CompleteTask(int taskId)
+        public Boolean earlyExit;
+
+        public CompleteTask(Models.Task task)
         {
             InitializeComponent();
 
             model = data.currentModel;
             user = data.currentUser;
+            this.task = task;
 
-            this.taskId = taskId;
-
+            earlyExit = true;
 
         }
 
         private DateTime computeStartDate()
         {
-            if(taskId == 0)
+            if(task.typeInd == 0)
             {
                 return model.startDate;
             }
@@ -79,23 +81,26 @@ namespace Gaant_Chart
             completeTaskLocally();
             updateDatabase();
 
+            earlyExit = false;
+
+            this.Close();
         }
 
         private void completeTaskLocally()
         {
             startDate = computeStartDate();
             TaskCompletor taskCompletor = new TaskCompletor(user, startDate, endDate);
-            model.tasks[taskId].complete(taskCompletor);
+            task.complete(taskCompletor);
         }
 
         private void updateDatabase()
         {
-
+            MainWindow.myDatabase.completeTask(task.rowid, endDate);
         }
 
         private void cancelBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            this.Close();   
         }
     }
 }

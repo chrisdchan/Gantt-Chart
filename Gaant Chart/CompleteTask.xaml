@@ -23,7 +23,7 @@
         <TextBox Name="dateTbx" Grid.Row="1"
                  Height="40" Width="200"/>
         
-        <Button x:Name="cancelBtn" Click="cancelBtn_Click"
+        <Button x:Name="cancelBtn" Click="completeTaskBtn_Click"
                 Grid.Row="3"
                 Height="40" Width="100"
                 HorizontalAlignment="Left"
@@ -32,7 +32,7 @@
                 Background="#00B6FF" Foreground="White"
                 BorderThickness="0"/>
 
-        <Button x:Name="completeTaskBtn" Click="completeTaskBtn_Click"
+        <Button x:Name="completeTaskBtn" Click="cancelBtn_Click"
                 Grid.Row="3"
                 Height="40" Width="75"
                 HorizontalAlignment="Right"
