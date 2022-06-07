@@ -8,6 +8,7 @@ namespace Gaant_Chart.Models
 {
     public class Task
     {
+        public int rowId { get; set; }
         private readonly String name;
         public int typeInd { get; set; }
         private User user { get; set; }
@@ -17,6 +18,11 @@ namespace Gaant_Chart.Models
         public DateTime plannedEndDate { get; set; }
 
         public Boolean completed = false;
+
+        public Task(int rowId, int typeInd, DateTime plannedStartDate, DateTime plannedEndDate) : this(typeInd, plannedStartDate, plannedEndDate)
+        {
+            this.rowId = rowId;
+        }
 
         public Task(int typeInd, DateTime plannedStartDate, DateTime plannedEndDate)
         {

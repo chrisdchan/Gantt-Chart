@@ -30,6 +30,10 @@ namespace Gaant_Chart
             }
 
             myConnection = new SQLiteConnection("Data Source = " + dbName);
+        }
+
+        private void createTables()
+        {
             this.OpenConnection();
 
             using(SQLiteCommand myCommand = new SQLiteCommand(myConnection))
@@ -47,11 +51,35 @@ namespace Gaant_Chart
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Authorization (userId INT NOT NULL, taskId INT NOT NULL)";
                 myCommand.ExecuteNonQuery();
+
+                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS TaskIdentifiers (typeId INT NOT NULL UNIQUE, name TEXT NOT NULL UNIQUE)";
+                myCommand.ExecuteNonQuery();
             }
 
             this.CloseConnection();
 
         }
+
+        private void insertTaskIdentifiers()
+        {
+            this.OpenConnection();
+            using(myCommand = new SQLiteCommand(myConnection))
+            {
+                String[] allTasks = data.allTasks;
+                for(int i = 0; i < allTasks.Length; i++)
+                {
+                    String taskName = allTasks[i];
+
+                    myCommand.CommandText = "INSERT OR IGNORE INTO TaskIdentifiers(typeId, name) VALUES (@typeId, @name)";
+                    myCommand.Parameters.AddWithValue("@typeId", i);
+                    myCommand.Parameters.AddWithValue("@name", taskName);
+                    myCommand.Prepare();
+                    myCommand.ExecuteNonQuery();
+                }
+            }
+            this.CloseConnection();
+        }
+
 
         public Model insertModel(String modelName, DateTime startDate)
         {
@@ -93,7 +121,6 @@ namespace Gaant_Chart
 
             Model model = new Model(modelId, modelName, startDate);
             return model;
-
         }
 
         public void insertUser(User user)
@@ -293,6 +320,7 @@ namespace Gaant_Chart
                     }
                 }
             }
+            this.CloseConnection();
 
             return users;
         }
@@ -320,6 +348,20 @@ namespace Gaant_Chart
             return modelTags;
         }
 
+        public void completeTask(int taskId, DateTime endDate)
+        {
+            this.OpenConnection();
+            using (myCommand = new SQLiteCommand(myConnection))
+            {
+                myCommand.CommandText = "UPDATE tasks SET endDate = @endDate, userId = @userId WHERE rowid = @taskId";
+                myCommand.Parameters.AddWithValue("@endDate", endDate);
+                myCommand.Parameters.AddWithValue("@taskId", taskId);
+                myCommand.Prepare();
+                myCommand.ExecuteNonQuery();
+            }
+            this.CloseConnection();
+        }
+
         public void deleteModel(int modelId)
         {
             this.OpenConnection();
@@ -328,7 +370,7 @@ namespace Gaant_Chart
                 deleteModelFromModelDB(modelId);
                 deleteModelFromTasksDB(modelId);
             }
-
+            this.CloseConnection();
 
         }
 
