@@ -42,12 +42,14 @@ namespace Gaant_Chart
         private CanvasView view { get; set; }
 
         private  ModelDisplay modelDisplay { get; set; }
+        private CanvasDisplay canvasDisplay { get; set; }
 
         private Boolean renderedChecks = true;
 
         // double WIDTH = 850;
         // double HEIGHT = 592;
 
+        /*
         int topOffset = 120;
 
         int dateX = 210;
@@ -60,6 +62,7 @@ namespace Gaant_Chart
         int rightOuterBorder = 713;
         int topBorder = 15;
         int bottomBorder = 465;
+        */
 
         public MainWindow()
         {
@@ -67,14 +70,15 @@ namespace Gaant_Chart
 
             // create database connection
             myDatabase = new DbConnection();
+            view = new CanvasView(DateTime.Now, DEFAULT_DAYS_IN_VIEW);
 
             // set up the canvas
 
             createTaskBar();
 
-            drawInitialCanvas();
+            initCanvas();
 
-            view = new CanvasView(DateTime.Now, DEFAULT_DAYS_IN_VIEW);
+
             
             myCanvas.Visibility = Visibility.Visible;
 
@@ -92,9 +96,9 @@ namespace Gaant_Chart
 
             myCanvas.Visibility = Visibility.Visible;
 
-            //refactor into view object
-            adjustLabels(model);
-            setDate(data.currentModel.startDate);
+            updateCanvas();
+
+            label_ModelID.Content = model.modelName;
             txtDisplayModelName.Text = data.currentModel.modelName;
 
             initTaskBlocks();
@@ -165,9 +169,70 @@ namespace Gaant_Chart
 
         // NOTE: The top left corner for lines is (-100, -100), Components start at (0, 0)
 
-        private void drawInitialCanvas()
+        private void initCanvas()
         {
+            Canvas.SetLeft(label_ModelID, 25);
+            Canvas.SetTop(label_ModelID, 50);
 
+            canvasDisplay = new CanvasDisplay(view);
+
+            foreach(CanvasElement canvasElement in canvasDisplay.canvasTexts)
+            {
+                addFrameworkElementToCanvas(canvasElement);
+            }
+
+            foreach(CanvasLine canvasLine in canvasDisplay.staticLines)
+            {
+                myCanvas.Children.Add(canvasLine.line);
+            }
+
+            renderDynamicElements();
+        }
+
+        private void renderDynamicElements()
+        {
+            foreach(CanvasElement canvasElement in canvasDisplay.dates)
+            {
+                addFrameworkElementToCanvas(canvasElement);
+            }
+
+            foreach(CanvasLine dynamicLine in canvasDisplay.dynamicLines)
+            {
+                myCanvas.Children.Add(dynamicLine.line);
+            }
+        }
+
+        private void addFrameworkElementToCanvas(CanvasElement canvasElement)
+        {
+            FrameworkElement element = canvasElement.element;
+            myCanvas.Children.Add(element);
+            Canvas.SetLeft(element, canvasElement.leftoffset);
+            Canvas.SetTop(element, canvasElement.topoffset);
+        }
+
+        private void updateCanvas()
+        {
+            removeDynamicElements();
+            canvasDisplay.resize(view);
+            renderDynamicElements();
+        }
+
+        private void removeDynamicElements()
+        {
+            foreach(CanvasLine canvasLine in canvasDisplay.dynamicLines)
+            {
+                myCanvas.Children.Remove(canvasLine.line);
+            }
+
+            foreach(CanvasElement canvasElement in canvasDisplay.dates)
+            {
+                myCanvas.Children.Remove(canvasElement.element);
+            }
+        }
+
+        /*
+        private void drawInitialCanvas1()
+        {
             heightPerTask = (bottomBorder + 5 - topBorder) / 14.0;
 
             Canvas.SetLeft(l1, labelLeftMargin);
@@ -291,6 +356,8 @@ namespace Gaant_Chart
             Canvas.SetTop(label_ModelID, 50);
 
         }
+        */
+
         private void initTaskBlocks()
         {
             Model model = data.currentModel;
@@ -439,6 +506,7 @@ namespace Gaant_Chart
 
 
 
+        /*
         private void setDate(DateTime date)
         {
             date1.Content = date.ToString("MM-dd-yy");
@@ -447,6 +515,8 @@ namespace Gaant_Chart
             date4.Content = date.AddDays(21).ToString("MM-dd-yy");
             date5.Content = date.AddDays(28).ToString("MM-dd-yy");
         }
+
+        */
 
         private void adjustLabels(Model model)
         {

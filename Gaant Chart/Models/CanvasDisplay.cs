@@ -10,10 +10,8 @@ namespace Gaant_Chart.Models
     public class CanvasDisplay
     {
         public List<CanvasElement> canvasTexts { get; set; }
-        public List<DateLabel> dates { get; set; }
-
+        public List<CanvasElement> dates { get; set; }
         public List<CanvasLine> dynamicLines { get; set; }
-
         public List<CanvasLine> staticLines { get; set; }
 
         private CanvasView view { get; set; }
@@ -21,17 +19,29 @@ namespace Gaant_Chart.Models
         private SolidColorBrush RED = new SolidColorBrush(Colors.Red);
         private SolidColorBrush DULL_GREEN = new SolidColorBrush(Color.FromRgb(50, 236, 80));
         private SolidColorBrush PISS = new SolidColorBrush(Color.FromRgb(242, 218, 46));
+        private SolidColorBrush GRAY = new SolidColorBrush(Color.FromRgb(233, 233, 233));
 
         public CanvasDisplay(CanvasView view)
         {
             this.view = view;
             canvasTexts = new List<CanvasElement>();
+
+            initDates();
+            initDynamicLines();
+            initLabels();
+            initStaticLines();
         }
 
-        private void initDynamicLists()
+        private void initDynamicLines()
         {
             dynamicLines = new List<CanvasLine>();
             updateDynamicLines();
+        }
+
+        private void initDates()
+        {
+            dates = new List<CanvasElement>();
+            updateDates();
         }
 
         private void initStaticLines()
@@ -75,6 +85,27 @@ namespace Gaant_Chart.Models
                 PISS ));
         }
 
+        private void initLabels()
+        {
+            canvasTexts = new List<CanvasElement>();
+
+            foreach(String taskName in data.allTasks)
+            {
+                canvasTexts.Add(new TaskLabel(taskName));
+            }
+
+            foreach((String groupName, int index) in data.taskLabelGroups)
+            {
+                canvasTexts.Insert(index, new TaskGroupLabel(groupName));
+            }
+
+            for(int i = 0; i < canvasTexts.Count; i++)
+            {
+                canvasTexts[i].leftoffset = view.LABEL_LEFT_MARGIN;
+                canvasTexts[i].topoffset = view.LABEL_TOP_OFFSET + view.LABEL_VERTICAL_SPACE * i;
+            }
+        }
+
         private void updateDynamicLines()
         {
             for(int i = 0; i < view.numDays; i++)
@@ -93,13 +124,29 @@ namespace Gaant_Chart.Models
                     dynamicLines.Add(new CanvasLine(
                         x, view.TOP_BORDER,
                         x, view.TOP_BORDER + view.DAYLINE_LENGTH,
-                        PISS));
+                        GRAY ));
                 }
-
             }
-
-
         }
+
+        private void updateDates()
+        {
+            double pixelsPerWeek = view.pixelsPerDay * 7;
+
+            for(int i = 0; i < view.numDays; i++)
+            {
+                if(isWeekSinceStart(i))
+                {
+                    DateTime date = view.startDate.AddDays(i);
+                    CanvasElement dateLabel = new DateLabel(date);
+                    dateLabel.leftoffset = view.DATE_LEFT_OFFSET + i * pixelsPerWeek;
+                    dateLabel.topoffset = view.DATE_TOP_OFFSET;
+
+                    dates.Add(dateLabel);
+                }
+            }
+        }
+
 
         private Boolean isWeekSinceStart(int i)
         {
@@ -108,9 +155,11 @@ namespace Gaant_Chart.Models
             return (numDays % 7 == 0);
         }
 
-        private void resize(CanvasView view)
+        public void resize(CanvasView view)
         {
-
+            this.view = view;
+            updateDates();
+            updateDynamicLines();
         }
 
     }

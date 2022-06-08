@@ -14,7 +14,9 @@ namespace Gaant_Chart.Models
     {
         public FrameworkElement element { get; set; }
 
-        public double leftOffset
+        public double leftoffset { get; set; }
+
+        public double topoffset { get; set; }
 
         protected SolidColorBrush WHITE = new SolidColorBrush(Colors.White);
         protected SolidColorBrush GREEN = new SolidColorBrush(Color.FromRgb(50, 236, 0));
@@ -40,11 +42,15 @@ namespace Gaant_Chart.Models
     public class DateLabel : CanvasElement
     { 
         private Label label { get; set; }
+
+        private int ROTATATION = 285;
         public DateLabel(DateTime date)
         {
             label = new Label();
             label.Foreground = GREEN;
             label.FontSize = 14;
+            label.Content = date.ToString("d/M/y");
+            label.LayoutTransform = new RotateTransform(ROTATATION);
 
             element = label;
         }
@@ -70,7 +76,7 @@ namespace Gaant_Chart.Models
 
     public class CanvasLine
     {
-        private Line line { get; set; } 
+        public Line line { get; set; } 
         public CanvasLine(double x1, double y1, double x2, double y2, SolidColorBrush color)
         {
             line = new Line();

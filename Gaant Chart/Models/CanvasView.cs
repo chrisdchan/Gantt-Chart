@@ -32,6 +32,12 @@ namespace Gaant_Chart.Models
         public double TOP_BORDER = 15;
 
         public double DAYLINE_LENGTH = 5;
+        public double LABEL_LEFT_MARGIN = 20;
+        public double LABEL_TOP_OFFSET = 120;
+        public double LABEL_VERTICAL_SPACE = 32;
+
+        public double DATE_TOP_OFFSET = 40;
+        public double DATE_LEFT_OFFSET = 210;
 
         public CanvasView(DateTime startDate, int numDays)
         {
