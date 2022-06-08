@@ -107,6 +107,8 @@
     <Compile Include="Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\CanvasDisplay.cs" />
+    <Compile Include="Models\CanvasElement.cs" />
     <Compile Include="Models\CanvasView.cs" />
     <Compile Include="Models\Model.cs" />
     <Compile Include="Models\ModelDisplay.cs" />

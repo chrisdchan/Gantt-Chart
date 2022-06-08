@@ -17,7 +17,6 @@ namespace Gaant_Chart.Models
 
         private CanvasView view { get; set; }
 
-        
         public ModelDisplay(Model model, CanvasView view)
         {
             this.model = model;
