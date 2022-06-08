@@ -46,7 +46,6 @@ namespace Gaant_Chart.Models
         private void sizeTask()
         {
             rectangle.Width = view.pixelsPerDay * numDays;
-            rectangle.Height = view.BlOCK_HEIGHT;
             cutOffIfNecessary();
         }
 
@@ -106,6 +105,8 @@ namespace Gaant_Chart.Models
         public PlannedTaskDisplay(Task task, CanvasView view) : base(task, view)
         {
             rectangle.Fill = PLANNED_COLOR;
+            rectangle.Height = view.BLOCK_HEIGHT;
+            rectangle.Opacity = 0.8;
             startDate = task.plannedStartDate;
             endDate = task.plannedEndDate;
 
@@ -116,13 +117,17 @@ namespace Gaant_Chart.Models
 
     public class CompletedTaskDisplay : TaskDisplay
     {
+        public double BlOCK_HEIGHT = 22;
         public CompletedTaskDisplay(Task task, CanvasView view) : base(task, view)
         {
             rectangle.Fill = COMPLETED_COLOR;
+            rectangle.Height= BlOCK_HEIGHT;
             startDate = task.startDate;
             endDate = task.endDate;
 
             finishInit();
+
+            topOffset += (view.BLOCK_HEIGHT - BlOCK_HEIGHT) / 2;
         }
     }
 

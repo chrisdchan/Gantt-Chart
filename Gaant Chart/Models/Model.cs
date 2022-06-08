@@ -47,6 +47,22 @@ namespace Gaant_Chart.Models
             tasks[taskCompletor.taskTypeId].complete(taskCompletor);
             lastCompletedTaskId = taskCompletor.taskTypeId;
         }
+
+        public void uncompleteTask(int taskTypeId)
+        {
+
+            if(taskTypeId > lastCompletedTaskId)
+            {
+                tasks[taskTypeId].uncomplete();
+            }
+
+            for(int i = lastCompletedTaskId; i >= taskTypeId; i--)
+            {
+                tasks[i].uncomplete();
+            }
+
+        }
+
     }
 
     public class TaskCompletor

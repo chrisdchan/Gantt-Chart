@@ -9,7 +9,7 @@ namespace Gaant_Chart.Models
     public class Task
     {
         public long rowid { get; set; }
-        private readonly String name;
+        public readonly String name;
         public int typeInd { get; set; }
         public User user { get; set; }
         public DateTime startDate { get; set; }
@@ -45,6 +45,14 @@ namespace Gaant_Chart.Models
             this.endDate = taskCompletor.endDate;
 
             completed = true;
+        }
+
+        public void uncomplete()
+        {
+            startDate = DateTime.MinValue;
+            endDate = DateTime.MinValue;
+            completed = false;
+            user = null;
         }
 
         public void remove()

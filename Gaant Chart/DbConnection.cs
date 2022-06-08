@@ -319,7 +319,7 @@ namespace Gaant_Chart
             return modelTags;
         }
 
-        public void completeTask(long taskId, DateTime startDate, DateTime endDate)
+        public void completeTask(long rowid, DateTime startDate, DateTime endDate)
         {
             this.OpenConnection();
 
@@ -332,11 +332,27 @@ namespace Gaant_Chart
                 myCommand.Parameters.AddWithValue("@startDate", startDate);
                 myCommand.Parameters.AddWithValue("@endDate", endDate);
                 myCommand.Parameters.AddWithValue("@userId", userId);
-                myCommand.Parameters.AddWithValue("@taskId", taskId);
+                myCommand.Parameters.AddWithValue("@taskId", rowid);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
             }
             this.CloseConnection();
+        }
+
+        public void uncompleteTask(long rowid)
+        {
+            this.OpenConnection();
+
+            using(myCommand = new SQLiteCommand(myConnection))
+            {
+                myCommand.CommandText = "UPDATE tasks SET startDate = null, endDate = null, userId = null WHERE rowid = @rowid";
+                myCommand.Parameters.AddWithValue("@rowid", rowid);
+                myCommand.Prepare();
+                myCommand.ExecuteNonQuery();
+            }
+
+            this.CloseConnection();
+
         }
 
         public void deleteModel(int modelId)

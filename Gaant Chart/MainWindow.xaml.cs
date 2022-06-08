@@ -43,6 +43,8 @@ namespace Gaant_Chart
 
         private  ModelDisplay modelDisplay { get; set; }
 
+        private Boolean renderedChecks = true;
+
         // double WIDTH = 850;
         // double HEIGHT = 592;
 
@@ -412,6 +414,8 @@ namespace Gaant_Chart
             SolidColorBrush completedColor = new SolidColorBrush(Colors.Black);
             Model model = data.currentModel;
 
+            renderedChecks = false;
+
             for(int i = 0; i < data.allTasks.Length; i++)
             {
                 CheckBox checkbox = taskBarCheckBoxes[i];
@@ -424,9 +428,13 @@ namespace Gaant_Chart
                     checkbox.IsHitTestVisible = true;
                     checkbox.Foreground = completedColor;
 
-                    textbox.Text = "Completed by " + task.user.name + " on " + task.endDate.ToString();
+                    textbox.Text = task.user.name + " | " + task.endDate.ToString("d/M/y");
                 }
             }
+
+            renderedChecks = true;
+
+
         }
 
 
@@ -481,6 +489,7 @@ namespace Gaant_Chart
         {
             CheckBox checkbox = sender as CheckBox;
             int taskTypeId = (int)checkbox.Tag;
+            Model model = data.currentModel;
 
 
             if (!isCurrentModel())
@@ -490,9 +499,16 @@ namespace Gaant_Chart
                 return;
             }
 
+            if (!renderedChecks) return;
+
             if (checkboxTaskCompleted(taskTypeId))
             {
-                return;
+                String lastTaskName = model.tasks[model.lastCompletedTaskId].name;
+                MessageBoxResult res = MessageBox.Show("WARNING: The last saved task will be " + lastTaskName, "Undo Task?", MessageBoxButton.YesNo);
+                if(res == MessageBoxResult.Yes)
+                {
+                    model.uncompleteTask(taskTypeId);
+                }
             }
 
             if(!isCurrentUser())
@@ -502,7 +518,7 @@ namespace Gaant_Chart
                 return;
             }
 
-            Models.Task task = data.currentModel.tasks[taskTypeId];
+            Models.Task task = model.tasks[taskTypeId];
 
             CompleteTask win2 = new CompleteTask(task);
             win2.ShowDialog();
@@ -515,7 +531,6 @@ namespace Gaant_Chart
             {
                 addCompletedTaskBlock(task);
             }
-
         }
 
         private Boolean checkboxTaskCompleted(int taskTypeId)
