@@ -46,7 +46,7 @@ namespace Gaant_Chart
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Tasks (modelId INT NOT NULL, " +
-                    "typeId INT NOT NULL, startDate DATETIME NOT NULL, endDate DATETIME, userId INT)";
+                    "typeId INT NOT NULL, startDate DATETIME, endDate DATETIME, userId INT)";
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Users (name TEXT NOT NULL UNIQUE, password TEXT, requirePassword INT)";
@@ -319,7 +319,7 @@ namespace Gaant_Chart
             return modelTags;
         }
 
-        public void completeTask(long taskId, DateTime endDate)
+        public void completeTask(long taskId, DateTime startDate, DateTime endDate)
         {
             this.OpenConnection();
 
@@ -328,7 +328,8 @@ namespace Gaant_Chart
 
             using (myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "UPDATE tasks SET endDate = @endDate, userId = @userId WHERE rowid = @taskId";
+                myCommand.CommandText = "UPDATE tasks SET startDate = @startDate, endDate = @endDate, userId = @userId WHERE rowid = @taskId";
+                myCommand.Parameters.AddWithValue("@startDate", startDate);
                 myCommand.Parameters.AddWithValue("@endDate", endDate);
                 myCommand.Parameters.AddWithValue("@userId", userId);
                 myCommand.Parameters.AddWithValue("@taskId", taskId);

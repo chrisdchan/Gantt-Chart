@@ -95,7 +95,7 @@ namespace Gaant_Chart
 
         private void updateDatabase()
         {
-            MainWindow.myDatabase.completeTask(task.rowid, endDate);
+            MainWindow.myDatabase.completeTask(task.rowid, startDate, endDate);
         }
 
         private void cancelBtn_Click(object sender, RoutedEventArgs e)
