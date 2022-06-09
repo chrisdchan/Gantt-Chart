@@ -33,7 +33,8 @@ namespace Gaant_Chart.Models
             label.Foreground = WHITE;
             label.Width = 200;
             label.Height = 30;
-            label.HorizontalAlignment = HorizontalAlignment.Right;
+            label.HorizontalContentAlignment = HorizontalAlignment.Right;
+            label.Tag = false; // dynamic element or not
 
             element = label;
         }
@@ -49,8 +50,9 @@ namespace Gaant_Chart.Models
             label = new Label();
             label.Foreground = GREEN;
             label.FontSize = 14;
-            label.Content = date.ToString("d/M/y");
+            label.Content = date.ToString("MM/dd/y");
             label.LayoutTransform = new RotateTransform(ROTATATION);
+            label.Tag = true;
 
             element = label;
         }
@@ -59,18 +61,29 @@ namespace Gaant_Chart.Models
     public class TaskGroupLabel : CanvasElement
     {
         private TextBlock textblock { get; set; }
+
+        private int ROTATION = 270;
+
         public TaskGroupLabel(String taskGroupLabel)
         {
             textblock = new TextBlock();
             textblock.Text = taskGroupLabel;
             textblock.FontSize = 10;
             textblock.Foreground = WHITE;
-            textblock.Width = 100;
             textblock.TextWrapping = TextWrapping.Wrap;
             textblock.TextAlignment = TextAlignment.Center;
             textblock.VerticalAlignment = VerticalAlignment.Bottom;
+            textblock.LayoutTransform = new RotateTransform(ROTATION);
+            textblock.Tag = false;
 
             element = textblock;
+        }
+
+        public TaskGroupLabel(string taskGroupLabel, double width, double leftoffset, double topoffset) : this(taskGroupLabel)
+        {
+            this.leftoffset = leftoffset;
+            this.topoffset = topoffset;
+            element.Width = width;
         }
     }
 

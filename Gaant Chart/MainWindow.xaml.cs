@@ -77,8 +77,6 @@ namespace Gaant_Chart
             createTaskBar();
 
             initCanvas();
-
-
             
             myCanvas.Visibility = Visibility.Visible;
 
@@ -109,7 +107,6 @@ namespace Gaant_Chart
         private void displayCurrentUser()
         {
             userLabel.Content = "Hello " + data.currentUser.name;
-
         }
 
         private void setTaskComponentsReadOnly()
@@ -165,8 +162,6 @@ namespace Gaant_Chart
             
         }
 
-
-
         // NOTE: The top left corner for lines is (-100, -100), Components start at (0, 0)
 
         private void initCanvas()
@@ -214,20 +209,12 @@ namespace Gaant_Chart
         {
             removeDynamicElements();
             canvasDisplay.resize(view);
-            renderDynamicElements();
+            initCanvas();
         }
 
         private void removeDynamicElements()
         {
-            foreach(CanvasLine canvasLine in canvasDisplay.dynamicLines)
-            {
-                myCanvas.Children.Remove(canvasLine.line);
-            }
-
-            foreach(CanvasElement canvasElement in canvasDisplay.dates)
-            {
-                myCanvas.Children.Remove(canvasElement.element);
-            }
+            myCanvas.Children.Clear();
         }
 
         /*

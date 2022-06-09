@@ -39,7 +39,7 @@ namespace Gaant_Chart
         {
             ("Assemblies", 0),
             ("Segmentation Tasks", 1),
-            ("Segmentation Review and Approval", 7),
+            ("Segmentation Review and Approval", 7),                                                                        
             ("Mesh Preperation and Export to Physics", 13),
             ("Physics Modeling and Reports", 16)
         };

@@ -17,6 +17,7 @@ namespace Gaant_Chart.Models
         private CanvasView view { get; set; }
 
         private SolidColorBrush RED = new SolidColorBrush(Colors.Red);
+        private SolidColorBrush PINK = new SolidColorBrush(Color.FromRgb(252, 180, 180));
         private SolidColorBrush DULL_GREEN = new SolidColorBrush(Color.FromRgb(50, 236, 80));
         private SolidColorBrush PISS = new SolidColorBrush(Color.FromRgb(242, 218, 46));
         private SolidColorBrush GRAY = new SolidColorBrush(Color.FromRgb(233, 233, 233));
@@ -28,7 +29,7 @@ namespace Gaant_Chart.Models
 
             initDates();
             initDynamicLines();
-            initLabels();
+            initTaskLabels();
             initStaticLines();
         }
 
@@ -46,46 +47,73 @@ namespace Gaant_Chart.Models
 
         private void initStaticLines()
         {
-            staticLines = new List<CanvasLine>();  
-            
-            staticLines.Add(new CanvasLine(
-                view.LEFT_OUTER_BORDER, view.BOTTOM_BORDER,
-                view.LEFT_INNER_BORDER, view.BOTTOM_BORDER,
-                RED ));
+            staticLines = new List<CanvasLine>
+            {
+                new CanvasLine(
+                    view.LEFT_OUTER_BORDER, view.BOTTOM_BORDER,
+                    view.LEFT_INNER_BORDER, view.BOTTOM_BORDER,
+                    RED ),
+                new CanvasLine(
+                    view.LEFT_OUTER_BORDER, view.TOP_BORDER,
+                    view.LEFT_OUTER_BORDER, view.BOTTOM_BORDER,
+                    RED ),
+                new CanvasLine(
+                    view.LEFT_OUTER_BORDER, view.TOP_BORDER,
+                    view.LEFT_INNER_BORDER, view.TOP_BORDER,
+                    RED ),
+                new CanvasLine(
+                    view.LEFT_OUTER_BORDER, view.TOP_BORDER,
+                    view.LEFT_INNER_BORDER, view.TOP_BORDER,
+                    RED ),
+                new CanvasLine(
+                    view.LEFT_INNER_BORDER, view.TOP_BORDER,
+                    view.LEFT_INNER_BORDER, view.BOTTOM_BORDER,
+                    RED ),
 
-            staticLines.Add(new CanvasLine(
-                view.LEFT_OUTER_BORDER, view.TOP_BORDER,
-                view.LEFT_OUTER_BORDER, view.BOTTOM_BORDER,
-                RED ));
-            
-            staticLines.Add(new CanvasLine(
-                view.LEFT_OUTER_BORDER, view.TOP_BORDER,
-                view.LEFT_INNER_BORDER, view.TOP_BORDER,
-                RED ));
+                new CanvasLine(
+                        view.LEFT_OUTER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 5,
+                        view.LEFT_INNER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 5,
+                        RED ),
+                new CanvasLine(
+                        view.LEFT_OUTER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 10,
+                        view.LEFT_INNER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 10,
+                        RED ),
+                new CanvasLine(
+                        view.LEFT_OUTER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 12,
+                        view.LEFT_INNER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 12,
+                        RED ),
+                new CanvasLine(
+                        view.LEFT_INNER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 5,
+                        view.RIGHT_OUTER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 5,
+                        PINK ),
+                new CanvasLine(
+                        view.LEFT_INNER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 10,
+                        view.RIGHT_OUTER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 10,
+                        PINK ),
+                new CanvasLine(
+                        view.LEFT_INNER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 12,
+                        view.RIGHT_OUTER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 12,
+                        PINK ),
 
-            staticLines.Add(new CanvasLine(
-                view.LEFT_INNER_BORDER, view.TOP_BORDER,
-                view.LEFT_INNER_BORDER, view.BOTTOM_BORDER,
-                RED ));
 
-            
-            staticLines.Add(new CanvasLine(
-                view.LEFT_INNER_BORDER, view.BOTTOM_BORDER,
-                view.RIGHT_OUTER_BORDER, view.BOTTOM_BORDER,
-                DULL_GREEN ));
+                new CanvasLine(
+                    view.LEFT_INNER_BORDER, view.BOTTOM_BORDER,
+                    view.RIGHT_OUTER_BORDER, view.BOTTOM_BORDER,
+                    DULL_GREEN ),
+                new CanvasLine(
+                    view.RIGHT_OUTER_BORDER, view.TOP_BORDER,
+                    view.RIGHT_OUTER_BORDER, view.BOTTOM_BORDER,
+                    DULL_GREEN ),
 
-            staticLines.Add(new CanvasLine(
-                view.LEFT_INNER_BORDER, view.TOP_BORDER,
-                view.RIGHT_OUTER_BORDER, view.BOTTOM_BORDER,
-                DULL_GREEN ));
+                new CanvasLine(
+                    view.LEFT_INNER_BORDER, view.TOP_BORDER,
+                    view.RIGHT_OUTER_BORDER, view.TOP_BORDER,
+                    PISS )
 
-            staticLines.Add(new CanvasLine(
-                view.LEFT_INNER_BORDER, view.TOP_BORDER,
-                view.RIGHT_OUTER_BORDER, view.TOP_BORDER,
-                PISS ));
+            };
         }
 
-        private void initLabels()
+        private void initTaskLabels()
         {
             canvasTexts = new List<CanvasElement>();
 
@@ -94,37 +122,50 @@ namespace Gaant_Chart.Models
                 canvasTexts.Add(new TaskLabel(taskName));
             }
 
-            foreach((String groupName, int index) in data.taskLabelGroups)
-            {
-                canvasTexts.Insert(index, new TaskGroupLabel(groupName));
-            }
-
             for(int i = 0; i < canvasTexts.Count; i++)
             {
                 canvasTexts[i].leftoffset = view.LABEL_LEFT_MARGIN;
                 canvasTexts[i].topoffset = view.LABEL_TOP_OFFSET + view.LABEL_VERTICAL_SPACE * i;
             }
+
+            initGroupLabels();
+        }
+
+        private void initGroupLabels()
+        {
+            // must be done manually :(
+            canvasTexts.Add(new TaskGroupLabel("Segmentation", 100, 35, 168));
+            canvasTexts.Add(new TaskGroupLabel("Segmentation Review and Approval", 100,  30, 312));
+            canvasTexts.Add(new TaskGroupLabel("Mesh Prep and Export", 50, 30, 444.8));
+            canvasTexts.Add(new TaskGroupLabel("Physics Modeling and Report", 50, 20, 505.6));
         }
 
         private void updateDynamicLines()
         {
-            for(int i = 0; i < view.numDays; i++)
+            for(int i = 1; i < view.numDays; i++)
             {
                 double x = view.LEFT_INNER_BORDER + i * view.pixelsPerDay;
 
                 if(isWeekSinceStart(i))
                 {
-                    dynamicLines.Add(new CanvasLine(
+                    CanvasLine line = new CanvasLine(
                         x, view.TOP_BORDER,
                         x, view.BOTTOM_BORDER,
-                        PISS));
+                        GRAY);
+
+                    line.line.Tag = true;
+                    dynamicLines.Add(line);
                 }
                 else
                 {
-                    dynamicLines.Add(new CanvasLine(
+                     CanvasLine line = new CanvasLine(
                         x, view.TOP_BORDER,
                         x, view.TOP_BORDER + view.DAYLINE_LENGTH,
-                        GRAY ));
+                        PISS);
+
+                    line.line.Tag = true;
+                    dynamicLines.Add(line);
+
                 }
             }
         }
@@ -132,18 +173,16 @@ namespace Gaant_Chart.Models
         private void updateDates()
         {
             double pixelsPerWeek = view.pixelsPerDay * 7;
+            int numWeeks = (int) view.numDays / 7;
 
-            for(int i = 0; i < view.numDays; i++)
+            for(int i = 0; i <= numWeeks; i++)
             {
-                if(isWeekSinceStart(i))
-                {
-                    DateTime date = view.startDate.AddDays(i);
-                    CanvasElement dateLabel = new DateLabel(date);
-                    dateLabel.leftoffset = view.DATE_LEFT_OFFSET + i * pixelsPerWeek;
-                    dateLabel.topoffset = view.DATE_TOP_OFFSET;
+                DateTime date = view.startDate.AddDays(i);
+                CanvasElement dateLabel = new DateLabel(date);
+                dateLabel.leftoffset = view.DATE_LEFT_OFFSET + i * pixelsPerWeek;
+                dateLabel.topoffset = view.DATE_TOP_OFFSET;
 
-                    dates.Add(dateLabel);
-                }
+                dates.Add(dateLabel);
             }
         }
 
