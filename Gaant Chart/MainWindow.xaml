@@ -114,9 +114,9 @@
                     Grid.Row="1" Grid.Column="6"
                     Height="20"
                      Margin="5 0 5 70">
-            <Button Content="left" Width="30"></Button>
+            <Button Content="left" Width="30" Click="leftBtn_Click"></Button>
             <Slider Width="750" Margin="10, 0, 10, 0" HorizontalAlignment="Center"></Slider>
-            <Button Content="Right" Width="30" HorizontalAlignment="Right"></Button>
+            <Button Content="Right" Width="30" HorizontalAlignment="Right" Click="rightBtn_Click"></Button>
         </DockPanel>
 
         <Rectangle Grid.Column="5" Grid.Row="1"
@@ -127,96 +127,14 @@
         <Canvas 
             Grid.Column="5" Grid.Row="1"
             Grid.RowSpan="6"
+            Focusable="True"
             Margin="10 65 10 25"
             Background="Black"
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Width="0" Height="0"
+            MouseWheel="myCanvas_MouseWheel"
             Name="myCanvas" Visibility="Hidden">
 
-            <!--
-            <Label 
-                   Content="Image Aquisition" FontSize="10"
-                   Name="l1" Width="200" HorizontalContentAlignment="Right" Height="30" 
-                   Foreground="White"></Label>
-            <Label Name="l2" Width="200" HorizontalContentAlignment="Right" Height="30" 
-                   Content="Image Download" FontSize="10"
-                   Foreground="White"></Label>
-            <Label Name="l3" Width="200" HorizontalContentAlignment="Right" Height="30" 
-                   Content="SPM8 Completion" FontSize="10"
-                   Foreground="White"></Label>
-            <Label Name="l4" Width="200" HorizontalContentAlignment="Right" Height="30"
-                   Content="MD Volumes Completion" FontSize="10"
-                   Foreground="White"></Label>
-            <Label Name="l5" Width="200" HorizontalContentAlignment="Right" Height="30"
-                   Content="Fully Segmented" FontSize="10"
-                   Foreground="White"></Label>
-
-            <Label Name="l6" Width="200" HorizontalContentAlignment="Right" Height="30"
-                   Content="Initial Peer Review" FontSize="10"
-                   Foreground="White"></Label>
-            <Label Name="l7" Width="200" HorizontalContentAlignment="Right" Height="30"
-                   Content="Segmentation Corrections" FontSize="10"
-                   Foreground="White"></Label>
-            <Label Name="l8" Width="200" HorizontalContentAlignment="Right" Height="30"
-                   Content="2nd Peer Review" FontSize="10"
-                   Foreground="White"></Label>
-            <Label Name="l9" Width="200" HorizontalContentAlignment="Right" Height="30"
-                   Content="2nd Segmentation Corrections" FontSize="10"
-                   Foreground="White"></Label>
-            <Label Name="l10" Width="200" HorizontalContentAlignment="Right" Height="30"
-                   Content="Full Model Approval" FontSize="10"
-                   Foreground="White"></Label>
-
-
-
-            <Label Name="l11" Width="200" HorizontalContentAlignment="Right"
-                   Content="Mesh Model" FontSize="10"
-                   Foreground="White"></Label>
-            <Label Name="l12" Width="200" HorizontalContentAlignment="Right"
-                   Content="Export to Physics" FontSize="10"
-                   Foreground="White"></Label>
-
-            <Label Name="l13" Width="200" HorizontalContentAlignment="Right"
-                   Content="Model Solved" FontSize="10"
-                   Foreground="White"></Label>
-            <Label Name="l14" Width="200" HorizontalContentAlignment="Right"
-                   Content="Report Generated" FontSize="10"
-                   Foreground="White"></Label>
-
-
-            <Label Name="L1" Content="Segmentaion"
-                   FontSize="10"
-                   Foreground="White"></Label>
-
-            <TextBlock Name="L2" Text="Segmentation Review and Approval"
-                   FontSize="10" TextWrapping="wrap"
-                   Width="100" 
-                       TextAlignment="Center" VerticalAlignment="Bottom"
-                   Foreground="White"></TextBlock>
-
-            <TextBlock Name="L3" Text="Mesh Prep and Export"
-                   FontSize="10" TextWrapping="Wrap"
-                   Width="50"
-                   TextAlignment="Center" VerticalAlignment="Bottom"
-                   Foreground="White"></TextBlock>
-
-            <TextBlock Name="L4" Text="Physics Modeling and Report"
-                   FontSize="10" TextWrapping="Wrap"
-                   Width="50"
-                   TextAlignment="Center" VerticalAlignment="Bottom"
-                   Foreground="White"></TextBlock>
-
-            <Label Foreground="#32EC00" FontSize="14"
-                   Name="date1"></Label>
-            <Label Foreground="#32EC00" FontSize="14"
-                   Name="date2"></Label>
-            <Label Foreground="#32EC00" FontSize="14"
-                   Name="date3"></Label>
-            <Label Foreground="#32EC00" FontSize="14"
-                   Name="date4"></Label>
-            <Label Foreground="#32EC00" FontSize="14"
-                   Name="date5"></Label>
-                    -->
             <Label Foreground="#32EC00" FontSize="25"
                     Name="label_ModelID"></Label>
         </Canvas>

@@ -34,7 +34,6 @@ namespace Gaant_Chart.Models
             label.Width = 200;
             label.Height = 30;
             label.HorizontalContentAlignment = HorizontalAlignment.Right;
-            label.Tag = false; // dynamic element or not
 
             element = label;
         }
@@ -74,7 +73,6 @@ namespace Gaant_Chart.Models
             textblock.TextAlignment = TextAlignment.Center;
             textblock.VerticalAlignment = VerticalAlignment.Bottom;
             textblock.LayoutTransform = new RotateTransform(ROTATION);
-            textblock.Tag = false;
 
             element = textblock;
         }

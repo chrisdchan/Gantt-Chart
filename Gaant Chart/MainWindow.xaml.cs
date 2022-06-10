@@ -184,6 +184,7 @@ namespace Gaant_Chart
             renderDynamicElements();
         }
 
+
         private void renderDynamicElements()
         {
             foreach(CanvasElement canvasElement in canvasDisplay.dates)
@@ -209,141 +210,23 @@ namespace Gaant_Chart
         {
             removeDynamicElements();
             canvasDisplay.resize(view);
-            initCanvas();
+            renderDynamicElements();
         }
 
         private void removeDynamicElements()
         {
-            myCanvas.Children.Clear();
-        }
-
-        /*
-        private void drawInitialCanvas1()
-        {
-            heightPerTask = (bottomBorder + 5 - topBorder) / 14.0;
-
-            Canvas.SetLeft(l1, labelLeftMargin);
-            Canvas.SetLeft(l2, labelLeftMargin);
-            Canvas.SetLeft(l3, labelLeftMargin);
-            Canvas.SetLeft(l4, labelLeftMargin);
-            Canvas.SetLeft(l5, labelLeftMargin);
-            Canvas.SetLeft(l6, labelLeftMargin);
-            Canvas.SetLeft(l7, labelLeftMargin);
-            Canvas.SetLeft(l8, labelLeftMargin);
-            Canvas.SetLeft(l9, labelLeftMargin);
-            Canvas.SetLeft(l10, labelLeftMargin);
-            Canvas.SetLeft(l11, labelLeftMargin);
-            Canvas.SetLeft(l12, labelLeftMargin);
-            Canvas.SetLeft(l13, labelLeftMargin);
-            Canvas.SetLeft(l14, labelLeftMargin);
-
-            Canvas.SetTop(l1, topOffset + verticalLabelSpace * 0);
-            Canvas.SetTop(l2, topOffset + verticalLabelSpace * 1);
-            Canvas.SetTop(l3, topOffset + verticalLabelSpace * 2);
-            Canvas.SetTop(l4, topOffset + verticalLabelSpace * 3);
-            Canvas.SetTop(l5, topOffset + verticalLabelSpace * 4);
-            Canvas.SetTop(l6, topOffset + verticalLabelSpace * 5);
-            Canvas.SetTop(l7, topOffset + verticalLabelSpace * 6);
-            Canvas.SetTop(l8, topOffset + verticalLabelSpace * 7);
-            Canvas.SetTop(l9, topOffset + verticalLabelSpace * 8);
-            Canvas.SetTop(l10, topOffset + verticalLabelSpace * 9);
-            Canvas.SetTop(l11, topOffset + verticalLabelSpace * 10);
-            Canvas.SetTop(l12, topOffset + verticalLabelSpace * 11);
-            Canvas.SetTop(l13, topOffset + verticalLabelSpace * 12);
-            Canvas.SetTop(l14, topOffset + verticalLabelSpace * 13);
-
-            Canvas.SetLeft(L1, labelLeftMargin + 15);
-            Canvas.SetLeft(L2, labelLeftMargin + 10);
-            Canvas.SetLeft(L3, labelLeftMargin + 10);
-            Canvas.SetLeft(L4, labelLeftMargin);
-
-            Canvas.SetTop(L1, topOffset + verticalLabelSpace * 1.5);
-            Canvas.SetTop(L2, topOffset + verticalLabelSpace * 6);
-            Canvas.SetTop(L3, topOffset + verticalLabelSpace * 10.15);
-            Canvas.SetTop(L4, topOffset + verticalLabelSpace * 12.05);
-
-
-            // Draw a boarder around the data
-            double segmentationBottomBorder = topBorder + heightPerTask * 5;
-            double reviewBottomBorder = segmentationBottomBorder + heightPerTask * 5;
-            double meshBottomBorder = reviewBottomBorder + heightPerTask * 2 - 5;
-
-            drawLine(new Point(leftOuterBorder, segmentationBottomBorder),
-                     new Point(leftInnerBorder, segmentationBottomBorder),
-                     Color.FromRgb(255, 0, 0));
-
-            drawLine(new Point(leftInnerBorder, segmentationBottomBorder),
-                     new Point(rightOuterBorder, segmentationBottomBorder),
-                     Color.FromRgb(252, 180, 180));
-
-            drawLine(new Point(leftOuterBorder, reviewBottomBorder),
-                     new Point(leftInnerBorder, reviewBottomBorder),
-                     Color.FromRgb(255, 0, 0));
-            drawLine(new Point(leftInnerBorder, reviewBottomBorder),
-                     new Point(rightOuterBorder, reviewBottomBorder),
-                     Color.FromRgb(252, 180, 180));
-
-            drawLine(new Point(leftOuterBorder, meshBottomBorder),
-                     new Point(leftInnerBorder, meshBottomBorder),
-                     Color.FromRgb(255, 0, 0));
-            drawLine(new Point(leftInnerBorder, meshBottomBorder),
-                     new Point(rightOuterBorder, meshBottomBorder),
-                     Color.FromRgb(252, 180, 180));
-
-
-            newLine(leftOuterBorder, leftInnerBorder, bottomBorder, bottomBorder, "#FF0000");
-            newLine(leftOuterBorder, leftOuterBorder, topBorder, bottomBorder, "#FF0000");
-            newLine(leftOuterBorder, leftInnerBorder, topBorder, topBorder, "#FF0000");
-            newLine(leftInnerBorder, leftInnerBorder, topBorder, bottomBorder, "#FF0000");
-
-            newLine(leftInnerBorder, rightOuterBorder, bottomBorder, bottomBorder, "#32EC00");
-            newLine(rightOuterBorder, rightOuterBorder, topBorder, bottomBorder, "#32EC00");
-
-            L1.LayoutTransform = new RotateTransform(270);
-            L2.LayoutTransform = new RotateTransform(270);
-            L3.LayoutTransform = new RotateTransform(270);
-            L4.LayoutTransform = new RotateTransform(270);
-
-
-            newLine(leftInnerBorder, rightOuterBorder, topBorder, topBorder, "#F2DA2E");
-
-            for (int i = leftInnerBorder; i < rightOuterBorder; i += 147)
+            foreach(CanvasLine canvasLine in canvasDisplay.dynamicLines)
             {
-                if (i != leftInnerBorder) newLine(i, i, topBorder, bottomBorder, "#DFDFDF");
-
-                for (int j = i; j < i + 147; j += 21)
-                {
-                    if (j != i) newLine(j, j, topBorder, topBorder + 5, "#F2DA2E");
-                }
+                UIElement element = canvasLine.line;
+                myCanvas.Children.Remove(element);
             }
 
-            int dateSpacing = 147;
-            int dateHeight = 40;
-            int dateRotation = 285;
-
-            Canvas.SetLeft(date1, dateX + dateSpacing * 0);
-            Canvas.SetLeft(date2, dateX + dateSpacing * 1);
-            Canvas.SetLeft(date3, dateX + dateSpacing * 2);
-            Canvas.SetLeft(date4, dateX + dateSpacing * 3);
-            Canvas.SetLeft(date5, dateX + dateSpacing * 4);
-
-            Canvas.SetTop(date1, dateHeight);
-            Canvas.SetTop(date2, dateHeight);
-            Canvas.SetTop(date3, dateHeight);
-            Canvas.SetTop(date4, dateHeight);
-            Canvas.SetTop(date5, dateHeight);
-
-            date1.LayoutTransform = new RotateTransform(dateRotation);
-            date2.LayoutTransform = new RotateTransform(dateRotation);
-            date3.LayoutTransform = new RotateTransform(dateRotation);
-            date4.LayoutTransform = new RotateTransform(dateRotation);
-            date5.LayoutTransform = new RotateTransform(dateRotation);
-
-            Canvas.SetLeft(label_ModelID, 25);
-            Canvas.SetTop(label_ModelID, 50);
-
+            foreach(CanvasElement canvasElement in canvasDisplay.dates)
+            {
+                UIElement element = canvasElement.element;
+                myCanvas.Children.Remove(element);
+            }
         }
-        */
 
         private void initTaskBlocks()
         {
@@ -491,57 +374,6 @@ namespace Gaant_Chart
 
         }
 
-
-
-        /*
-        private void setDate(DateTime date)
-        {
-            date1.Content = date.ToString("MM-dd-yy");
-            date2.Content = date.AddDays(7).ToString("MM-dd-yy");
-            date3.Content = date.AddDays(14).ToString("MM-dd-yy");
-            date4.Content = date.AddDays(21).ToString("MM-dd-yy");
-            date5.Content = date.AddDays(28).ToString("MM-dd-yy");
-        }
-
-        */
-
-        private void adjustLabels(Model model)
-        {
-            label_ModelID.Content = model.modelName;
-        }
-
-
-        private void newLine(int X1, int X2, int Y1, int Y2, String color)
-        {
-            Line newLine = new Line();
-            Thickness thickness = new Thickness(100);
-            newLine.Margin = thickness;
-            SolidColorBrush brush = (SolidColorBrush)new BrushConverter().ConvertFrom(color);
-            newLine.Stroke = brush;
-            newLine.X1 = X1;
-            newLine.X2 = X2;
-            newLine.Y1 = Y1;
-            newLine.Y2 = Y2;
-
-            myCanvas.Children.Add(newLine);
-        }
-
-        private void drawLine(Point p1, Point p2, Color color)
-        {
-            Line newLine = new Line();
-            Thickness thickness = new Thickness(100);
-            newLine.Margin = thickness;
-            SolidColorBrush brush = new SolidColorBrush(color);
-            newLine.Stroke = brush;
-            newLine.X1 = p1.X;
-            newLine.Y1 = p1.Y;
-            newLine.X2 = p2.X;
-            newLine.Y2 = p2.Y;
-
-            myCanvas.Children.Add(newLine);
-
-        }
-
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             CheckBox checkbox = sender as CheckBox;
@@ -645,6 +477,33 @@ namespace Gaant_Chart
             Admin win2 = new Admin();
             win2.ShowDialog();
 
+        }
+
+        private void myCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if(e.Delta > 0)
+            {
+                view.addOneDay();
+                updateCanvas();
+            }
+            else
+            {
+                view.removeOneDay();
+                updateCanvas();
+            }
+        }
+
+        private void rightBtn_Click(object sender, RoutedEventArgs e)
+        {
+            view.addOneDay();
+            updateCanvas();
+
+        }
+
+        private void leftBtn_Click(object sender, RoutedEventArgs e)
+        {
+            view.removeOneDay();
+            updateCanvas();
         }
     }
 }

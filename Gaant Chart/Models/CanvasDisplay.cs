@@ -82,6 +82,7 @@ namespace Gaant_Chart.Models
                         view.LEFT_OUTER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 12,
                         view.LEFT_INNER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 12,
                         RED ),
+                /*
                 new CanvasLine(
                         view.LEFT_INNER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 5,
                         view.RIGHT_OUTER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 5,
@@ -94,6 +95,7 @@ namespace Gaant_Chart.Models
                         view.LEFT_INNER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 12,
                         view.RIGHT_OUTER_BORDER, view.TOP_BORDER + view.TASK_HEIGHT * 12,
                         PINK ),
+                */
 
 
                 new CanvasLine(
@@ -142,6 +144,8 @@ namespace Gaant_Chart.Models
 
         private void updateDynamicLines()
         {
+            dynamicLines.Clear();
+
             for(int i = 1; i < view.numDays; i++)
             {
                 double x = view.LEFT_INNER_BORDER + i * view.pixelsPerDay;
@@ -172,6 +176,8 @@ namespace Gaant_Chart.Models
 
         private void updateDates()
         {
+            dates.Clear();
+
             double pixelsPerWeek = view.pixelsPerDay * 7;
             int numWeeks = (int) view.numDays / 7;
 

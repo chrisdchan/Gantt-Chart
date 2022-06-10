@@ -55,6 +55,18 @@ namespace Gaant_Chart.Models
             endDate = startDate.AddDays(numDays);
         }
 
+        public void addOneDay()
+        {
+            numDays++;
+            endDate = endDate.AddDays(1);
+        }
+
+        public void removeOneDay()
+        {
+            numDays--;
+            endDate = endDate.AddDays(-1);
+        }
+
         public void changeNumDays(int numDays)
         {
             this.numDays = numDays;
