@@ -85,13 +85,12 @@ namespace Gaant_Chart
                 return;
             }
 
-            if(endDate < model.tasks[task.typeInd - 1].endDate)
+            if(task.typeInd != 0 && endDate < model.tasks[task.typeInd - 1].endDate)
             {
                 MessageBox.Show("INVALID DATE: Cannot complete a task before a prerequisite task was completed");
                 dateTbx.Text = "";
                 return;
             }
-
 
             completeTaskLocally();
             updateDatabase();

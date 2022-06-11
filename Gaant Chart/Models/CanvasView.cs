@@ -67,9 +67,12 @@ namespace Gaant_Chart.Models
 
         public void changeNumDays(double numDays)
         {
-            this.numDays = numDays;
-            endDate = startDate.AddDays(numDays);
-            pixelsPerDay = (RIGHT_OUTER_BORDER - LEFT_INNER_BORDER) / numDays;
+            if(numDays > 0 && numDays <= 365)
+            {
+                this.numDays = numDays;
+                endDate = startDate.AddDays(numDays);
+                pixelsPerDay = (RIGHT_OUTER_BORDER - LEFT_INNER_BORDER) / numDays;
+            }
         }
 
     }

@@ -75,13 +75,8 @@ namespace Gaant_Chart
             // set up the canvas
 
             createTaskBar();
-
             initCanvas();
-            
-            myCanvas.Visibility = Visibility.Visible;
-
             initTaskBarLists();
-
             setTaskComponentsReadOnly();
 
         }
@@ -183,6 +178,20 @@ namespace Gaant_Chart
             }
 
             renderDynamicElements();
+            initInivisibleRectangle();
+        }
+
+        private void initInivisibleRectangle()
+        {
+            Rectangle background = new Rectangle();
+            background.Width = view.RIGHT_OUTER_BORDER - view.LEFT_OUTER_BORDER;
+            background.Height = view.BOTTOM_BORDER - view.TOP_BORDER;
+            background.Opacity = 0.001;
+            background.Fill = new SolidColorBrush(Colors.White);
+            myCanvas.Children.Add(background);
+
+            Canvas.SetTop(background, view.LABEL_TOP_OFFSET);
+            Canvas.SetLeft(background, view.LABEL_LEFT_MARGIN);
         }
 
         private void updateTaskBlocks()
@@ -435,6 +444,7 @@ namespace Gaant_Chart
             }
             else
             {
+
                 addCompletedTaskBlock(task);
             }
         }
