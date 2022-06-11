@@ -64,7 +64,15 @@ namespace Gaant_Chart.Models
 
         public void resize(CanvasView view)
         {
-        }
+            foreach(TaskDisplay taskDisplay in plannedBlocks)
+            {
+                taskDisplay.resize(view);
+            }
 
+            foreach(TaskDisplay taskDisplay in completedBlocks)
+            {
+                taskDisplay.resize(view);
+            }
+        }
     }
 }

@@ -132,7 +132,7 @@
             Background="Black"
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Width="0" Height="0"
-            MouseWheel="myCanvas_MouseWheel"
+            PreviewMouseWheel="myCanvas_MouseWheel"
             Name="myCanvas" Visibility="Hidden">
 
             <Label Foreground="#32EC00" FontSize="25"

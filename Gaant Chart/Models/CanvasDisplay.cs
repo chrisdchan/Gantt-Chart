@@ -183,7 +183,7 @@ namespace Gaant_Chart.Models
 
             for(int i = 0; i <= numWeeks; i++)
             {
-                DateTime date = view.startDate.AddDays(i);
+                DateTime date = view.startDate.AddDays(i * 7);
                 CanvasElement dateLabel = new DateLabel(date);
                 dateLabel.leftoffset = view.DATE_LEFT_OFFSET + i * pixelsPerWeek;
                 dateLabel.topoffset = view.DATE_TOP_OFFSET;

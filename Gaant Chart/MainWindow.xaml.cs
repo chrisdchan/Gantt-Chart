@@ -94,7 +94,6 @@ namespace Gaant_Chart
 
             myCanvas.Visibility = Visibility.Visible;
 
-            updateCanvas();
 
             label_ModelID.Content = model.modelName;
             txtDisplayModelName.Text = data.currentModel.modelName;
@@ -102,6 +101,7 @@ namespace Gaant_Chart
             initTaskBlocks();
             initTaskBarWithModel();
 
+            updateCanvas();
         }
 
         private void displayCurrentUser()
@@ -130,6 +130,7 @@ namespace Gaant_Chart
                 CheckBox checkbox = new CheckBox();
                 checkbox.Content = taskname;
                 checkbox.Checked += new RoutedEventHandler(CheckBox_Checked);
+                checkbox.Unchecked += new RoutedEventHandler(CheckBox_Unchecked);
 
                 TextBox textbox = new TextBox();
                 textbox.Width = 100;
@@ -184,6 +185,25 @@ namespace Gaant_Chart
             renderDynamicElements();
         }
 
+        private void updateTaskBlocks()
+        {
+            if(isCurrentModel())
+            {
+                foreach(TaskDisplay taskDisplay in Enumerable.Concat(modelDisplay.plannedBlocks, modelDisplay.completedBlocks))
+                {
+                    UIElement element = taskDisplay.rectangle;
+                    myCanvas.Children.Remove(element);
+                }
+
+                modelDisplay.resize(view);
+
+                foreach(TaskDisplay taskDisplay in Enumerable.Concat(modelDisplay.plannedBlocks, modelDisplay.completedBlocks))
+                {
+                    addRectToCanvas(taskDisplay);
+                }
+            }
+        }
+
 
         private void renderDynamicElements()
         {
@@ -196,6 +216,9 @@ namespace Gaant_Chart
             {
                 myCanvas.Children.Add(dynamicLine.line);
             }
+
+
+
         }
 
         private void addFrameworkElementToCanvas(CanvasElement canvasElement)
@@ -211,6 +234,8 @@ namespace Gaant_Chart
             removeDynamicElements();
             canvasDisplay.resize(view);
             renderDynamicElements();
+
+            updateTaskBlocks();
         }
 
         private void removeDynamicElements()
@@ -226,6 +251,7 @@ namespace Gaant_Chart
                 UIElement element = canvasElement.element;
                 myCanvas.Children.Remove(element);
             }
+
         }
 
         private void initTaskBlocks()
@@ -333,6 +359,8 @@ namespace Gaant_Chart
         {
             SolidColorBrush unavalibleColor = new SolidColorBrush(Color.FromRgb(194, 194, 194));
 
+            renderedChecks = false;
+
             for(int i = 0; i < data.allTasks.Length; i++)
             {
                 CheckBox checkbox = taskBarCheckBoxes[i];
@@ -344,6 +372,8 @@ namespace Gaant_Chart
 
                 textbox.Text = "";
             }
+
+            renderedChecks = true;
         }
 
         private void setTaskBar()
@@ -365,13 +395,10 @@ namespace Gaant_Chart
                     checkbox.IsHitTestVisible = true;
                     checkbox.Foreground = completedColor;
 
-                    textbox.Text = task.user.name + " | " + task.endDate.ToString("d/M/y");
+                    textbox.Text = task.user.name + " | " + task.endDate.ToString("M/d/y");
                 }
             }
-
             renderedChecks = true;
-
-
         }
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -389,16 +416,6 @@ namespace Gaant_Chart
             }
 
             if (!renderedChecks) return;
-
-            if (checkboxTaskCompleted(taskTypeId))
-            {
-                String lastTaskName = model.tasks[model.lastCompletedTaskId].name;
-                MessageBoxResult res = MessageBox.Show("WARNING: The last saved task will be " + lastTaskName, "Undo Task?", MessageBoxButton.YesNo);
-                if(res == MessageBoxResult.Yes)
-                {
-                    model.uncompleteTask(taskTypeId);
-                }
-            }
 
             if(!isCurrentUser())
             {
@@ -422,12 +439,32 @@ namespace Gaant_Chart
             }
         }
 
-        private Boolean checkboxTaskCompleted(int taskTypeId)
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            Model model = data.currentModel;
-            return (model.tasks[taskTypeId].completed);
-        }
 
+            if (!renderedChecks) return;
+
+            CheckBox checkbox = sender as CheckBox;
+            int taskTypeId = (int)checkbox.Tag;
+            Model model = data.currentModel;
+            Models.Task task = model.tasks[taskTypeId];
+
+            if (task.completed)
+            {
+                String lastTaskName = (task.typeInd == 0) ? "NONE" : model.tasks[task.typeInd - 1].name;
+
+                MessageBoxResult res = MessageBox.Show("WARNING: The last saved task will be " + lastTaskName, "Undo Task?", MessageBoxButton.YesNo);
+                if(res == MessageBoxResult.Yes)
+                {
+                    model.uncompleteTask(taskTypeId);
+                    myDatabase.updateModel(model);
+                }
+            }
+
+            initTaskBarWithModel();
+            initTaskBlocks();
+
+        }
         private Boolean isCurrentModel()
         {
             return data.currentModel != null;

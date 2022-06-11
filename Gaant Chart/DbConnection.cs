@@ -339,22 +339,48 @@ namespace Gaant_Chart
             this.CloseConnection();
         }
 
-        public void uncompleteTask(long rowid)
+        public void updateModel(Model model)
         {
-            this.OpenConnection();
+            OpenConnection();
 
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "UPDATE tasks SET startDate = null, endDate = null, userId = null WHERE rowid = @rowid";
-                myCommand.Parameters.AddWithValue("@rowid", rowid);
+                myCommand.CommandText = "UPDATE Models SET startDate = @startDate, name=@name WHERE rowid=@rowid";
+                myCommand.Parameters.AddWithValue("@startDate", model.startDate);
+                myCommand.Parameters.AddWithValue("@name", model.modelName);
+                myCommand.Parameters.AddWithValue("@rowid", model.rowid);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
-            }
 
-            this.CloseConnection();
+                foreach(Task task in model.tasks)
+                {
+                    myCommand.CommandText = "UPDATE Tasks SET startDate=@startDate, endDate=@endDate, userId=@userId WHERE rowid=@rowid";
+
+                    if(task.completed)
+                    {
+                        myCommand.Parameters.AddWithValue("@startDate", task.startDate);
+                        myCommand.Parameters.AddWithValue("@endDate", task.endDate);
+                        myCommand.Parameters.AddWithValue("@userId", task.user.rowid);
+                    }
+                    else
+                    {
+                        myCommand.Parameters.AddWithValue("@startDate", null);
+                        myCommand.Parameters.AddWithValue("@endDate", null);
+                        myCommand.Parameters.AddWithValue("@userId", null);
+                    }
+
+                    myCommand.Parameters.AddWithValue("@rowid", task.rowid);
+                    myCommand.Prepare();
+                    myCommand.ExecuteNonQuery();
+                }
+            }
+            
+            CloseConnection();
+
+
+
 
         }
-
         public void deleteModel(int modelId)
         {
             this.OpenConnection();

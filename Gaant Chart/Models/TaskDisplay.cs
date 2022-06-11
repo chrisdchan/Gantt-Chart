@@ -45,7 +45,15 @@ namespace Gaant_Chart.Models
         }
         private void sizeTask()
         {
-            rectangle.Width = view.pixelsPerDay * numDays;
+            if(numDays < 0)
+            {
+                rectangle.Width = view.pixelsPerDay;
+
+            }
+            else
+            {
+               rectangle.Width = view.pixelsPerDay * numDays;
+            }
             cutOffIfNecessary();
         }
 

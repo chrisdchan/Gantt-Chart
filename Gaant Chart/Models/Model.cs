@@ -55,12 +55,22 @@ namespace Gaant_Chart.Models
             {
                 tasks[taskTypeId].uncomplete();
             }
-
-            for(int i = lastCompletedTaskId; i >= taskTypeId; i--)
+            else
             {
-                tasks[i].uncomplete();
+                for(int i = lastCompletedTaskId; i >= taskTypeId; i--)
+                {
+                    tasks[i].uncomplete();
+                }
             }
 
+            if(taskTypeId == 0)
+            {
+                lastCompletedTaskId = -1;
+            }
+            else
+            {
+                lastCompletedTaskId = taskTypeId - 1;
+            }
         }
 
     }
