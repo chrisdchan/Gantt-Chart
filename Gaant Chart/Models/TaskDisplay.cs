@@ -71,7 +71,7 @@ namespace Gaant_Chart.Models
 
             topOffset = view.TOP_START_OFF + task.typeInd * view.TASK_HEIGHT;
 
-            if(numDays < 1)
+            if(numDays < 1 && task.typeInd != 0)
             {
                 leftOffset -= view.pixelsPerDay;
             }
@@ -110,8 +110,6 @@ namespace Gaant_Chart.Models
 
             double numDaysInView = (blockEnd - blockStart).TotalDays;
             rectangle.Width = view.pixelsPerDay * numDaysInView;
-
-
         }
 
     }

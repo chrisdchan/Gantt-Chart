@@ -74,6 +74,10 @@ namespace Gaant_Chart
         public static void initUsers()
         {
             users = MainWindow.myDatabase.getUsers();
+            foreach(User user in users)
+            {
+                user.authorization = MainWindow.myDatabase.getAuthorization(user.rowid);
+            }
         }
 
         public static User getUser(int userId)

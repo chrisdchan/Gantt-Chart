@@ -14,14 +14,13 @@ namespace Gaant_Chart.Models
         public Boolean reqPass;
 
         public Boolean[] authorization;
-        public User(string name, string password, bool reqPass, Boolean[] authorization)
+        public User(string name, string password, bool reqPass)
         {
             this.name = name;
             this.password = password;
             this.reqPass = reqPass;
-            this.authorization = authorization;
         }
-        public User(long rowid, string name, string password, bool reqPass, Boolean[] authorization) : this(name, password, reqPass, authorization)
+        public User(long rowid, string name, string password, bool reqPass) : this(name, password, reqPass)
         {
             this.rowid = rowid;
         }
