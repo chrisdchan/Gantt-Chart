@@ -45,24 +45,23 @@ namespace Gaant_Chart.Models
         }
         private void sizeTask()
         {
-            if(numDays < 0)
+            if(numDays < 1)
             {
                 rectangle.Width = view.pixelsPerDay;
-
             }
             else
             {
                rectangle.Width = view.pixelsPerDay * numDays;
             }
-            cutOffIfNecessary();
         }
 
-        public void resize(CanvasView view)
+        public virtual void resize(CanvasView view)
         {
             this.view = view;
             setInView();
             sizeTask();
             setOffsets();
+            cutOffIfNecessary();
         }
 
         private void setOffsets()
@@ -71,6 +70,11 @@ namespace Gaant_Chart.Models
             leftOffset = view.LEFT_START_OFF + dayOffset * view.pixelsPerDay;
 
             topOffset = view.TOP_START_OFF + task.typeInd * view.TASK_HEIGHT;
+
+            if(numDays < 1)
+            {
+                leftOffset -= view.pixelsPerDay;
+            }
         }
 
         private void setInView()
@@ -86,24 +90,28 @@ namespace Gaant_Chart.Models
             }
         }
 
-
         private void cutOffIfNecessary()
         {
             if (!inView) return;
 
-            double numDaysInView;
+            DateTime blockStart = startDate;
+            DateTime blockEnd = endDate;
+
             if(startDate < view.startDate)
             {
-                numDaysInView = (endDate - view.startDate).TotalDays;
+                blockStart = view.startDate;
                 leftOffset = view.LEFT_START_OFF;
-                rectangle.Width = view.pixelsPerDay * numDaysInView;
             }
-            
+
             if(endDate > view.endDate)
             {
-                numDaysInView = (view.endDate - startDate).TotalDays;
-                rectangle.Width = view.pixelsPerDay * numDaysInView;
+                blockEnd = view.endDate;
             }
+
+            double numDaysInView = (blockEnd - blockStart).TotalDays;
+            rectangle.Width = view.pixelsPerDay * numDaysInView;
+
+
         }
 
     }
@@ -135,6 +143,12 @@ namespace Gaant_Chart.Models
 
             finishInit();
 
+            topOffset += (view.BLOCK_HEIGHT - BlOCK_HEIGHT) / 2;
+        }
+
+        public override void resize(CanvasView view)
+        {
+            base.resize(view);
             topOffset += (view.BLOCK_HEIGHT - BlOCK_HEIGHT) / 2;
         }
     }

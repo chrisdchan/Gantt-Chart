@@ -18,6 +18,12 @@ namespace Gaant_Chart.Models
         public double pixelsPerDay { get; set; }
         public double numDays { get; set; }
 
+        public double dayPixelOffset { get; set; }
+        public double weekPixelOffset { get; set; }
+
+        public double dayFractionOffset { get; set; }
+        public double weekFractionOffset { get; set; }
+
         public double LEFT_START_OFF = 225;
         public double TOP_START_OFF = 120;
         public double TASK_HEIGHT = 31.9;
@@ -44,6 +50,10 @@ namespace Gaant_Chart.Models
             this.numDays = numDays;
             this.startDate = startDate;
             modelStartDate = startDate;
+            dayPixelOffset = 0;
+            weekPixelOffset = 0;
+            dayFractionOffset = 0;
+            weekFractionOffset = 0;
             endDate = startDate.AddDays(numDays);
             pixelsPerDay = (RIGHT_OUTER_BORDER - LEFT_INNER_BORDER) / numDays;
         }
@@ -53,6 +63,19 @@ namespace Gaant_Chart.Models
         {
             this.startDate = startDate;
             endDate = startDate.AddDays(numDays);
+
+            computeOffsets();
+        }
+
+        private void computeOffsets()
+        {
+            double dayDifferemce = (startDate - modelStartDate).TotalDays;
+            dayFractionOffset = Math.Ceiling(dayDifferemce) - dayDifferemce;
+            dayPixelOffset = dayFractionOffset * pixelsPerDay;
+
+            double weekDifference = dayDifferemce / 7;
+            weekFractionOffset = (Math.Ceiling(weekDifference) - weekDifference) * 7;
+            weekPixelOffset = weekFractionOffset * pixelsPerDay;
         }
 
         public void addOneDay()
@@ -72,6 +95,7 @@ namespace Gaant_Chart.Models
                 this.numDays = numDays;
                 endDate = startDate.AddDays(numDays);
                 pixelsPerDay = (RIGHT_OUTER_BORDER - LEFT_INNER_BORDER) / numDays;
+                computeOffsets();
             }
         }
 

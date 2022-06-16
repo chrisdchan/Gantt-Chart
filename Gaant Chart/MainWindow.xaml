@@ -133,6 +133,9 @@
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Width="0" Height="0"
             PreviewMouseWheel="myCanvas_MouseWheel"
+            PreviewMouseDown="myCanvas_PreviewMouseDown"
+            PreviewMouseMove="myCanvas_PreviewMouseMove"
+            PreviewMouseUp="myCanvas_PreviewMouseUp"
             Name="myCanvas" Visibility="Hidden">
 
             <Label Foreground="#32EC00" FontSize="25"

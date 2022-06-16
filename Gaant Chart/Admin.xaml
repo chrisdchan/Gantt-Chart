@@ -16,13 +16,16 @@
 
         <StackPanel Grid.Column="0">
             <Button x:Name="navAddTeamMemberBtn" Content="Add Team Member"
-                    Click="navAddTeamMemberBtn_Click" Foreground="Gray"
+                    Click="navAddTeamMemberBtn_Click" Foreground="Black"
                     Width="100" FontSize="10"
                     Height="30" Margin="0, 5"/>
             <Button x:Name="navRemoveModelBtn" Content="Remove Model"
                     Click="navRemoveModelBtn_Click" Foreground="Gray"
                     FontSize="10" Width="100"
                     Height="30"/>
+            <Button x:Name="navEditUserBtn" Content="Edit Team Member"
+                    FontSize="10" Width="100" Height="30" Margin="0, 5"
+                    Click="navEditUserBtn_Click" Foreground="Gray"/>
         </StackPanel>
 
         <Grid x:Name="defaultGrid">
@@ -32,37 +35,43 @@
         <Grid Grid.Column="1" Background="AliceBlue" 
               x:Name="addTeamMemberGrid" Visibility="Visible">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="50"/>
-                <RowDefinition/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
 
-
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" 
+                        Grid.ColumnSpan="3" Margin="10, 0, 0, 0">
                 <Label Content="Full Name" VerticalAlignment="Center"/>
-                <TextBox x:Name="nameTxt" Width="100" Height="30" />
+                <TextBox x:Name="nameTxt" Width="100" Height="25" />
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0">
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0"
+                        Grid.ColumnSpan="3" Margin="10, 0, 0, 0">
                 <Label Content="Password" VerticalAlignment="Center"/>
-                <TextBox x:Name="passwordTxt" Width="100" Height="30"/>
+                <TextBox x:Name="passwordTxt" Width="100" Height="25" Margin="3, 0, 0, 0"/>
+                <CheckBox  Content="Require Password" x:Name="reqPassCheckBox" Margin="50, 0, 0, 0"
+                           VerticalAlignment="Center"/>
+
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" 
-                        Grid.Column="1" Grid.Row="2"
-                        Height="30">
-                <CheckBox VerticalAlignment="Center" x:Name="reqPassCheckBox"/>
-                <Label Content="Require Password On Login"/>
+            <Label Content="Authorization" Grid.Column="1" Grid.Row="2"/>
+
+            <StackPanel Grid.Row="3" Grid.Column="1" Background="White"
+                        x:Name="authorizationSP">
+                
             </StackPanel>
 
             <Button x:Name="createUserBtn" Click="createUserBtn_Click"
                     Content="Create New User"
-                    Grid.Row="3" Grid.Column="0"
+                    Grid.Row="4" Grid.Column="0"
                     Grid.ColumnSpan="2"
                     Height="30" Width="100"/>
 

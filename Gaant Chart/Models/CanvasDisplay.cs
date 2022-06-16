@@ -146,9 +146,13 @@ namespace Gaant_Chart.Models
         {
             dynamicLines.Clear();
 
-            for(int i = 1; i < view.numDays; i++)
+
+            for(int i = 0; i < view.numDays; i++)
             {
-                double x = view.LEFT_INNER_BORDER + i * view.pixelsPerDay;
+                double x = view.LEFT_INNER_BORDER + i * view.pixelsPerDay + view.dayPixelOffset;
+
+                if (view.dayPixelOffset == 0 && i == 0) continue;
+
 
                 if(isWeekSinceStart(i))
                 {
@@ -183,19 +187,18 @@ namespace Gaant_Chart.Models
 
             for(int i = 0; i <= numWeeks; i++)
             {
-                DateTime date = view.startDate.AddDays(i * 7);
+                DateTime date = view.startDate.AddDays(view.weekFractionOffset + i * 7);
                 CanvasElement dateLabel = new DateLabel(date);
-                dateLabel.leftoffset = view.DATE_LEFT_OFFSET + i * pixelsPerWeek;
+                dateLabel.leftoffset = view.DATE_LEFT_OFFSET + i * pixelsPerWeek + view.weekPixelOffset;
                 dateLabel.topoffset = view.DATE_TOP_OFFSET;
 
                 dates.Add(dateLabel);
             }
         }
 
-
         private Boolean isWeekSinceStart(int i)
         {
-            DateTime date = view.startDate.AddDays(i);
+            DateTime date = view.startDate.AddDays(i + view.dayFractionOffset);
             int numDays = (int)(date - view.modelStartDate).TotalDays;
             return (numDays % 7 == 0);
         }

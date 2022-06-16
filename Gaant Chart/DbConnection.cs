@@ -52,7 +52,7 @@ namespace Gaant_Chart
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Users (name TEXT NOT NULL UNIQUE, password TEXT, requirePassword INT)";
                 myCommand.ExecuteNonQuery();
 
-                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Authorization (userId INT NOT NULL, taskId INT NOT NULL)";
+                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Authorization (userId INT NOT NULL, taskTypeId INT NOT NULL)";
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS TaskIdentifiers (typeId INT NOT NULL UNIQUE, name TEXT NOT NULL UNIQUE)";
@@ -87,7 +87,7 @@ namespace Gaant_Chart
         public Model insertModel(String modelName, DateTime startDate)
         {
             this.OpenConnection();
-            int modelId;
+            long modelId;
             String dateString = startDate.ToString("MM-dd-yyyy");
 
             using (SQLiteCommand myCommand = new SQLiteCommand(myConnection))
@@ -100,7 +100,7 @@ namespace Gaant_Chart
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "SELECT last_insert_rowid() FROM Models";
-                modelId = (int)((long)myCommand.ExecuteScalar());
+                modelId = (long)myCommand.ExecuteScalar();
 
 
                 DateTime taskStart = startDate;
@@ -140,8 +140,29 @@ namespace Gaant_Chart
                 myCommand.Parameters.AddWithValue("@requirePassword", reqPass);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
+
+                insertUserAuthorization(user);
+
             }
             this.CloseConnection();
+        }
+        private void insertUserAuthorization(User user)
+        {
+            myCommand.CommandText = "SELECT last_insert_rowid() FROM USERS";
+            long rowid = (long)myCommand.ExecuteScalar();
+
+            for(int i = 0; i < data.allTasks.Length; i++)
+            {
+                if (user.authorization[i])
+                {
+                    myCommand.CommandText = "INSERT INTO Authorization(userId, taskTypeId) VALUES (@userId, @taskTypeId)";
+                    myCommand.Parameters.AddWithValue("@userId", rowid);
+                    myCommand.Parameters.AddWithValue("taskTypeId", i);
+                    myCommand.Prepare();
+                    myCommand.ExecuteNonQuery();
+                }
+            }
+
         }
 
         public int modelExists(String modelName)
@@ -207,14 +228,12 @@ namespace Gaant_Chart
             }
 
             return model;
-
         }
 
         private void addTasks(Model model)
         {
             addCompletedTasks(model);
             addNonCompletedTasks(model);
-
         }
 
         private void addCompletedTasks(Model model)
@@ -265,6 +284,38 @@ namespace Gaant_Chart
                     model.tasks[typeId].rowid = rowid;
                 }
             }
+        }
+
+        public User getUser(long rowid)
+        {
+            OpenConnection();
+            using (myCommand = new SQLiteCommand(myConnection))
+            {
+                myCommand.CommandText = "SELECT name, password, requirePassword FROM Users WHERE rowid = @rowid";
+                myCommand.Parameters.AddWithValue("@rowid", rowid);
+                myCommand.Prepare();
+            }
+            CloseConnection();
+        }
+
+        private Boolean[] getAuthorization(long userId)
+        {
+            Boolean[] authorization = Enumerable.Repeat(false, data.allTasks.Length).ToArray();
+
+            myCommand.CommandText = "SELECT taskTypeInd WHERE userId = @userId";
+            myCommand.Parameters.AddWithValue("userId", userId);
+            myCommand.Prepare();
+            using(myDataReader = myCommand.ExecuteReader())
+            {
+                while(myDataReader.Read())
+                {
+                    int typeId = (int)myDataReader["taskTypeId"];
+                    authorization[typeId] = true;
+                }
+            }
+
+            return authorization;
+
         }
 
         public List<User> getUsers()

@@ -61,7 +61,6 @@ namespace Gaant_Chart.Models
             return taskDisplay;
         }
 
-
         public void resize(CanvasView view)
         {
             foreach(TaskDisplay taskDisplay in plannedBlocks)

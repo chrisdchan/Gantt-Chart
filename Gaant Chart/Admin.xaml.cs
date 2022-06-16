@@ -37,25 +37,51 @@ namespace Gaant_Chart
         private void createUserBtn_Click(object sender, RoutedEventArgs e)
         {
             String name = nameTxt.Text;
-            String password = passwordTxt.Text;
-            Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
-
             if(name == String.Empty)
             {
                 MessageBox.Show("Name cannot be blank");
                 return;
             }
             
+            String password = passwordTxt.Text;
             if(password == String.Empty)
             {
                 MessageBox.Show("Password cannot be blank");
                 return;
             }
 
-            User tempUser = new User(name, password, reqPass);
+            Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
+            Boolean[] authorization = setAuthorization();
+
+            User tempUser = new User(name, password, reqPass, authorization);
 
             MainWindow.myDatabase.insertUser(tempUser);
             MessageBox.Show("User Added to Database");
+        }
+
+        private void initAuthorizationCheckBoxes()
+        {
+            foreach(String taskname  in data.allTasks)
+            {
+                CheckBox checkbox = new CheckBox();
+                checkbox.Content = taskname;
+                checkbox.IsChecked = true;
+                authorizationSP.Children.Add(checkbox);
+            }
+        }
+
+        private Boolean[] setAuthorization()
+        {
+            Boolean[] authorization = new bool[data.allTasks.Length];
+
+            for(int i = 0; i < authorizationSP.Children.Count; i++)
+            {
+                CheckBox checkbox = authorizationSP.Children[i] as CheckBox;
+                authorization[i] = (Boolean) checkbox.IsChecked;
+            }
+
+            return authorization;
+
         }
 
 
@@ -114,6 +140,11 @@ namespace Gaant_Chart
             MainWindow.myDatabase.deleteModel(modelId);
             unpopulateDeleteModelComboBox();
             populateDelteModelComoboBox();
+        }
+
+        private void navEditUserBtn_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

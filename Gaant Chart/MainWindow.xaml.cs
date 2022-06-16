@@ -552,5 +552,35 @@ namespace Gaant_Chart
             view.removeOneDay();
             updateCanvas();
         }
+
+        private Point referencePoint;
+        private DateTime referenceDate;
+        Boolean mouseCaptured = false;
+
+        private void myCanvas_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            referencePoint = e.GetPosition(myCanvas);
+            referenceDate = view.startDate;
+            mouseCaptured = true;
+        }
+
+        private void myCanvas_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+
+            if (referencePoint == null) return;
+            if (!mouseCaptured) return;
+
+            Point position = e.GetPosition(sender as IInputElement);
+
+            double dayOffset = (referencePoint.X - position.X) / view.pixelsPerDay;
+
+            view.changeStartDate(referenceDate.AddDays(dayOffset));
+            updateCanvas();
+         }
+
+        private void myCanvas_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            mouseCaptured = false;
+        }
     }
 }
