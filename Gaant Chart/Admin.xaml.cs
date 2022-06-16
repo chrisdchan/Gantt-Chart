@@ -31,6 +31,8 @@ namespace Gaant_Chart
             navAddTeamMemberBtn.Foreground = notToggleColor;
             navRemoveModelBtn.Foreground = notToggleColor;
 
+            initAuthorizationCheckBoxes();
+
             populateDelteModelComoboBox();
         }
 
@@ -64,6 +66,8 @@ namespace Gaant_Chart
             foreach(String taskname  in data.allTasks)
             {
                 CheckBox checkbox = new CheckBox();
+                checkbox.Height = 15;
+                checkbox.Margin = new Thickness(0, 5, 0, 5);
                 checkbox.Content = taskname;
                 checkbox.IsChecked = true;
                 authorizationSP.Children.Add(checkbox);
