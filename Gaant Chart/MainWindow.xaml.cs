@@ -39,6 +39,8 @@ namespace Gaant_Chart
         private List<CheckBox> taskBarCheckBoxes { get; set; }
         private List<TextBox> taskBarTextBoxes { get; set; }
 
+        private List<DockPanel> dockPanels { get; set; }
+
         private CanvasView view { get; set; }
 
         private  ModelDisplay modelDisplay { get; set; }
@@ -92,6 +94,7 @@ namespace Gaant_Chart
         private void displayCurrentUser()
         {
             userLabel.Content = "Hello " + data.currentUser.name;
+            setTaskBarWithUser();
         }
 
         private void setTaskComponentsReadOnly()
@@ -235,6 +238,13 @@ namespace Gaant_Chart
             renderDynamicElements();
 
             updateTaskBlocks();
+            updateSlider();
+        }
+
+        private void updateSlider()
+        {
+            double daysOffset = (view.startDate - view.modelStartDate).TotalDays;
+            slider.Value = 50 + (daysOffset / 180) * 50;
         }
 
         private void removeDynamicElements()
@@ -311,6 +321,7 @@ namespace Gaant_Chart
         {
             taskBarTextBoxes = new List<TextBox>();
             taskBarCheckBoxes = new List<CheckBox>();
+            dockPanels = new List<DockPanel>();
 
             int i = 0;
 
@@ -319,6 +330,7 @@ namespace Gaant_Chart
                 if(outerObj.GetType() != typeof(DockPanel)) continue;
 
                 DockPanel dockPanel = outerObj as DockPanel;
+                dockPanels.Add(dockPanel);
 
                 foreach(Object innerObj in dockPanel.Children)
                 {
@@ -337,66 +349,95 @@ namespace Gaant_Chart
                 i++;
             }
         }
+
         
         private void initTaskBarWithModel()
         {
-            resetTaskBar();
-            setTaskBar();
-            setNextCheckbox();
+            setTaskBarWithModel();
         }
 
-        private void setNextCheckbox()
+        private void resetTaskbarWithoutModel()
         {
-            SolidColorBrush completedColor = new SolidColorBrush(Colors.Black);
-            Model model = data.currentModel;
-            CheckBox nextCheckbox = taskBarCheckBoxes[model.lastCompletedTaskId + 1];
-            nextCheckbox.Foreground = completedColor;
-            nextCheckbox.IsHitTestVisible = true;
-        }
-
-        private void resetTaskBar()
-        {
-            SolidColorBrush unavalibleColor = new SolidColorBrush(Color.FromRgb(194, 194, 194));
-
+            SolidColorBrush uncompletedColor = new SolidColorBrush(Color.FromRgb(237, 241, 86));
             renderedChecks = false;
 
-            for(int i = 0; i < data.allTasks.Length; i++)
+            for (int i = 0; i < data.allTasks.Length; i++)
             {
+                DockPanel dockpanel = dockPanels[i];
                 CheckBox checkbox = taskBarCheckBoxes[i];
                 TextBox textbox = taskBarTextBoxes[i];
-
-                checkbox.Foreground = unavalibleColor;
+                dockpanel.Background = uncompletedColor;
                 checkbox.IsChecked = false;
                 checkbox.IsHitTestVisible = false;
-
                 textbox.Text = "";
             }
-
             renderedChecks = true;
+            
         }
 
-        private void setTaskBar()
+        private void setTaskBarWithModel()
         {
-            SolidColorBrush completedColor = new SolidColorBrush(Colors.Black);
-            Model model = data.currentModel;
+            SolidColorBrush completedColor = new SolidColorBrush(Color.FromRgb(230, 255, 230));
+            SolidColorBrush uncompletedColor = new SolidColorBrush(Color.FromRgb(237, 241, 86));
 
             renderedChecks = false;
 
+            Model model = data.currentModel;
+            if (model == null) return;
+
             for(int i = 0; i < data.allTasks.Length; i++)
             {
+                DockPanel dockpanel = dockPanels[i];
                 CheckBox checkbox = taskBarCheckBoxes[i];
                 TextBox textbox = taskBarTextBoxes[i];
                 Models.Task task = model.tasks[i];
 
-                if(task.completed)
+                if (task.completed)
                 {
-                    checkbox.IsChecked = true;
+                    dockpanel.Background = completedColor;
                     checkbox.IsHitTestVisible = true;
-                    checkbox.Foreground = completedColor;
-
+                    checkbox.IsChecked = true;
                     textbox.Text = task.user.name + " | " + task.endDate.ToString("M/d/y");
                 }
+                else
+                {
+                    dockpanel.Background = uncompletedColor;
+                    checkbox.IsChecked = false;
+                    checkbox.IsHitTestVisible = false;
+                    textbox.Text = "";
+                }
             }
+
+            CheckBox nextCheckbox = taskBarCheckBoxes[model.lastCompletedTaskId + 1];
+            DockPanel nextDockPanel = dockPanels[model.lastCompletedTaskId + 1];
+            nextCheckbox.IsHitTestVisible = true;
+
+            renderedChecks = true;
+        }
+
+        public void setTaskBarWithUser()
+        {
+            User user = data.currentUser;
+            if (user == null) return;
+
+            SolidColorBrush authorizedColor = new SolidColorBrush(Colors.Black);
+            SolidColorBrush unauthorizedColor = new SolidColorBrush(Color.FromRgb(123, 123, 123));
+
+            renderedChecks = false;
+            
+            for(int i = 0; i < data.allTasks.Length; i++)
+            {
+                CheckBox checkbox = taskBarCheckBoxes[i];
+                if (user.authorization[i])
+                {
+                    checkbox.Foreground = authorizedColor;
+                }
+                else
+                {
+                    checkbox.Foreground = unauthorizedColor;
+                }
+            }
+
             renderedChecks = true;
         }
 
@@ -523,14 +564,15 @@ namespace Gaant_Chart
             String password = adminTxt.Text;
             if(password.ToLower() == ADMIN_PASSWORD)
             {
+                adminTxt.Text = "";
                 Admin win2 = new Admin();
                 win2.ShowDialog();
             }
             else
             {
+                adminTxt.Text = "";
                 MessageBox.Show("Wrong Password");
             }
-
         }
 
         private void myCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -593,6 +635,20 @@ namespace Gaant_Chart
         private void saveBtn_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("No need to save, model is updated upon every change");
+        }
+
+        private void help_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("For inquiries contact cchan12@bidmc.harvard.edu");
+
+        }
+
+        private void clearModel_Click(object sender, RoutedEventArgs e)
+        {
+            resetTaskbarWithoutModel();
+            myCanvas.Visibility = Visibility.Hidden;
+            txtDisplayModelName.Text = "";
+
         }
     }
 }

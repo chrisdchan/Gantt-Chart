@@ -45,6 +45,8 @@ namespace Gaant_Chart.Models
         public double DATE_TOP_OFFSET = 40;
         public double DATE_LEFT_OFFSET = 210;
 
+
+
         public CanvasView(DateTime startDate, int numDays)
         {
             this.numDays = numDays;
