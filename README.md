@@ -1,5 +1,8 @@
 # Gantt Chart
 
-An app that documents the work flow of TTField Treatment
+## For inquiries on how to use the app, contact cchan12@bidmc.harvard.edu
 
-Currently still in production
+## Beth Israel Deaconess Medical Center Wong Lab
+
+This app tracks and documents the procedure of TTField modelling.
+
