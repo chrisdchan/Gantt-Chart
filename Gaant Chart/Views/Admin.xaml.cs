@@ -26,6 +26,10 @@ namespace Gaant_Chart
 
         private User editUser;
 
+
+        public Boolean deletedCurrentModel;
+        public Boolean updatedCurrentUser;
+
         public Admin()
         {
             InitializeComponent();
@@ -38,6 +42,10 @@ namespace Gaant_Chart
             initEditUserCombobox();
 
             populateDelteModelComoboBox();
+
+
+            deletedCurrentModel = false;
+            updatedCurrentUser = false;
         }
 
         private void createUserBtn_Click(object sender, RoutedEventArgs e)
@@ -64,6 +72,11 @@ namespace Gaant_Chart
             MainWindow.myDatabase.insertUser(user);
             nameTxt.Text = "";
             passwordTxt.Text = "";
+
+            foreach(CheckBox checkbox in authorizationSP.Children)
+            {
+                checkbox.IsChecked = true;
+            }
 
 
             data.users.Add(user.rowid, user);
@@ -181,6 +194,7 @@ namespace Gaant_Chart
             MainWindow.myDatabase.deleteModel(modelId);
             unpopulateDeleteModelComboBox();
             populateDelteModelComoboBox();
+            deletedCurrentModel = true;
         }
 
         private void initEditUserCombobox()
@@ -250,8 +264,10 @@ namespace Gaant_Chart
             editReqPassCheckbox.IsChecked = false;
             editUserCombobox.SelectedIndex = -1;
 
-
-
+            if(editUser == data.currentUser)
+            {
+                updatedCurrentUser = true;
+            }
         }
     }
 }

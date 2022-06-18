@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\App.xaml
-6-1753686552
+61635026994
 
-21-1745513021
+21897343501
 2777116095
-Admin.xaml;CompleteTask.xaml;LoadExistingModel.xaml;Login.xaml;MainWindow.xaml;RegNewModel.xaml;
+Views\Admin.xaml;Views\CompleteTask.xaml;Views\LoadExistingModel.xaml;Views\Login.xaml;MainWindow.xaml;Views\RegNewModel.xaml;
 
 False
 

@@ -13,10 +13,8 @@ C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Gaant Chart.csproj
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Gaant Chart.csproj.CoreCompileInputs.cache
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Gaant Chart.exe
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Gaant Chart.pdb
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\RegNewModel.g.cs
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\Newtonsoft.Json.dll
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\Newtonsoft.Json.xml
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\RegNewModel.baml
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Gaant Chart.csproj.CopyComplete
 C:\Users\chris\Source\Repos\Gaant-Chart\Gaant Chart\bin\Debug\Gaant Chart.exe.config
 C:\Users\chris\Source\Repos\Gaant-Chart\Gaant Chart\bin\Debug\Gaant Chart.exe
@@ -83,11 +81,13 @@ C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Memory.xml
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Numerics.Vectors.xml
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Gaant Chart.csproj.SuggestedBindingRedirects.cache
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\CompleteTask.g.cs
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\LoadExistingModel.g.cs
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Login.g.cs
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\CompleteTask.baml
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\LoadExistingModel.baml
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Login.baml
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Admin.g.cs
-C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Admin.baml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\Admin.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\CompleteTask.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\LoadExistingModel.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\Login.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\RegNewModel.g.cs
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\Admin.baml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\CompleteTask.baml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\LoadExistingModel.baml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\Login.baml
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Debug\Views\RegNewModel.baml

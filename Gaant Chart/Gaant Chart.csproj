@@ -94,17 +94,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Admin.xaml.cs">
+    <Compile Include="Views\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
     </Compile>
     <Compile Include="data.cs" />
-    <Compile Include="CompleteTask.xaml.cs">
+    <Compile Include="Views\CompleteTask.xaml.cs">
       <DependentUpon>CompleteTask.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LoadExistingModel.xaml.cs">
+    <Compile Include="Views\LoadExistingModel.xaml.cs">
       <DependentUpon>LoadExistingModel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Login.xaml.cs">
+    <Compile Include="Views\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\CanvasDisplay.cs" />
@@ -116,22 +116,22 @@
     <Compile Include="Models\Task.cs" />
     <Compile Include="Models\TaskDisplay.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="RegNewModel.xaml.cs">
+    <Compile Include="Views\RegNewModel.xaml.cs">
       <DependentUpon>RegNewModel.xaml</DependentUpon>
     </Compile>
-    <Page Include="Admin.xaml">
+    <Page Include="Views\Admin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CompleteTask.xaml">
+    <Page Include="Views\CompleteTask.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LoadExistingModel.xaml">
+    <Page Include="Views\LoadExistingModel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Login.xaml">
+    <Page Include="Views\Login.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -148,7 +148,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="RegNewModel.xaml">
+    <Page Include="Views\RegNewModel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

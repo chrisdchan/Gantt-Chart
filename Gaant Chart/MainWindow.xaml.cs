@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Data.SQLite;
 using Gaant_Chart.Models;
+using System.Diagnostics;
 
 namespace Gaant_Chart
 {
@@ -49,7 +50,7 @@ namespace Gaant_Chart
         private Boolean renderedChecks = true;
 
 
-        private String ADMIN_PASSWORD = "physics123";
+        private String ADMIN_PASSWORD = "physics123!";
 
         public MainWindow()
         {
@@ -93,7 +94,23 @@ namespace Gaant_Chart
 
         private void displayCurrentUser()
         {
-            userLabel.Content = "Hello " + data.currentUser.name;
+            DateTime now = DateTime.Now;
+
+            String greeting = "";
+            if(now.TimeOfDay.TotalHours < 12)
+            {
+                greeting = "Good Morning";
+            }
+            else if(now.TimeOfDay.TotalHours < 18)
+            {
+                greeting = "Good Afternoon";
+            }
+            else
+            {
+                greeting = "Good Evening";
+            }
+
+            userLabel.Content = "Current User: " +  greeting + " " + data.currentUser.name;
             setTaskBarWithUser();
         }
 
@@ -374,6 +391,24 @@ namespace Gaant_Chart
             renderedChecks = true;
             
         }
+        
+        private void resetTaskBarWithoutUser()
+        {
+            User user = data.currentUser;
+            if (user == null) return;
+
+            SolidColorBrush authorizedColor = new SolidColorBrush(Colors.Black);
+            SolidColorBrush unauthorizedColor = new SolidColorBrush(Color.FromRgb(123, 123, 123));
+
+            renderedChecks = false;
+            
+            for(int i = 0; i < data.allTasks.Length; i++)
+            {
+                CheckBox checkbox = taskBarCheckBoxes[i];
+                checkbox.Foreground = authorizedColor;
+            }
+            renderedChecks = true;
+        }
 
         private void setTaskBarWithModel()
         {
@@ -409,7 +444,6 @@ namespace Gaant_Chart
             }
 
             CheckBox nextCheckbox = taskBarCheckBoxes[model.lastCompletedTaskId + 1];
-            DockPanel nextDockPanel = dockPanels[model.lastCompletedTaskId + 1];
             nextCheckbox.IsHitTestVisible = true;
 
             renderedChecks = true;
@@ -541,6 +575,11 @@ namespace Gaant_Chart
 
         private void btnEditCurrentModel_Click(object sender, RoutedEventArgs e)
         {
+            if(data.users.Count == 0)
+            {
+                MessageBox.Show("No Users Exist: Initialize Users in Admin Settings");
+                return;
+            }
             Login win2 = new Login();
             win2.ShowDialog();
             if (!win2.earlyExit) displayCurrentUser();
@@ -567,6 +606,18 @@ namespace Gaant_Chart
                 adminTxt.Text = "";
                 Admin win2 = new Admin();
                 win2.ShowDialog();
+                if(win2.updatedCurrentUser)
+                {
+                    resetTaskBarWithoutUser();
+                    userLabel.Content = "";
+                }
+
+                if(win2.deletedCurrentModel)
+                {
+                    resetTaskbarWithoutModel();
+                    myCanvas.Visibility = Visibility.Hidden;
+                    txtDisplayModelName.Text = "";
+                }
             }
             else
             {
@@ -639,8 +690,11 @@ namespace Gaant_Chart
 
         private void help_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("For inquiries contact cchan12@bidmc.harvard.edu");
-
+            System.Diagnostics.Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://github.com/chrisdchan/Gantt-Chart/blob/main/README.md",
+                UseShellExecute = true
+            });
         }
 
         private void clearModel_Click(object sender, RoutedEventArgs e)
