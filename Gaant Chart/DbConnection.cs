@@ -128,7 +128,7 @@ namespace Gaant_Chart
 
         public void insertUser(User user)
         {
-            this.OpenConnection();
+            OpenConnection();
 
             int reqPass = (user.reqPass) ? 1 : 0;
 
@@ -141,22 +141,25 @@ namespace Gaant_Chart
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
 
+                myCommand.CommandText = "SELECT last_insert_rowid() FROM USERS";
+                long rowid = (long)myCommand.ExecuteScalar();
+
+                user.rowid = rowid;
+
                 insertUserAuthorization(user);
 
             }
-            this.CloseConnection();
+            CloseConnection();
         }
         private void insertUserAuthorization(User user)
         {
-            myCommand.CommandText = "SELECT last_insert_rowid() FROM USERS";
-            long rowid = (long)myCommand.ExecuteScalar();
 
             for(int i = 0; i < data.allTasks.Length; i++)
             {
                 if (user.authorization[i])
                 {
                     myCommand.CommandText = "INSERT INTO Authorization(userId, taskTypeId) VALUES (@userId, @taskTypeId)";
-                    myCommand.Parameters.AddWithValue("@userId", rowid);
+                    myCommand.Parameters.AddWithValue("@userId", user.rowid);
                     myCommand.Parameters.AddWithValue("taskTypeId", i);
                     myCommand.Prepare();
                     myCommand.ExecuteNonQuery();
@@ -257,11 +260,21 @@ namespace Gaant_Chart
             return model;
         }
 
-        public List<User> getUsers()
+        public Dictionary<long, User> getUsers()
         {
-            List<User> users = new List<User>();
+            Dictionary<long, User> users = getTempUsers();
+            foreach(var item in users)
+            {
+                User user = item.Value;
+                user.authorization = MainWindow.myDatabase.getAuthorization(user.rowid);
+            }
+            return users;
+        }
+        private Dictionary<long, User> getTempUsers()
+        {
+            Dictionary<long, User> users = new Dictionary<long, User>();
 
-            this.OpenConnection();
+            OpenConnection();
             using(SQLiteCommand myCommand = new SQLiteCommand(myConnection))
             {
                 myCommand.CommandText = "SELECT rowid, Name, password, requirePassword FROM Users";
@@ -276,16 +289,15 @@ namespace Gaant_Chart
 
                         Boolean reqPass = (reqPassInt != 0);
 
-                        users.Add(new User(rowid, name, password, reqPass));
+                        users.Add(rowid, new User(rowid, name, password, reqPass));
                     }
                 }
             }
-            this.CloseConnection();
+            CloseConnection();
 
             return users;
         }
-
-        public Boolean[] getAuthorization(long userid)
+        private Boolean[] getAuthorization(long userid)
         {
             Boolean[] result = new Boolean[data.allTasks.Length];
 
@@ -304,6 +316,7 @@ namespace Gaant_Chart
                     }
                 }
             }
+            CloseConnection();
             return result;
         }
         
@@ -311,7 +324,7 @@ namespace Gaant_Chart
         {
             List<ModelTag> modelTags = new List<ModelTag>();
 
-            this.OpenConnection();
+            OpenConnection();
             using(SQLiteCommand myCommand = new SQLiteCommand(myConnection))
             {
                 myCommand.CommandText = "SELECT rowid, name from Models";
@@ -326,6 +339,7 @@ namespace Gaant_Chart
                     }
                 }
             }
+            CloseConnection();
 
             return modelTags;
         }
@@ -385,25 +399,46 @@ namespace Gaant_Chart
                     myCommand.ExecuteNonQuery();
                 }
             }
-            
             CloseConnection();
-
-
-
-
         }
+
+        public void updateUser(User user)
+        {
+            OpenConnection();
+            using(myCommand = new SQLiteCommand(myConnection))
+            {
+                myCommand.CommandText = "UPDATE Users SET password = @password, requirePassword = @reqPass WHERE rowid = @rowid";
+                myCommand.Parameters.AddWithValue("@password", user.password);
+                myCommand.Parameters.AddWithValue("@reqPass", user.reqPass);
+                myCommand.Parameters.AddWithValue("@rowid", user.rowid);
+                myCommand.Prepare();
+                myCommand.ExecuteNonQuery();
+
+                deleteAuthorizations(user);
+                insertUserAuthorization(user);
+            }
+            CloseConnection();
+        }
+
+        private void deleteAuthorizations(User user)
+        {
+            myCommand.CommandText = "DELETE FROM Authorization WHERE userid = @userid";
+            myCommand.Parameters.AddWithValue("@userid", user.rowid);
+            myCommand.Prepare();
+            myCommand.ExecuteNonQuery();
+        }
+
         public void deleteModel(int modelId)
         {
-            this.OpenConnection();
+            OpenConnection();
             using(myCommand = new SQLiteCommand(myConnection))
             {
                 deleteModelFromModelDB(modelId);
                 deleteModelFromTasksDB(modelId);
             }
-            this.CloseConnection();
+            CloseConnection();
 
         }
-
         private void deleteModelFromModelDB(int modelId)
         {
             myCommand.CommandText = "DELETE FROM Models WHERE rowid = @rowid";
@@ -411,7 +446,6 @@ namespace Gaant_Chart
             myCommand.Prepare();
             myCommand.ExecuteNonQuery();
         }
-
         private void deleteModelFromTasksDB(int modelId)
         {
             myCommand.CommandText = "DELETE FROM Tasks WHERE modelId = @modelId";
@@ -427,7 +461,6 @@ namespace Gaant_Chart
                 myConnection.Open();
             }
         }
-
         private void CloseConnection()
         {
             if(myConnection.State != System.Data.ConnectionState.Closed)

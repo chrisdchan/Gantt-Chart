@@ -28,6 +28,7 @@ namespace Gaant_Chart
             InitializeComponent();
             earlyExit = true;
             setSubmitStatus(false);
+            tbModelID.Focus();
         }
 
         private void btnCreateModel_Click(object sender, RoutedEventArgs e)

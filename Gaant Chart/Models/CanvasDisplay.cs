@@ -192,7 +192,11 @@ namespace Gaant_Chart.Models
                 dateLabel.leftoffset = view.DATE_LEFT_OFFSET + i * pixelsPerWeek + view.weekPixelOffset;
                 dateLabel.topoffset = view.DATE_TOP_OFFSET;
 
-                dates.Add(dateLabel);
+                if(dateLabel.leftoffset <= view.RIGHT_OUTER_BORDER + 90)
+                {
+                    dates.Add(dateLabel);
+
+                }
             }
         }
 

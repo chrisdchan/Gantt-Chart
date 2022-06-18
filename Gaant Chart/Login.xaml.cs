@@ -20,15 +20,12 @@ namespace Gaant_Chart
     /// </summary>
     public partial class Login : Window
     {
-        List<User> users { get; set; }
-
         public Boolean earlyExit { get; set; }
 
         public Login()
         {
             InitializeComponent();
 
-            users = MainWindow.myDatabase.getUsers();
             displayUsers();
             earlyExit = true;
 
@@ -36,8 +33,9 @@ namespace Gaant_Chart
 
         private void displayUsers()
         {
-            foreach(User user in users)
+            foreach(var item in data.users)
             {
+                User user = item.Value;
                 ComboBoxItem newComboBoxItem = new ComboBoxItem();
                 newComboBoxItem.Content = user.name;
                 newComboBoxItem.Tag = user;

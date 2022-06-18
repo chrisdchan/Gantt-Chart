@@ -44,11 +44,7 @@ namespace Gaant_Chart
             ("Physics Modeling and Reports", 16)
         };
 
-        // Tasks that are completed
-        public static Dictionary<String, (String, String, String)> completedTasks { get; set; }
-        public static Dictionary<String, int> taskStartDelayPlanned { get; set; }
-
-        private static List<User> users { get; set; }
+        public static Dictionary<long, User> users { get; set; }
 
         public static int[] taskSettingsDuration =
         {
@@ -74,10 +70,6 @@ namespace Gaant_Chart
         public static void initUsers()
         {
             users = MainWindow.myDatabase.getUsers();
-            foreach(User user in users)
-            {
-                user.authorization = MainWindow.myDatabase.getAuthorization(user.rowid);
-            }
         }
 
         public static User getUser(int userId)

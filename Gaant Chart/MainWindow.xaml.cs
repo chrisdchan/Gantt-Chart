@@ -46,23 +46,8 @@ namespace Gaant_Chart
 
         private Boolean renderedChecks = true;
 
-        // double WIDTH = 850;
-        // double HEIGHT = 592;
 
-        /*
-        int topOffset = 120;
-
-        int dateX = 210;
-        int verticalLabelSpace = 32;
-
-        int labelLeftMargin = 20;
-
-        int leftOuterBorder = -80;
-        int leftInnerBorder = 125;
-        int rightOuterBorder = 713;
-        int topBorder = 15;
-        int bottomBorder = 465;
-        */
+        private String ADMIN_PASSWORD = "physics123";
 
         public MainWindow()
         {
@@ -71,6 +56,11 @@ namespace Gaant_Chart
             // create database connection
             myDatabase = new DbConnection();
             view = new CanvasView(DateTime.Now, DEFAULT_DAYS_IN_VIEW);
+
+
+            // Cache user data from database
+            data.initUsers();
+
 
             // set up the canvas
 
@@ -433,6 +423,15 @@ namespace Gaant_Chart
                 return;
             }
 
+            User user = data.currentUser;
+            if (!user.authorization[taskTypeId])
+            {
+                MessageBox.Show("User is not authorized to complete task");
+                checkbox.IsChecked = false;
+                return;
+            }
+
+
             Models.Task task = model.tasks[taskTypeId];
 
             CompleteTask win2 = new CompleteTask(task);
@@ -521,8 +520,16 @@ namespace Gaant_Chart
 
         private void adminBtn_Click(object sender, RoutedEventArgs e)
         {
-            Admin win2 = new Admin();
-            win2.ShowDialog();
+            String password = adminTxt.Text;
+            if(password.ToLower() == ADMIN_PASSWORD)
+            {
+                Admin win2 = new Admin();
+                win2.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Wrong Password");
+            }
 
         }
 
@@ -581,6 +588,11 @@ namespace Gaant_Chart
         private void myCanvas_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             mouseCaptured = false;
+        }
+
+        private void saveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("No need to save, model is updated upon every change");
         }
     }
 }

@@ -45,14 +45,7 @@ namespace Gaant_Chart.Models
         }
         private void sizeTask()
         {
-            if(numDays < 1)
-            {
-                rectangle.Width = view.pixelsPerDay;
-            }
-            else
-            {
-               rectangle.Width = view.pixelsPerDay * numDays;
-            }
+            rectangle.Width = view.pixelsPerDay * numDays;
         }
 
         public virtual void resize(CanvasView view)
@@ -70,11 +63,6 @@ namespace Gaant_Chart.Models
             leftOffset = view.LEFT_START_OFF + dayOffset * view.pixelsPerDay;
 
             topOffset = view.TOP_START_OFF + task.typeInd * view.TASK_HEIGHT;
-
-            if(numDays < 1 && task.typeInd != 0)
-            {
-                leftOffset -= view.pixelsPerDay;
-            }
         }
 
         private void setInView()

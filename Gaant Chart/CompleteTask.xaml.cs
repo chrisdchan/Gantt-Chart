@@ -39,6 +39,7 @@ namespace Gaant_Chart
             this.task = task;
 
             earlyExit = true;
+            dateTbx.Focus();
 
         }
 
@@ -48,10 +49,15 @@ namespace Gaant_Chart
             {
                 return model.startDate;
             }
-            else
+
+            DateTime startDate = model.tasks[model.lastCompletedTaskId].endDate;
+
+            if((endDate - startDate).TotalDays < 0.5)
             {
-                return model.tasks[model.lastCompletedTaskId].endDate;
+                startDate = model.tasks[model.lastCompletedTaskId].startDate;
             }
+
+            return startDate;
         }
 
         private void completeTaskBtn_Click(object sender, RoutedEventArgs e)
@@ -73,23 +79,35 @@ namespace Gaant_Chart
             }
             else if(!DateTime.TryParse(dateString, out endDate))
             {
-                MessageBox.Show("Invalid Date Form, please use MM-dd-yyyy");
+                MessageBox.Show("Invalid Date Form, please use MM-dd-yy hh:mm");
                 dateTbx.Text = "";
                 return;
             }
 
             if(task.typeInd == 0 && endDate <= model.startDate)
             {
-                MessageBox.Show("INVALID DATE: Cannot complete a task before the model start date");
+                MessageBox.Show("INVALID DATE: Cannot complete a task before the model start date (" + model.startDate.ToString() + ")");
                 dateTbx.Text = "";
                 return;
             }
 
             if(task.typeInd != 0 && endDate < model.tasks[task.typeInd - 1].endDate)
             {
-                MessageBox.Show("INVALID DATE: Cannot complete a task before a prerequisite task was completed");
+                DateTime lastCompleted = model.tasks[task.typeInd - 1].endDate;
+                MessageBox.Show("INVALID DATE: Cannot complete a task before a prerequisite task was completed (" + lastCompleted.ToString() + ")");
                 dateTbx.Text = "";
                 return;
+            }
+
+            if(endDate.TimeOfDay.TotalSeconds == 0)
+            {
+                MessageBoxResult res = System.Windows.MessageBox.Show("No time is specified would you like to default to 12:00 AM?", "Time Missing", MessageBoxButton.YesNo);
+                if(res == MessageBoxResult.No)
+                {
+                    dateTbx.Text = dateString;
+                    dateTbx.Focus();
+                    return;
+                }
             }
 
             completeTaskLocally();
