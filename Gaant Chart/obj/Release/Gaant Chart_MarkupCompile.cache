@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Release\
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\obj\Release\
 Gaant_Chart
 none
 false
 TRACE
-C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\App.xaml
-5665110207
+C:\Users\18457\source\repos\Gaant Chart\Gaant Chart\App.xaml
+61635026994
 
-14-1368061964
-271236402802
-CompleteTask.xaml;LoadExistingModel.xaml;Login.xaml;MainWindow.xaml;RegNewModel.xaml;
+22-1841888807
+2777116095
+Views\Admin.xaml;Views\CompleteTask.xaml;Views\LoadExistingModel.xaml;Views\Login.xaml;MainWindow.xaml;Views\RegNewModel.xaml;
 
 True
 
