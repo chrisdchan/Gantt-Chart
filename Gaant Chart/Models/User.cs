@@ -17,7 +17,7 @@ namespace Gaant_Chart.Models
 
         Boolean active;
 
-        String category;
+        public String category { get; set; }
 
         public User(string name, string password, bool reqPass)
         {

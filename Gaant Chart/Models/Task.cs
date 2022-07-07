@@ -11,7 +11,10 @@ namespace Gaant_Chart.Models
         public long rowid { get; set; }
         public readonly String name;
         public int typeInd { get; set; }
-        public User user { get; set; }
+        public long userCompletedId { get; set; }
+        public long userAssignedId { get; set; }
+
+
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
         public DateTime plannedStartDate { get; set; }
@@ -33,16 +36,16 @@ namespace Gaant_Chart.Models
 
             this.startDate = DateTime.MinValue;
             this.endDate = DateTime.MinValue;
-            this.user = null;
-
+            userCompletedId = -1;
+            userAssignedId = -1;
             rowid = -1;
         }
 
-        public void complete(TaskCompletor taskCompletor)
+        public void complete(long userId, DateTime start, DateTime end)
         {
-            this.user = taskCompletor.user;
-            this.startDate = taskCompletor.startDate;
-            this.endDate = taskCompletor.endDate;
+            userCompletedId = userId;
+            startDate = start;
+            endDate = end;
 
             completed = true;
         }
@@ -52,14 +55,12 @@ namespace Gaant_Chart.Models
             startDate = DateTime.MinValue;
             endDate = DateTime.MinValue;
             completed = false;
-            user = null;
+            userCompletedId = -1;
         }
 
-        public void remove()
+        public void assign(long userId)
         {
-            this.user = null;
-            this.startDate = DateTime.MinValue;
-            this.endDate = DateTime.MinValue;
+            userAssignedId = userId;
         }
      }
 

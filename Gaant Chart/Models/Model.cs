@@ -33,19 +33,10 @@ namespace Gaant_Chart.Models
             }
         }
 
-        public void removeTask(int taskId)
+        public void completeTask(int taskTypeId, long userId, DateTime startDate, DateTime endDate)
         {
-            for(int i = lastCompletedTaskId; i >= taskId; i--)
-            {
-                tasks[i].remove();
-            }
-            lastCompletedTaskId = taskId - 1;
-        }
-
-        public void completeTask(TaskCompletor taskCompletor)
-        {
-            tasks[taskCompletor.taskTypeId].complete(taskCompletor);
-            lastCompletedTaskId = taskCompletor.taskTypeId;
+            tasks[taskTypeId].complete(userId, startDate, endDate);
+            lastCompletedTaskId = taskTypeId;
         }
 
         public void uncompleteTask(int taskTypeId)
@@ -77,20 +68,20 @@ namespace Gaant_Chart.Models
 
     public class TaskCompletor
     {
-        public User user { get; set; }
+        public long userId { get; set; }
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
 
         public int taskTypeId { get; set; }
 
-        public TaskCompletor(int taskTypeId, User user, DateTime startDate, DateTime endDate)
+        public TaskCompletor(int taskTypeId, long userId, DateTime startDate, DateTime endDate)
         {
-            this.user = user;
+            this.userId = userId;
             this.startDate = startDate;
             this.endDate = endDate;
             this.taskTypeId = taskTypeId;
         }
 
-       public TaskCompletor(Task task, User user, DateTime startDate, DateTime endDate) : this(task.typeInd, user, startDate, endDate) { }
+       public TaskCompletor(Task task, long userId, DateTime startDate, DateTime endDate) : this(task.typeInd, userId, startDate, endDate) { }
     }
 }

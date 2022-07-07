@@ -15,6 +15,12 @@ using System.Windows.Shapes;
 using System.Data.SQLite;
 using Gaant_Chart.Models;
 using System.Diagnostics;
+using System.Windows.Forms;
+
+using CheckBox = System.Windows.Controls.CheckBox;
+using TextBox = System.Windows.Controls.TextBox;
+using Label = System.Windows.Controls.Label;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Gaant_Chart
 {
@@ -38,7 +44,7 @@ namespace Gaant_Chart
         private const int DEFAULT_DAYS_IN_VIEW = 28;
 
         private List<CheckBox> taskBarCheckBoxes { get; set; }
-        private List<TextBox> taskBarTextBoxes { get; set; }
+        private List <TextBox> taskBarTextBoxes { get; set; }
 
         private List<DockPanel> dockPanels { get; set; }
 
@@ -48,7 +54,6 @@ namespace Gaant_Chart
         private CanvasDisplay canvasDisplay { get; set; }
 
         private Boolean renderedChecks = true;
-
 
         private String ADMIN_PASSWORD = "physics123!";
 
@@ -134,13 +139,13 @@ namespace Gaant_Chart
             {
                 CheckBox checkbox = new CheckBox();
                 checkbox.Content = taskname;
-                checkbox.Checked += new RoutedEventHandler(CheckBox_Checked);
-                checkbox.Unchecked += new RoutedEventHandler(CheckBox_Unchecked);
+                checkbox.Checked += new RoutedEventHandler(System_Checked);
+                checkbox.Unchecked += new RoutedEventHandler(System_Unchecked);
 
                 TextBox textbox = new TextBox();
                 textbox.Width = 100;
                 textbox.Margin = new Thickness(0, 0, 5, 0);
-                textbox.HorizontalAlignment = HorizontalAlignment.Right;
+                textbox.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
                 textbox.Background = new SolidColorBrush(Colors.LightGray);
 
                 DockPanel dockpanel = new DockPanel();
@@ -432,7 +437,7 @@ namespace Gaant_Chart
                     dockpanel.Background = completedColor;
                     checkbox.IsHitTestVisible = true;
                     checkbox.IsChecked = true;
-                    textbox.Text = task.user.name + " | " + task.endDate.ToString("M/d/y");
+                    textbox.Text = data.getUser(task.userCompletedId).name + " | " + task.endDate.ToString("M/d/y");
                 }
                 else
                 {
@@ -475,7 +480,7 @@ namespace Gaant_Chart
             renderedChecks = true;
         }
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        private void System_Checked(object sender, RoutedEventArgs e)
         {
             CheckBox checkbox = sender as CheckBox;
             int taskTypeId = (int)checkbox.Tag;
@@ -493,7 +498,7 @@ namespace Gaant_Chart
 
             if(!isCurrentUser())
             {
-                MessageBox.Show("No User Logged In");
+                System.Windows.MessageBox.Show("No User Logged In");
                 checkbox.IsChecked = false;
                 return;
             }
@@ -523,12 +528,12 @@ namespace Gaant_Chart
             }
         }
 
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        private void System_Unchecked(object sender, RoutedEventArgs e)
         {
 
             if (!renderedChecks) return;
 
-            CheckBox checkbox = sender as CheckBox;
+            CheckBox checkbox = sender as CheckBox; 
             int taskTypeId = (int)checkbox.Tag;
             Model model = data.currentModel;
             Models.Task task = model.tasks[taskTypeId];
@@ -537,8 +542,8 @@ namespace Gaant_Chart
             {
                 String lastTaskName = (task.typeInd == 0) ? "NONE" : model.tasks[task.typeInd - 1].name;
 
-                MessageBoxResult res = MessageBox.Show("WARNING: The last saved task will be " + lastTaskName, "Undo Task?", MessageBoxButton.YesNo);
-                if(res == MessageBoxResult.Yes)
+                System.Windows.MessageBoxResult res = MessageBox.Show("WARNING: The last saved task will be " + lastTaskName, "Undo Task?", MessageBoxButton.YesNo);
+                if(res == System.Windows.MessageBoxResult.Yes)
                 {
                     model.uncompleteTask(taskTypeId);
                     myDatabase.updateModel(model);
@@ -577,7 +582,7 @@ namespace Gaant_Chart
         {
             if(data.users.Count == 0)
             {
-                MessageBox.Show("No Users Exist: Initialize Users in Admin Settings");
+                System.Windows.MessageBox.Show("No Users Exist: Initialize Users in Admin Settings");
                 return;
             }
             Login win2 = new Login();
@@ -595,7 +600,7 @@ namespace Gaant_Chart
                 win2.ShowDialog();
                 if (!win2.earlyExist) displayCurrentModel();
             }
-            else MessageBox.Show("No Models Created");
+            else System.Windows.MessageBox.Show("No Models Created");
         }
 
         private void adminBtn_Click(object sender, RoutedEventArgs e)
@@ -622,7 +627,7 @@ namespace Gaant_Chart
             else
             {
                 adminTxt.Text = "";
-                MessageBox.Show("Wrong Password");
+                System.Windows.MessageBox.Show("Wrong Password");
             }
         }
 
@@ -664,7 +669,7 @@ namespace Gaant_Chart
             mouseCaptured = true;
         }
 
-        private void myCanvas_PreviewMouseMove(object sender, MouseEventArgs e)
+        private void myCanvas_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
 
             if (referencePoint == null) return;
@@ -685,7 +690,7 @@ namespace Gaant_Chart
 
         private void saveBtn_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("No need to save, model is updated upon every change");
+            System.Windows.MessageBox.Show("No need to save, model is updated upon every change");
         }
 
         private void help_Click(object sender, RoutedEventArgs e)
@@ -703,6 +708,21 @@ namespace Gaant_Chart
             myCanvas.Visibility = Visibility.Hidden;
             txtDisplayModelName.Text = "";
 
+        }
+
+        private void importBtn_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "CSV (*.csv)|*.csv, Excel (*.xlsm)|*.xlsm";
+            openFileDialog.Title = "Select sheet";
+            openFileDialog.Multiselect = false;
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                String filename = openFileDialog.FileName;
+                ExcelReader excelReader = new ExcelReader(filename);
+                
+            }
         }
     }
 }

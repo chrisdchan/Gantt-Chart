@@ -81,7 +81,7 @@ namespace Gaant_Chart
             users = MainWindow.myDatabase.getUsers();
         }
 
-        public static User getUser(int userId)
+        public static User getUser(long userId)
         {
             checkUsersInitialied();
             return users[userId];

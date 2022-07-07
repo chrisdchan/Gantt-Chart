@@ -31,6 +31,12 @@ namespace Gaant_Chart.Models
 
         private Boolean existingUserError = false;
         private Dictionary<String, User> initalsUserDict;
+
+        private IWorksheet mainWs;
+
+        private Model model;
+
+
         public ExcelReader(String pathname)
         {
             using (ExcelEngine excelEngine = new ExcelEngine())
@@ -41,7 +47,7 @@ namespace Gaant_Chart.Models
 
                 IWorkbook workbook = application.Workbooks.Open(pathname);
 
-                IWorksheet mainWs = workbook.Worksheets[0];
+                mainWs = workbook.Worksheets[0];
                 IWorksheet nameWs = workbook.Worksheets[1];
 
                 String modelName = mainWs.Range["B2"].Text;
@@ -51,10 +57,49 @@ namespace Gaant_Chart.Models
 
                 extractAndAddUsers(nameWs);
 
+                if(MainWindow.myDatabase.getModelId(modelName) != -1)
+                {
+                    model = MainWindow.myDatabase.getModel(modelName);
+                }
+                else
+                {
+                    model = MainWindow.myDatabase.insertModel(modelName, modelStartDate);
+                    addCompletedTasks();
+                    MainWindow.myDatabase.updateModel(model);
+                }
             }
         }
-        public void generateModel()
-        { 
+
+        private void addCompletedTasks()
+        {
+            for(int i = 0; i < data.allTasks.Length; i++)
+            {
+                int row = taskExcelRows[i];
+                String userInitals = mainWs.Range[row, 3].Text;
+                String plannedStartString = mainWs.Range[row, 5].Text;
+                String plannedEndString = mainWs.Range[row, 6].Text;
+                String startDateString = mainWs.Range[row, 8].Text;
+                String endDateString = mainWs.Range[row, 9].Text;
+
+                User user = initalsUserDict[userInitals];
+
+                DateTime plannedStartDate, plannedEndDate, startDate, endDate;
+                if (!DateTime.TryParse(plannedStartString, out plannedStartDate)) invalidDateError();
+                if (!DateTime.TryParse(plannedEndString, out plannedEndDate)) invalidDateError();
+
+                if(!String.IsNullOrEmpty(startDateString) && !String.IsNullOrEmpty(endDateString))
+                {
+                    if (!DateTime.TryParse(startDateString, out startDate)) invalidDateError();
+                    if(!DateTime.TryParse(endDateString, out endDate)) invalidDateError();
+
+                    model.tasks[i].complete(user.rowid, startDate, endDate);
+                }
+            }
+        }
+
+        private void invalidDateError()
+        {
+            throw new Exception("Invalid Date");
         }
 
         private void extractAndAddUsers(IWorksheet nameWs)
@@ -82,11 +127,9 @@ namespace Gaant_Chart.Models
                 }
                 else
                 {
-                    if(!user.authorization.SequenceEqual(data.categoryAuthorization[category]))
-                    {
-                        user = data.getUser(name);
-                    }
+                    user = data.getUser(name);
                 }
+
                 initalsUserDict.Add(initals, user);
             }
 
