@@ -92,3 +92,8 @@ C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\Views\CompleteTask
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\Views\LoadExistingModel.baml
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\Views\Login.baml
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\Views\RegNewModel.baml
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\Syncfusion.Compression.Base.dll
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\Syncfusion.Licensing.dll
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\Syncfusion.XlsIO.Base.dll
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\Syncfusion.Compression.Base.xml
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\Syncfusion.XlsIO.Base.xml

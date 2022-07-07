@@ -185,8 +185,33 @@ namespace Gaant_Chart
                 }
             }
 
+            this.CloseConnection();
+
             return modelId;
         }
+
+        /*
+        public Boolean userExists(String userName)
+        {
+            Boolean exists;
+
+            OpenConnection();
+            using(myCommand = new SQLiteCommand(myConnection))
+            {
+                myCommand.CommandText = "SELECT rowId FROM Users WHERE name = @name";
+                myCommand.Parameters.AddWithValue("@name", userName);
+                myCommand.Prepare();
+
+                using(myDataReader = myCommand.ExecuteReader())
+                {
+                    exists = myDataReader.Read();
+                }
+            }
+            CloseConnection();
+
+            return exists;
+        }
+        */
 
         public Model GetModel(int modelId)
         {

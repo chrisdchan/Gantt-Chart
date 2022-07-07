@@ -17,7 +17,7 @@ namespace Gaant_Chart
 
         public static Model currentModel { get; set; }
         public static User currentUser { get; set; }
-       
+
         public static string[] allTasks = {
             "Image Aquisition",
             "Images Download",
@@ -42,6 +42,15 @@ namespace Gaant_Chart
             ("Segmentation Review and Approval", 7),                                                                        
             ("Mesh Preperation and Export to Physics", 13),
             ("Physics Modeling and Reports", 16)
+        };
+
+
+        public static Dictionary<String, Boolean[]> categoryAuthorization = new Dictionary<String, Boolean[]>()
+        {
+            {"Phys", new bool[] {true, true, true, true, true, true, true, true, true, true, true, true, true}},
+            {"MD",   new bool[]   {true, true, true, true, true, true, true, true, true, true, true, true, true}},
+            {"Seg2", new bool[] {true, true, true, true, true, true, true, true, true, true, true, true, true}},
+            {"Seg1", new bool[] {true, true, true, true, true, true, true, true, true, true, true, true, true}}
         };
 
         public static Dictionary<long, User> users { get; set; }
@@ -74,8 +83,38 @@ namespace Gaant_Chart
 
         public static User getUser(int userId)
         {
-            if (users == null) throw new Exception("Calling getUser before users is initialized");
+            checkUsersInitialied();
             return users[userId];
+        }
+
+        public static User getUser(String name)
+        {
+            checkUsersInitialied();
+            User user = null;
+            foreach(KeyValuePair<long, User> pair in users)
+            {
+                User tempUser = pair.Value;
+                if(tempUser.name == name)
+                {
+                    user = tempUser;
+                }
+            }
+            return user;
+        }
+
+        public static void addUser(User user)
+        {
+            if(user.rowid == -1)
+            {
+                MainWindow.myDatabase.insertUser(user);
+            }
+
+            users.Add(user.rowid, user);
+        }
+
+        private static void checkUsersInitialied()
+        {
+            if (users == null) throw new Exception("Calling getUser before users is initialized");
         }
         
     }

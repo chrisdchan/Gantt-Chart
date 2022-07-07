@@ -15,11 +15,16 @@ namespace Gaant_Chart.Models
 
         public Boolean[] authorization;
 
+        Boolean active;
+
+        String category;
+
         public User(string name, string password, bool reqPass)
         {
             this.name = name;
             this.password = password;
             this.reqPass = reqPass;
+            rowid = -1;
         }
         public User(long rowid, string name, string password, bool reqPass) : this(name, password, reqPass)
         {
@@ -27,6 +32,11 @@ namespace Gaant_Chart.Models
         }
 
         public User(string name, string password, bool reqPass, Boolean[] authorization) : this(name, password, reqPass)
+        {
+            this.authorization = authorization;
+        }
+
+        public void authorize(Boolean[] authorization)
         {
             this.authorization = authorization;
         }
