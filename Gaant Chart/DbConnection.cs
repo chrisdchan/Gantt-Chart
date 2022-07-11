@@ -144,14 +144,23 @@ namespace Gaant_Chart
 
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "INSERT INTO USERS(name, initials, password, requirePassword, active, category) " +
-                    "VALUES (@name, @initials, @password, @requirePassword, @active, @category";
+                if(user.category == null)
+                {
+                    myCommand.CommandText = "INSERT INTO USERS(name, initials, password, requirePassword, active) " +
+                        "VALUES (@name, @initials, @password, @requirePassword, @active)";
+                }
+                else
+                {
+                    myCommand.CommandText = "INSERT INTO USERS(name, initials, password, requirePassword, active, category) " +
+                        "VALUES (@name, @initials, @password, @requirePassword, @active, @category)";
+                    myCommand.Parameters.AddWithValue("@category", user.category);
+                }
+
                 myCommand.Parameters.AddWithValue("@name", user.name);
                 myCommand.Parameters.AddWithValue("@initials", user.initials);
                 myCommand.Parameters.AddWithValue("@password", user.password);
                 myCommand.Parameters.AddWithValue("@requirePassword", reqPass);
                 myCommand.Parameters.AddWithValue("@active", active);
-                myCommand.Parameters.AddWithValue("@category", user.category);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
 

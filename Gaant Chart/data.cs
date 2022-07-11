@@ -47,10 +47,10 @@ namespace Gaant_Chart
 
         public static Dictionary<String, Boolean[]> categoryAuthorization = new Dictionary<String, Boolean[]>()
         {
-            {"Phys", new bool[] {true, true, true, true, true, true, true, true, true, true, true, true, true}},
-            {"MD",   new bool[]   {true, true, true, true, true, true, true, true, true, true, true, true, true}},
-            {"Seg2", new bool[] {true, true, true, true, true, true, true, true, true, true, true, true, true}},
-            {"Seg1", new bool[] {true, true, true, true, true, true, true, true, true, true, true, true, true}}
+            {"Phys", new bool[] {true, true, true, true, true, true, true, true, true, true, true, true, true, true}},
+            {"MD",   new bool[]   {true, true, true, true, true, true, true, true, true, true, true, true, true, true}},
+            {"Seg2", new bool[] {true, true, true, false, true, true, true, true, true, true, true, true, false, true}},
+            {"Seg1", new bool[] {true, true, true, true, true, true, true, true, true, true, true, true, false, true}}
         };
 
         public static Dictionary<long, User> users { get; set; }

@@ -30,6 +30,9 @@ namespace Gaant_Chart
         public Boolean deletedCurrentModel;
         public Boolean updatedCurrentUser;
 
+
+        private Boolean isCategoryResetOn = false;
+
         public Admin()
         {
             InitializeComponent();
@@ -68,7 +71,11 @@ namespace Gaant_Chart
             }
 
             String initials = initialsTxt.Text;
-            String category = (categoryCombo.SelectedItem as ComboBoxItem).Content as String;
+            String category;
+            if (categoryCombo.SelectedItem == null)
+                category = null;
+            else
+                category = (categoryCombo.SelectedItem as ComboBoxItem).Content as String;
 
             Boolean[] authorization = setAuthorization();
 
@@ -90,7 +97,7 @@ namespace Gaant_Chart
 
         private void initAuthorizationCheckBoxes()
         {
-            foreach(String taskname  in data.allTasks)
+            foreach(String taskname in data.allTasks)
             {
                 CheckBox checkbox = new CheckBox();
                 checkbox.Height = 15;
@@ -189,8 +196,8 @@ namespace Gaant_Chart
 
         private void authorizedCheckBoxChanged(object sender, RoutedEventArgs e)
         {
-            categoryCombo.SelectedIndex = 0;
-
+            if(isCategoryResetOn)
+                categoryCombo.SelectedItem = null;
         }
 
 
@@ -290,17 +297,19 @@ namespace Gaant_Chart
 
         private void categoryCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (categoryCombo.SelectedItem == null) return;
             String category = (categoryCombo.SelectedItem as ComboBoxItem).Content as String;
             Boolean[] authorization = data.categoryAuthorization[category];
 
-            for(int i = 0; i < authorizationSP.Children.Count - 1; i++)
+            isCategoryResetOn = false;
+
+            for(int i = 0; i < authorizationSP.Children.Count; i++)
             {
-                if(authorization[i])
-                {
-                    CheckBox checkbox = authorizationSP.Children[i] as CheckBox;
-                    checkbox.IsChecked = true;
-                }
+                CheckBox checkbox = authorizationSP.Children[i] as CheckBox;
+                checkbox.IsChecked = authorization[i];
             }
+
+            isCategoryResetOn = true;
 
         }
     }

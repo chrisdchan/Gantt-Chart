@@ -69,7 +69,9 @@
             <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="2">
                 <Label Content="Authorization"/>
                 <ComboBox Text="Category" x:Name="categoryCombo"
-                          Height="18" Width="75" Margin="130, 0, 0, 0" SelectionChanged="categoryCombo_SelectionChanged"/>
+                          Height="20" Width="75" 
+                          FontSize="12"
+                          Margin="130, 0, 0, 0" SelectionChanged="categoryCombo_SelectionChanged"/>
             </StackPanel>
 
             <StackPanel Grid.Row="3" Grid.Column="1" Background="White"
@@ -131,7 +133,6 @@
             <ComboBox Grid.Column="0" Height="20" Width="100" x:Name="editUserCombobox"
                         Grid.ColumnSpan="3" Margin="15, 0, 0, 0" SelectionChanged="editUserCombobox_Selected"
                       HorizontalAlignment="Left" Text="Select User"/>
-
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0"
                         Grid.ColumnSpan="3" Margin="10, 0, 0, 0">
