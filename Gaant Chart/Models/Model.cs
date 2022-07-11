@@ -33,9 +33,9 @@ namespace Gaant_Chart.Models
             }
         }
 
-        public void completeTask(int taskTypeId, long userId, DateTime startDate, DateTime endDate)
+        public void completeTask(User user, int taskTypeId, DateTime startDate, DateTime endDate)
         {
-            tasks[taskTypeId].complete(userId, startDate, endDate);
+            tasks[taskTypeId].complete(user, startDate, endDate);
             lastCompletedTaskId = taskTypeId;
         }
 

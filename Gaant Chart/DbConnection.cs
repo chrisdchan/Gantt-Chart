@@ -49,7 +49,14 @@ namespace Gaant_Chart
                     "typeId INT NOT NULL, startDate DATETIME, endDate DATETIME, userAssignedId INT, userCompletedId INT)";
                 myCommand.ExecuteNonQuery();
 
-                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Users (name TEXT NOT NULL UNIQUE, password TEXT, requirePassword INT, category TEXT)";
+                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Users (" +
+                    "name TEXT NOT NULL UNIQUE, " +
+                    "initials TEXT UNIQUE, " +
+                    "password TEXT, " +
+                    "requirePassword INT, " +
+                    "active INT, " +
+                    "category TEXT)";
+
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Authorization (userId INT NOT NULL, taskTypeId INT NOT NULL)";
@@ -133,13 +140,17 @@ namespace Gaant_Chart
             OpenConnection();
 
             int reqPass = (user.reqPass) ? 1 : 0;
+            int active = (user.active) ? 1 : 0;
 
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "INSERT INTO USERS(name, password, requirePassword, category) VALUES (@name, @password, @requirePassword, @category";
+                myCommand.CommandText = "INSERT INTO USERS(name, initials, password, requirePassword, active, category) " +
+                    "VALUES (@name, @initials, @password, @requirePassword, @active, @category";
                 myCommand.Parameters.AddWithValue("@name", user.name);
+                myCommand.Parameters.AddWithValue("@initials", user.initials);
                 myCommand.Parameters.AddWithValue("@password", user.password);
                 myCommand.Parameters.AddWithValue("@requirePassword", reqPass);
+                myCommand.Parameters.AddWithValue("@active", active);
                 myCommand.Parameters.AddWithValue("@category", user.category);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
@@ -168,7 +179,6 @@ namespace Gaant_Chart
                     myCommand.ExecuteNonQuery();
                 }
             }
-
         }
 
         public int getModelId(String modelName)
@@ -290,7 +300,10 @@ namespace Gaant_Chart
                         DateTime endDate = (DateTime)myDataReader["endDate"];
                         int userid = (int)myDataReader["userid"];
 
-                        model.completeTask(typeId, userid, startDate, endDate);
+
+                        User user = data.users[userid];
+
+                        model.completeTask(user, typeId, startDate, endDate);
                     }
                 }
             }
@@ -299,64 +312,61 @@ namespace Gaant_Chart
 
         }
 
-        public Dictionary<long, User> getUsers()
-        {
-            Dictionary<long, User> users = getTempUsers();
-            foreach(var item in users)
-            {
-                User user = item.Value;
-                user.authorization = MainWindow.myDatabase.getAuthorization(user.rowid);
-            }
-            return users;
-        }
-        private Dictionary<long, User> getTempUsers()
+        public  Dictionary<long, User> getUsers()
         {
             Dictionary<long, User> users = new Dictionary<long, User>();
 
             OpenConnection();
-            using(SQLiteCommand myCommand = new SQLiteCommand(myConnection))
+
+            using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT rowid, Name, password, requirePassword FROM Users";
+                myCommand.CommandText = "SELECT rowid, name, initials, password, requirePassword, category FROM Users";
+                
+
                 using(myDataReader = myCommand.ExecuteReader())
                 {
                     while(myDataReader.Read())
                     {
                         long rowid = (long)myDataReader["rowid"];
                         String name = (String) myDataReader["name"];
+                        String initials = (String)myDataReader["initials"];
                         String password = (String)myDataReader["password"];
+                        String category = (String)myDataReader["category"];
                         int reqPassInt = (int) myDataReader["requirePassword"];
-
                         Boolean reqPass = (reqPassInt != 0);
+                        Boolean[] authorization = getAuthorization(rowid);
 
-                        users.Add(rowid, new User(rowid, name, password, reqPass));
+                        User user = new User(rowid, name, initials, password, reqPass, category, authorization);
+                        users.Add(rowid, user);
                     }
                 }
+
             }
+
             CloseConnection();
 
             return users;
         }
+
         private Boolean[] getAuthorization(long userid)
         {
-            Boolean[] result = new Boolean[data.allTasks.Length];
+            Boolean[] authorization = new Boolean[data.allTasks.Length];
 
-            OpenConnection();
-            using(myCommand = new SQLiteCommand(myConnection))
+            using(SQLiteCommand command = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT taskTypeId FROM Authorization WHERE userId = @userid";
-                myCommand.Parameters.AddWithValue("@userid", userid);
-                myCommand.Prepare();
-                using(myDataReader = myCommand.ExecuteReader())
+                command.CommandText = "SELECT taskTypeId FROM Authorization WHERE userId = @userid";
+                command.Parameters.AddWithValue("@userid", userid);
+                command.Prepare();
+                using(SQLiteDataReader dataReader = command.ExecuteReader())
                 {
-                    while(myDataReader.Read())
+                    while(dataReader.Read())
                     {
                         int taskTypeId = (int)myDataReader["tasktypeId"];
-                        result[taskTypeId] = true;
+                        authorization[taskTypeId] = true;
                     }
                 }
             }
-            CloseConnection();
-            return result;
+            return authorization;
         }
         
         public List<ModelTag> getModelTags()
@@ -444,12 +454,22 @@ namespace Gaant_Chart
         public void updateUser(User user)
         {
             OpenConnection();
+
+            int reqPass = (user.reqPass) ? 1 : 0;
+            int active = (user.active) ? 1 : 0;
+
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "UPDATE Users SET password = @password, requirePassword = @reqPass, cateogry=@category, WHERE rowid = @rowid";
+                myCommand.CommandText = "UPDATE Users SET " +
+                    "password = @password, " +
+                    "requirePassword = @reqPass, " +
+                    "active = @active, " + 
+                    "cateogry=@category, " +
+                    "WHERE rowid = @rowid";
+
                 myCommand.Parameters.AddWithValue("@password", user.password);
-                myCommand.Parameters.AddWithValue("@reqPass", user.reqPass);
-                myCommand.Parameters.AddWithValue("@rowid", user.rowid);
+                myCommand.Parameters.AddWithValue("@reqPass", reqPass);
+                myCommand.Parameters.AddWithValue("@rowid", active);
                 myCommand.Parameters.AddWithValue("@category", user.category);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();

@@ -437,7 +437,7 @@ namespace Gaant_Chart
                     dockpanel.Background = completedColor;
                     checkbox.IsHitTestVisible = true;
                     checkbox.IsChecked = true;
-                    textbox.Text = data.getUser(task.userCompletedId).name + " | " + task.endDate.ToString("M/d/y");
+                    textbox.Text =  task.completedUser.name + " | " + task.endDate.ToString("M/d/y");
                 }
                 else
                 {
@@ -713,7 +713,7 @@ namespace Gaant_Chart
         private void importBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "CSV (*.csv)|*.csv, Excel (*.xlsm)|*.xlsm";
+            openFileDialog.Filter = "CSV (*.csv)|*.csv|Excel (*.xlsm)|*.xlsm";
             openFileDialog.Title = "Select sheet";
             openFileDialog.Multiselect = false;
 

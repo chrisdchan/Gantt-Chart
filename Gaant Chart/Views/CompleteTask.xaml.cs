@@ -121,7 +121,7 @@ namespace Gaant_Chart
         private void completeTaskLocally()
         {
             startDate = computeStartDate();
-            model.completeTask(task.typeInd, user.rowid, startDate, endDate);
+            model.completeTask(user, task.typeInd, startDate, endDate);
         }
 
         private void updateDatabase()

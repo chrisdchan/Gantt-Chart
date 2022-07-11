@@ -63,7 +63,7 @@ namespace Gaant_Chart
             else 
             {
                 int modelId = (int)(myComboBox.SelectedItem as ComboBoxItem).Tag;
-                data.currentModel = MainWindow.myDatabase.GetModel(modelId);
+                data.currentModel = MainWindow.myDatabase.getModel(modelId);
                 earlyExist = false;
                 this.Close();
             }

@@ -80,36 +80,16 @@ namespace Gaant_Chart
         {
             users = MainWindow.myDatabase.getUsers();
         }
-
-        public static User getUser(long userId)
-        {
-            checkUsersInitialied();
-            return users[userId];
-        }
-
         public static User getUser(String name)
         {
             checkUsersInitialied();
             User user = null;
-            foreach(KeyValuePair<long, User> pair in users)
+            foreach(var kvp in users)
             {
-                User tempUser = pair.Value;
-                if(tempUser.name == name)
-                {
-                    user = tempUser;
-                }
+                if (kvp.Value.name == name)
+                    user = kvp.Value;
             }
             return user;
-        }
-
-        public static void addUser(User user)
-        {
-            if(user.rowid == -1)
-            {
-                MainWindow.myDatabase.insertUser(user);
-            }
-
-            users.Add(user.rowid, user);
         }
 
         private static void checkUsersInitialied()

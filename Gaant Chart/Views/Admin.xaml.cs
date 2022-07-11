@@ -43,6 +43,7 @@ namespace Gaant_Chart
 
             populateDelteModelComoboBox();
 
+            initCategoryComboBox();
 
             deletedCurrentModel = false;
             updatedCurrentUser = false;
@@ -57,17 +58,21 @@ namespace Gaant_Chart
                 return;
             }
             
+            Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
+
             String password = passwordTxt.Text;
-            if(password == String.Empty)
+            if(password == String.Empty && reqPass)
             {
-                MessageBox.Show("Password cannot be blank");
+                MessageBox.Show("Password cannot be blank if password is required");
                 return;
             }
 
-            Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
+            String initials = initialsTxt.Text;
+            String category = (categoryCombo.SelectedItem as ComboBoxItem).Content as String;
+
             Boolean[] authorization = setAuthorization();
 
-            User user = new User(name, password, reqPass, authorization);
+            User user = new User(name, initials, password, reqPass, category, authorization);
 
             MainWindow.myDatabase.insertUser(user);
             nameTxt.Text = "";
@@ -91,8 +96,20 @@ namespace Gaant_Chart
                 checkbox.Height = 15;
                 checkbox.Margin = new Thickness(0, 5, 0, 5);
                 checkbox.Content = taskname;
+                checkbox.Checked += new RoutedEventHandler(authorizedCheckBoxChanged);
+                checkbox.Unchecked += new RoutedEventHandler(authorizedCheckBoxChanged);
                 checkbox.IsChecked = true;
                 authorizationSP.Children.Add(checkbox);
+            }
+        }
+
+        private void initCategoryComboBox()
+        {
+            foreach(var kvp in data.categoryAuthorization)
+            {
+                ComboBoxItem comboBoxItem = new ComboBoxItem();
+                comboBoxItem.Content = kvp.Key;
+                categoryCombo.Items.Add(comboBoxItem);
             }
         }
 
@@ -122,6 +139,8 @@ namespace Gaant_Chart
             return authorization;
 
         }
+
+
 
         private void navAddTeamMemberBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -168,6 +187,12 @@ namespace Gaant_Chart
             }
         }
 
+        private void authorizedCheckBoxChanged(object sender, RoutedEventArgs e)
+        {
+            categoryCombo.SelectedIndex = 0;
+
+        }
+
 
         private void populateDelteModelComoboBox()
         {
@@ -199,11 +224,12 @@ namespace Gaant_Chart
 
         private void initEditUserCombobox()
         {
-            foreach(var item in data.users)
+            foreach(var kvp in data.users)
             {
+                User user = kvp.Value;
                 ComboBoxItem comboboxitem = new ComboBoxItem();
-                comboboxitem.Content = item.Value.name;
-                comboboxitem.Tag = item.Value;
+                comboboxitem.Content = user.name;
+                comboboxitem.Tag = user;
                 editUserCombobox.Items.Add(comboboxitem);
             }
         }
@@ -237,24 +263,16 @@ namespace Gaant_Chart
 
         }
 
-        private void editCreateUserBtn_Click(object sender, RoutedEventArgs e)
+        private void updateUserBtn_Click(object sender, RoutedEventArgs e)
         {
             
             String password = editPasswordTxt.Text;
-            if(password == String.Empty)
-            {
-                MessageBox.Show("Password cannot be blank");
-                return;
-            }
-
             Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
             Boolean[] authorization = setEditAuthorization();
 
             editUser.password = password;
             editUser.authorization = authorization;
             editUser.reqPass = reqPass;
-
-            data.users[editUser.rowid] = editUser;
 
             MainWindow.myDatabase.updateUser(editUser);
 
@@ -268,6 +286,22 @@ namespace Gaant_Chart
             {
                 updatedCurrentUser = true;
             }
+        }
+
+        private void categoryCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            String category = (categoryCombo.SelectedItem as ComboBoxItem).Content as String;
+            Boolean[] authorization = data.categoryAuthorization[category];
+
+            for(int i = 0; i < authorizationSP.Children.Count - 1; i++)
+            {
+                if(authorization[i])
+                {
+                    CheckBox checkbox = authorizationSP.Children[i] as CheckBox;
+                    checkbox.IsChecked = true;
+                }
+            }
+
         }
     }
 }

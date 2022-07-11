@@ -92,7 +92,7 @@ namespace Gaant_Chart.Models
                     if (!DateTime.TryParse(startDateString, out startDate)) invalidDateError();
                     if(!DateTime.TryParse(endDateString, out endDate)) invalidDateError();
 
-                    model.tasks[i].complete(user.rowid, startDate, endDate);
+                    model.tasks[i].complete(user, startDate, endDate);
                 }
             }
         }
@@ -117,12 +117,13 @@ namespace Gaant_Chart.Models
                 User user = data.getUser(name);
                 String initals = nameWs.Range[r, 2].Text;
                 String category = nameWs.Range[r, 3].Text;
-                String Status = nameWs.Range[r, 4].Text;
+                String status = nameWs.Range[r, 4].Text;
+
+                Boolean active = (status == "active");
 
                 if(user == null)
                 {
-                    user = new User(name, "", false);
-                    user.authorize(data.categoryAuthorization[category]);
+                    user = new User(name, initals, category, active);
                     users.Add(user);
                 }
                 else
@@ -131,11 +132,6 @@ namespace Gaant_Chart.Models
                 }
 
                 initalsUserDict.Add(initals, user);
-            }
-
-            foreach(User user in users)
-            {
-                data.addUser(user);
             }
         }
 

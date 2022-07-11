@@ -33,7 +33,7 @@
         </Grid>
 
         <Grid Grid.Column="1" Background="AliceBlue" 
-              x:Name="addTeamMemberGrid" Visibility="Hidden">
+              x:Name="addTeamMemberGrid" Visibility="Visible">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="8*"/>
@@ -51,7 +51,11 @@
                         Grid.ColumnSpan="3" Margin="10, 0, 0, 0">
                 <Label Content="Full Name" VerticalAlignment="Center"/>
                 <TextBox x:Name="nameTxt" Width="100" Height="25" />
+                <Label Content="Initials" VerticalAlignment="Center" 
+                       Margin="25, 0, 0, 0"/>
+                <TextBox x:Name="initialsTxt" Width="100" Height="25"/>
             </StackPanel>
+           
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0"
                         Grid.ColumnSpan="3" Margin="10, 0, 0, 0">
@@ -62,7 +66,11 @@
 
             </StackPanel>
 
-            <Label Content="Authorization" Grid.Column="1" Grid.Row="2"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="2">
+                <Label Content="Authorization"/>
+                <ComboBox Text="Category" x:Name="categoryCombo"
+                          Height="18" Width="75" Margin="130, 0, 0, 0" SelectionChanged="categoryCombo_SelectionChanged"/>
+            </StackPanel>
 
             <StackPanel Grid.Row="3" Grid.Column="1" Background="White"
                         x:Name="authorizationSP">
@@ -105,7 +113,7 @@
                     Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"/>
         </Grid>
 
-        <Grid x:Name="editUserGrid" Visibility="Visible" Background="AliceBlue"
+        <Grid x:Name="editUserGrid" Visibility="Hidden" Background="AliceBlue"
               Grid.Column="1" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -140,7 +148,7 @@
                 
             </StackPanel>
 
-            <Button x:Name="editCreateUserBtn" Click="editCreateUserBtn_Click"
+            <Button x:Name="updateUserBtn" Click="updateUserBtn_Click"
                     Content="Update User"
                     Grid.Row="4" Grid.Column="0"
                     Grid.ColumnSpan="2"

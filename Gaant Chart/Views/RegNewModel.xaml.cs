@@ -62,13 +62,13 @@ namespace Gaant_Chart
                 return;
             }
 
-            int existingModelId = MainWindow.myDatabase.modelExists(modelName);
+            int existingModelId = MainWindow.myDatabase.getModelId(modelName);
             if(existingModelId != -1)
             {
                 MessageBoxResult res = System.Windows.MessageBox.Show("This Model Already Exists, would you like to load it instead?", "Existing Model", MessageBoxButton.YesNo);
                 if (res == MessageBoxResult.Yes)
                 {
-                    data.currentModel = MainWindow.myDatabase.GetModel(existingModelId);
+                    data.currentModel = MainWindow.myDatabase.getModel(existingModelId);
                     earlyExit = false;
                     this.Close();
                 }

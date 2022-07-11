@@ -15,25 +15,58 @@ namespace Gaant_Chart.Models
 
         public Boolean[] authorization;
 
-        Boolean active;
+        public Boolean active;
+        public String initials;
 
         public String category { get; set; }
 
-        public User(string name, string password, bool reqPass)
+        // FROM EXCEL
+        public User(string name, string initials, string category, Boolean active)
         {
             this.name = name;
-            this.password = password;
-            this.reqPass = reqPass;
-            rowid = -1;
-        }
-        public User(long rowid, string name, string password, bool reqPass) : this(name, password, reqPass)
-        {
-            this.rowid = rowid;
+            this.initials = initials;
+            this.active = active;
+            this.category = category;
+
+            reqPass = false;
+            password = "";
+            authorization = data.categoryAuthorization[category];
+
+            MainWindow.myDatabase.insertUser(this);
         }
 
-        public User(string name, string password, bool reqPass, Boolean[] authorization) : this(name, password, reqPass)
+        // FROM DB
+        public User(long rowid,
+                    string name,
+                    string initials,
+                    string password,
+                    Boolean reqPass,
+                    string category,
+                    Boolean[] authorization)
         {
+            this.rowid = rowid;
+            this.name = name;
+            this.initials = initials;
+            this.password = password;
+            this.reqPass = reqPass;
+            this.category = category;
             this.authorization = authorization;
+        }
+
+        // FROM Admin
+        public User(string name, string initials, string password, Boolean reqPass, string category, Boolean[] authorization)
+        {
+            this.name = name;
+            this.initials = initials;
+            this.password = password;
+            this.reqPass = reqPass;
+            this.category = category;
+            this.authorization = authorization;
+
+            active = true;
+
+            MainWindow.myDatabase.insertUser(this);
+
         }
 
         public void authorize(Boolean[] authorization)
@@ -41,9 +74,9 @@ namespace Gaant_Chart.Models
             this.authorization = authorization;
         }
 
-        public Boolean correctPassword(string _password)
+        public Boolean correctPassword(string password)
         {
-            return password == _password;
+            return this.password == password;
         }
     }
 }

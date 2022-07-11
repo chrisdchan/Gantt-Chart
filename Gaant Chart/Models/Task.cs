@@ -14,6 +14,8 @@ namespace Gaant_Chart.Models
         public long userCompletedId { get; set; }
         public long userAssignedId { get; set; }
 
+        public User completedUser { get; set; }
+        public User assignedUser { get; set; }
 
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
@@ -41,9 +43,9 @@ namespace Gaant_Chart.Models
             rowid = -1;
         }
 
-        public void complete(long userId, DateTime start, DateTime end)
+        public void complete(User user, DateTime start, DateTime end)
         {
-            userCompletedId = userId;
+            completedUser = user;
             startDate = start;
             endDate = end;
 
@@ -58,9 +60,9 @@ namespace Gaant_Chart.Models
             userCompletedId = -1;
         }
 
-        public void assign(long userId)
+        public void assign(User user)
         {
-            userAssignedId = userId;
+            assignedUser = user;
         }
      }
 
