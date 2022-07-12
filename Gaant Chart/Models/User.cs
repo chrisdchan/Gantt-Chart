@@ -31,8 +31,6 @@ namespace Gaant_Chart.Models
             reqPass = false;
             password = "";
             authorization = data.categoryAuthorization[category];
-
-            MainWindow.myDatabase.insertUser(this);
         }
 
         // FROM DB
@@ -41,8 +39,7 @@ namespace Gaant_Chart.Models
                     string initials,
                     string password,
                     Boolean reqPass,
-                    string category,
-                    Boolean[] authorization)
+                    string category)
         {
             this.rowid = rowid;
             this.name = name;
@@ -50,7 +47,6 @@ namespace Gaant_Chart.Models
             this.password = password;
             this.reqPass = reqPass;
             this.category = category;
-            this.authorization = authorization;
         }
 
         // FROM Admin
@@ -64,9 +60,6 @@ namespace Gaant_Chart.Models
             this.authorization = authorization;
 
             active = true;
-
-            MainWindow.myDatabase.insertUser(this);
-
         }
 
         public void authorize(Boolean[] authorization)

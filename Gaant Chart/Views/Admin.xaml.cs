@@ -81,7 +81,9 @@ namespace Gaant_Chart
 
             User user = new User(name, initials, password, reqPass, category, authorization);
 
-            MainWindow.myDatabase.insertUser(user);
+            if(!MainWindow.myDatabase.isUserExist(user))
+                MainWindow.myDatabase.insertUser(user);
+
             nameTxt.Text = "";
             passwordTxt.Text = "";
 

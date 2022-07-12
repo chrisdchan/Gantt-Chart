@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Syncfusion.XlsIO;
 
 namespace Gaant_Chart.Models
@@ -48,10 +49,11 @@ namespace Gaant_Chart.Models
                 IWorkbook workbook = application.Workbooks.Open(pathname);
 
                 mainWs = workbook.Worksheets[0];
+                mainWs.EnableSheetCalculations();
                 IWorksheet nameWs = workbook.Worksheets[1];
 
-                String modelName = mainWs.Range["B2"].Text;
-                String modelStartDateString = mainWs.Range["B4"].Text;
+                String modelName = mainWs.Range["B2"].Value;
+                String modelStartDateString = mainWs.Range["B4"].Value;
 
                 DateTime modelStartDate = stringToDate(modelStartDateString);
 
@@ -68,6 +70,11 @@ namespace Gaant_Chart.Models
                     MainWindow.myDatabase.updateModel(model);
                 }
             }
+        }
+
+        public Model getModel()
+        {
+            return model;
         }
 
         private void addCompletedTasks()
@@ -124,6 +131,14 @@ namespace Gaant_Chart.Models
                 if(user == null)
                 {
                     user = new User(name, initals, category, active);
+
+                    if(user.initials != null && MainWindow.myDatabase.isUserInitialsExist(user))
+                    {
+                        user.initials = String.Concat(name.Split(' ').Select(s => s[0]));
+                        user.initials += user.rowid.ToString();
+                    }
+
+                    MainWindow.myDatabase.insertUser(user);
                     users.Add(user);
                 }
                 else
@@ -131,7 +146,11 @@ namespace Gaant_Chart.Models
                     user = data.getUser(name);
                 }
 
-                initalsUserDict.Add(initals, user);
+                if(!initalsUserDict.ContainsKey(initals))
+                    initalsUserDict.Add(initals, user);
+
+                r++;
+                name = nameWs.Range[r, 1].Value;
             }
         }
 

@@ -721,7 +721,9 @@ namespace Gaant_Chart
             {
                 String filename = openFileDialog.FileName;
                 ExcelReader excelReader = new ExcelReader(filename);
-                
+
+                data.currentModel = excelReader.getModel();
+                displayCurrentModel();
             }
         }
     }

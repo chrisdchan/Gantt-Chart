@@ -118,7 +118,7 @@ namespace Gaant_Chart
                     String taskStartString = taskStart.ToString();
                     
                     myCommand.CommandText = "INSERT INTO Tasks(modelId, typeId, startDate, endDate, userAssignedId, userCompletedId)" +
-                        " VALUES (@ModelId, @typeId, @StartDate, @EndDate, @UserId)";
+                        " VALUES (@ModelId, @typeId, @StartDate, @EndDate, @userAssignedId, @userCompletedId)";
                     myCommand.Parameters.AddWithValue("@ModelId", modelId);
                     myCommand.Parameters.AddWithValue("@typeID", i);
                     myCommand.Parameters.AddWithValue("@StartDate", null);
@@ -173,6 +173,51 @@ namespace Gaant_Chart
 
             }
             CloseConnection();
+        }
+
+        public Boolean isUserExist(User user)
+        {
+            OpenConnection();
+
+            Boolean isUserInDB;
+
+            using(myCommand = new SQLiteCommand(myConnection))
+            {
+                myCommand.CommandText = "SELECT rowid FROM Users WHERE name = @name";
+                myCommand.Parameters.AddWithValue("@name", user.name);
+                myCommand.Prepare();
+                using(myDataReader = myCommand.ExecuteReader())
+                {
+                    isUserInDB = myDataReader.Read();
+                }
+            }
+
+            CloseConnection();
+
+            return isUserInDB;
+
+        }
+
+        public Boolean isUserInitialsExist(User user)
+        {
+            OpenConnection();
+
+            Boolean isInitialsExist;
+
+            using(myCommand = new SQLiteCommand(myConnection))
+            {
+                myCommand.CommandText = "SELECT rowid FROM Users WHERE initials = @initials";
+                myCommand.Parameters.AddWithValue("@initials", user.initials);
+                myCommand.Prepare();
+                using(myDataReader = myCommand.ExecuteReader())
+                {
+                    isInitialsExist = myDataReader.Read();
+                }
+            }
+
+            CloseConnection();
+
+            return isInitialsExist;
         }
         private void insertUserAuthorization(User user)
         {
@@ -278,7 +323,7 @@ namespace Gaant_Chart
         {
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT tasks.rowid, tasks.typeId FROM tasks WHERE modelId = @modelId";
+                myCommand.CommandText = "SELECT tasks.rowid, tasks.typeId, userAssignedId FROM tasks WHERE modelId = @modelId";
                 myCommand.Parameters.AddWithValue("@modelId", model.rowid);
                 myCommand.Prepare();
 
@@ -288,6 +333,12 @@ namespace Gaant_Chart
                     {
                         int typeId = (int)myDataReader["typeId"];
                         long rowid = (long)myDataReader["rowid"];
+                        if(myDataReader["userAssignedId"].GetType() != typeof(DBNull))
+                        {
+                            long assignedUserId = (long)myDataReader["userAssignedId"];
+                            User assignedUser = data.users[assignedUserId];
+                            model.tasks[typeId].assignedUser = assignedUser;
+                        }
 
                         model.tasks[typeId].rowid = rowid;
                     }
@@ -296,7 +347,7 @@ namespace Gaant_Chart
 
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT typeId, startDate, endDate, userid FROM tasks WHERE modelId = @modelId AND endDate IS NOT NULL";
+                myCommand.CommandText = "SELECT typeId, startDate, endDate, userCompletedId, userAssignedId FROM tasks WHERE modelId = @modelId AND endDate IS NOT NULL";
                 myCommand.Parameters.AddWithValue("@modelId", model.rowid);
                 myCommand.Prepare();
 
@@ -307,10 +358,10 @@ namespace Gaant_Chart
                         int typeId = (int)myDataReader["typeId"];
                         DateTime startDate = (DateTime)myDataReader["startDate"];
                         DateTime endDate = (DateTime)myDataReader["endDate"];
-                        int userid = (int)myDataReader["userid"];
+                        int completedUserId = (int)myDataReader["userCompletedId"];
 
 
-                        User user = data.users[userid];
+                        User user = data.users[completedUserId];
 
                         model.completeTask(user, typeId, startDate, endDate);
                     }
@@ -340,16 +391,20 @@ namespace Gaant_Chart
                         String name = (String) myDataReader["name"];
                         String initials = (String)myDataReader["initials"];
                         String password = (String)myDataReader["password"];
-                        String category = (String)myDataReader["category"];
+                        String category = (myDataReader["category"].GetType() == typeof(DBNull)) ? null : (String)myDataReader["category"];
                         int reqPassInt = (int) myDataReader["requirePassword"];
                         Boolean reqPass = (reqPassInt != 0);
-                        Boolean[] authorization = getAuthorization(rowid);
 
-                        User user = new User(rowid, name, initials, password, reqPass, category, authorization);
+                        User user = new User(rowid, name, initials, password, reqPass, category);
                         users.Add(rowid, user);
                     }
                 }
 
+                foreach(var kvp in users)
+                {
+                    Boolean[] authorization = getAuthorization(kvp.Key);
+                    kvp.Value.authorize(authorization);
+                }
             }
 
             CloseConnection();
@@ -361,18 +416,15 @@ namespace Gaant_Chart
         {
             Boolean[] authorization = new Boolean[data.allTasks.Length];
 
-            using(SQLiteCommand command = new SQLiteCommand(myConnection))
+            myCommand.CommandText = "SELECT taskTypeId FROM Authorization WHERE userId = @userid";
+            myCommand.Parameters.AddWithValue("@userid", userid);
+            myCommand.Prepare();
+            using (myDataReader = myCommand.ExecuteReader())
             {
-                command.CommandText = "SELECT taskTypeId FROM Authorization WHERE userId = @userid";
-                command.Parameters.AddWithValue("@userid", userid);
-                command.Prepare();
-                using(SQLiteDataReader dataReader = command.ExecuteReader())
+                while (myDataReader.Read())
                 {
-                    while(dataReader.Read())
-                    {
-                        int taskTypeId = (int)myDataReader["tasktypeId"];
-                        authorization[taskTypeId] = true;
-                    }
+                    int taskTypeId = (int)myDataReader["tasktypeId"];
+                    authorization[taskTypeId] = true;
                 }
             }
             return authorization;
