@@ -64,9 +64,9 @@ namespace Gaant_Chart.Models
                 }
                 else
                 {
-                    model = MainWindow.myDatabase.insertModel(modelName, modelStartDate);
-                    addCompletedTasks();
-                    MainWindow.myDatabase.updateModel(model);
+                    Task[] tasks = getTasks();
+                    model = new Model(modelName, modelStartDate, tasks);
+                    MainWindow.myDatabase.insertModel(model);
                 }
             }
         }
@@ -76,10 +76,13 @@ namespace Gaant_Chart.Models
             return model;
         }
 
-        private void addCompletedTasks()
+        private Task[] getTasks()
         {
+            Task[] tasks = new Task[data.NTASKS];
+
             for(int i = 0; i < data.allTasks.Length; i++)
             {
+
                 int row = taskExcelRows[i];
                 String userInitals = mainWs.Range[row, 3].Text;
                 DateTime plannedStart = mainWs.Range[row, 5].DateTime;
@@ -99,11 +102,16 @@ namespace Gaant_Chart.Models
 
                 User user = initalsUserDict[userInitals];
 
-                model.tasks[i].assign(user, plannedStart, plannedEnd);
+                Task task = new Task(i, plannedStart, plannedEnd);
+                task.assign(user);
 
                 if (hasStartDate && hasEndDate)
-                    model.tasks[i].complete(user, startDate, endDate);
+                    task.complete(user, startDate, endDate);
+
+                tasks[i] = task;
             }
+
+            return tasks;
         }
 
         private void invalidDateError()

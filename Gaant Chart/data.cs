@@ -18,6 +18,8 @@ namespace Gaant_Chart
         public static Model currentModel { get; set; }
         public static User currentUser { get; set; }
 
+        public static int NTASKS = 14;
+
         public static string[] allTasks = {
             "Image Aquisition",
             "Images Download",

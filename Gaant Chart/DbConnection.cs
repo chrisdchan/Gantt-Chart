@@ -90,51 +90,47 @@ namespace Gaant_Chart
             this.CloseConnection();
         }
 
-
-        public Model insertModel(String modelName, DateTime startDate)
+        public void insertModel(Model model)
         {
-            this.OpenConnection();
-            long modelId;
-            String dateString = startDate.ToString("MM-dd-yyyy");
+            OpenConnection();
+            String startDateString = model.startDate.ToString("MM-dd-yyyy");
+            String endDateString = (model.endDate.HasValue) ? ((DateTime)model.endDate).ToString("MM-dd-yyyy") : null;
 
             using (SQLiteCommand myCommand = new SQLiteCommand(myConnection))
             {
                 myCommand.CommandText = "INSERT INTO Models(name, startDate, endDate) VALUES (@name, @startDate, @endDate)";
-                myCommand.Parameters.AddWithValue("@Name", modelName);
-                myCommand.Parameters.AddWithValue("@StartDate", startDate);
-                myCommand.Parameters.AddWithValue("@EndDate", null);
+                myCommand.Parameters.AddWithValue("@Name", model.modelName);
+                myCommand.Parameters.AddWithValue("@startDate", startDateString);
+                myCommand.Parameters.AddWithValue("@EndDate", endDateString);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "SELECT last_insert_rowid() FROM Models";
-                modelId = (long)myCommand.ExecuteScalar();
+                model.rowid = (long)myCommand.ExecuteScalar();
 
-
-                DateTime taskStart = startDate;
-                DateTime taskEnd = startDate;
-                for(int i = 0; i < data.allTasks.Length; i++)
+                foreach(Task task in model.tasks)
                 {
-                    taskStart = taskEnd;
-                    String taskStartString = taskStart.ToString();
-                    
-                    myCommand.CommandText = "INSERT INTO Tasks(modelId, typeId, startDate, endDate, userAssignedId, userCompletedId)" +
-                        " VALUES (@ModelId, @typeId, @StartDate, @EndDate, @userAssignedId, @userCompletedId)";
-                    myCommand.Parameters.AddWithValue("@ModelId", modelId);
-                    myCommand.Parameters.AddWithValue("@typeID", i);
-                    myCommand.Parameters.AddWithValue("@StartDate", null);
-                    myCommand.Parameters.AddWithValue("@EndDate", null);
-                    myCommand.Parameters.AddWithValue(@"userAssignedId", null);
-                    myCommand.Parameters.AddWithValue(@"userCompletedId", null);
+                    long? assignedUserId = (task.assignedUser == null) ? null : (long?)task.assignedUser.rowid;
+                    long? completedUserId = (task.completedUser == null) ? null : (long?)task.completedUser.rowid;
+
+
+                    myCommand.CommandText = "INSERT INTO Tasks(modelId, typeId, startDate, endDate, userAssignedId, userCompletedId) " +
+                        "VALUES (@modelId, @typeId, @startDate, @endDate, @userAssignedId, @userCompletedId)";
+                    myCommand.Parameters.AddWithValue("@modelId", model.rowid);
+                    myCommand.Parameters.AddWithValue("@typeId", task.typeInd);
+                    myCommand.Parameters.AddWithValue("@startDate", task.startDate);
+                    myCommand.Parameters.AddWithValue("@endDate", task.endDate);
+                    myCommand.Parameters.AddWithValue("@userAssignedId", assignedUserId);
+                    myCommand.Parameters.AddWithValue("@userCompletedId", completedUserId);
                     myCommand.Prepare();
                     myCommand.ExecuteNonQuery();
+
+                    myCommand.CommandText = "SELECT last_insert_rowid() FROM Models";
+                    task.rowid = (long)myCommand.ExecuteScalar();
                 }
             }
-            this.CloseConnection();
-
-            Model model = new Model(modelId, modelName, startDate);
-            return model;
+            CloseConnection();
         }
-
         public void insertUser(User user)
         {
             OpenConnection();
@@ -263,7 +259,7 @@ namespace Gaant_Chart
             OpenConnection();
             using (myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT rowid, startDate FROM Models where name = @name";
+                myCommand.CommandText = "SELECT rowid, startDate, endDate FROM Models where name = @name";
                 myCommand.Parameters.AddWithValue("@name", modelName);
                 myCommand.Prepare();
 
@@ -273,7 +269,10 @@ namespace Gaant_Chart
                     {
                         int rowid = myDataReader.GetInt32(0);
                         String startDateString = myDataReader.GetString(1);
-                        model = new Model(rowid, modelName, DateTime.Parse(startDateString));
+                        String endDateString = (myDataReader["endDate"] == DBNull.Value) ? null : (String)myDataReader["endDate"];
+                        DateTime startDate = DateTime.Parse(startDateString);
+                        DateTime endDate = DateTime.Parse(endDateString);
+                        model = new Model(rowid, modelName, startDate, endDate);
                     }
                     else
                     {
@@ -294,7 +293,7 @@ namespace Gaant_Chart
             OpenConnection();
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT name, startDate FROM Models where rowid = @rowid";
+                myCommand.CommandText = "SELECT name, startDate, endDate FROM Models where rowid = @rowid";
                 myCommand.Parameters.AddWithValue("@rowid", modelId);
                 myCommand.Prepare();
 
@@ -304,7 +303,11 @@ namespace Gaant_Chart
                     {
                         String modelName = myDataReader.GetString(0);
                         String startDateString = myDataReader.GetString(1);
-                        model = new Model(modelId, modelName, DateTime.Parse(startDateString));
+                        String endDateString = (myDataReader["endDate"] == DBNull.Value) ? null : (String)myDataReader["endDate"];
+                        DateTime startDate = DateTime.Parse(startDateString);
+                        DateTime? endDate = (String.IsNullOrEmpty(endDateString)) ? null : (DateTime?)DateTime.Parse(endDateString);
+
+                        model = new Model(modelId, modelName, startDate, endDate);
                     }
                     else
                     {

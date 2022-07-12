@@ -17,8 +17,8 @@ namespace Gaant_Chart.Models
         public User completedUser { get; set; }
         public User assignedUser { get; set; }
 
-        public DateTime startDate { get; set; }
-        public DateTime endDate { get; set; }
+        public DateTime? startDate { get; set; }
+        public DateTime? endDate { get; set; }
         public DateTime plannedStartDate { get; set; }
         public DateTime plannedEndDate { get; set; }
 
@@ -36,10 +36,10 @@ namespace Gaant_Chart.Models
             this.plannedStartDate = plannedStartDate;
             this.plannedEndDate = plannedEndDate;
 
-            this.startDate = DateTime.MinValue;
-            this.endDate = DateTime.MinValue;
-            userCompletedId = -1;
-            userAssignedId = -1;
+            startDate = null;
+            endDate = null;
+            completedUser = null;
+            assignedUser = null;
             rowid = -1;
         }
 
@@ -60,11 +60,9 @@ namespace Gaant_Chart.Models
             userCompletedId = -1;
         }
 
-        public void assign(User user, DateTime start, DateTime end)
+        public void assign(User user)
         {
             assignedUser = user;
-            plannedStartDate = start;
-            plannedEndDate = end;
         }
      }
 

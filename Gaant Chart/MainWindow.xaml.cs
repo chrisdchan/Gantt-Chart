@@ -437,7 +437,7 @@ namespace Gaant_Chart
                     dockpanel.Background = completedColor;
                     checkbox.IsHitTestVisible = true;
                     checkbox.IsChecked = true;
-                    textbox.Text =  task.completedUser.name + " | " + task.endDate.ToString("M/d/y");
+                    textbox.Text =  task.completedUser.name + " | " + ((DateTime)task.endDate).ToString("M/d/y");
                 }
                 else
                 {

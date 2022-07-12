@@ -11,26 +11,77 @@ namespace Gaant_Chart.Models
         public long rowid { get; set; }
         public String modelName { get; set; }
         public DateTime startDate { get; }
-
-        public List<Task> tasks = new List<Task>();
+        public DateTime? endDate { get; set; }
+        public Task[] tasks { get; set; }
         public int lastCompletedTaskId { get; set; }
 
-        public Model(long rowid, String modelName, DateTime startDate)
+        // FROM RegModel
+        public Model(string modelName, DateTime startDate)
+        {
+            this.modelName = modelName;
+            this.startDate = startDate;
+            this.endDate = null;
+            this.lastCompletedTaskId = -1;
+
+            tasks = initDefaultTasks();
+        }
+
+        // FROM DATABASE
+        public Model(long rowid, String modelName, DateTime startDate, DateTime? endDate)
         {
             this.rowid = rowid; 
             this.modelName = modelName;
             this.startDate = startDate;
-            this.lastCompletedTaskId = -1;
+            this.endDate = endDate;
+
+            tasks = initDefaultTasks();
+        }
+
+        //FROM EXCEL
+        public Model(string modelName, DateTime startDate, Task[] tasks)
+        {
+            this.modelName = modelName;
+            this.startDate = startDate;
+            this.tasks = tasks;
+            endDate = null;
+
+            for(int i = 0; i < tasks.Length; i++)
+            {
+                if(!tasks[i].completed)
+                {
+                    lastCompletedTaskId = i;
+                    break;
+                }
+            }
+
+            if(lastCompletedTaskId == tasks.Length - 1)
+            {
+                endDate = tasks[lastCompletedTaskId].endDate;
+            }
+        }
+
+        public void addTasks(Task[] tasks)
+        {
+            this.tasks = tasks;
+        }
+
+        private Task[] initDefaultTasks()
+        {
+            Task[] tasks = new Task[data.NTASKS];
 
             DateTime plannedStart = startDate;
             DateTime plannedEnd = startDate;
-            for(int i = 0; i < data.allTasks.Length; i++)
+
+            tasks = new Task[data.NTASKS];
+            for(int i = 0; i < data.NTASKS; i++)
             {
                 plannedEnd = plannedStart.AddDays(data.taskSettingsDuration[i]);
                 Task newTask = new Task(i, plannedStart, plannedEnd);
-                tasks.Add(newTask);
+                tasks[i] = newTask;
                 plannedStart = plannedEnd;
             }
+
+            return tasks;
         }
 
         public void completeTask(User user, int taskTypeId, DateTime startDate, DateTime endDate)

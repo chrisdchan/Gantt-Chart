@@ -50,11 +50,11 @@ namespace Gaant_Chart
                 return model.startDate;
             }
 
-            DateTime startDate = model.tasks[model.lastCompletedTaskId].endDate;
+            DateTime startDate = (DateTime)model.tasks[model.lastCompletedTaskId].endDate;
 
             if((endDate - startDate).TotalDays < 0.5)
             {
-                startDate = model.tasks[model.lastCompletedTaskId].startDate;
+                startDate = (DateTime)model.tasks[model.lastCompletedTaskId].startDate;
             }
 
             return startDate;
@@ -93,7 +93,7 @@ namespace Gaant_Chart
 
             if(task.typeInd != 0 && endDate < model.tasks[task.typeInd - 1].endDate)
             {
-                DateTime lastCompleted = model.tasks[task.typeInd - 1].endDate;
+                DateTime lastCompleted = (DateTime)model.tasks[task.typeInd - 1].endDate;
                 MessageBox.Show("INVALID DATE: Cannot complete a task before a prerequisite task was completed (" + lastCompleted.ToString() + ")");
                 dateTbx.Text = "";
                 return;

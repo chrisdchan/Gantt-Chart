@@ -74,8 +74,9 @@ namespace Gaant_Chart
                 }
                 else return;
             }
-
-            data.currentModel = MainWindow.myDatabase.insertModel(modelName, date);
+            Model model = new Model(modelName, date);
+            MainWindow.myDatabase.insertModel(model);
+            data.currentModel = model;
             earlyExit = false;
             this.Close();
 
