@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Syncfusion.XlsIO;
@@ -83,24 +82,27 @@ namespace Gaant_Chart.Models
             {
                 int row = taskExcelRows[i];
                 String userInitals = mainWs.Range[row, 3].Text;
-                String plannedStartString = mainWs.Range[row, 5].Text;
-                String plannedEndString = mainWs.Range[row, 6].Text;
-                String startDateString = mainWs.Range[row, 8].Text;
-                String endDateString = mainWs.Range[row, 9].Text;
+                DateTime plannedStart = mainWs.Range[row, 5].DateTime;
+                DateTime plannedEnd = mainWs.Range[row, 6].DateTime;
+
+                DateTime startDate = DateTime.MinValue;
+                DateTime endDate = DateTime.MinValue;
+
+                Boolean hasStartDate = !mainWs.Range[row, 8].IsBlank;
+                Boolean hasEndDate = !mainWs.Range[row, 9].IsBlank;
+
+                if (hasStartDate)
+                    startDate = mainWs.Range[row, 8].DateTime;
+
+                if (hasEndDate)
+                    endDate = mainWs.Range[row, 9].DateTime;
 
                 User user = initalsUserDict[userInitals];
 
-                DateTime plannedStartDate, plannedEndDate, startDate, endDate;
-                if (!DateTime.TryParse(plannedStartString, out plannedStartDate)) invalidDateError();
-                if (!DateTime.TryParse(plannedEndString, out plannedEndDate)) invalidDateError();
+                model.tasks[i].assign(user, plannedStart, plannedEnd);
 
-                if(!String.IsNullOrEmpty(startDateString) && !String.IsNullOrEmpty(endDateString))
-                {
-                    if (!DateTime.TryParse(startDateString, out startDate)) invalidDateError();
-                    if(!DateTime.TryParse(endDateString, out endDate)) invalidDateError();
-
+                if (hasStartDate && hasEndDate)
                     model.tasks[i].complete(user, startDate, endDate);
-                }
             }
         }
 
@@ -115,16 +117,16 @@ namespace Gaant_Chart.Models
 
             initalsUserDict = new Dictionary<String, User>();
 
-            String name = nameWs.Range[r, 1].Text;
+            String name = nameWs.Range[r, 1].Value;
 
             List<User> users = new List<User>();
 
             while(!String.IsNullOrEmpty(name))
             {
                 User user = data.getUser(name);
-                String initals = nameWs.Range[r, 2].Text;
-                String category = nameWs.Range[r, 3].Text;
-                String status = nameWs.Range[r, 4].Text;
+                String initals = nameWs.Range[r, 2].Value;
+                String category = nameWs.Range[r, 3].Value;
+                String status = nameWs.Range[r, 4].Value;
 
                 Boolean active = (status == "active");
 

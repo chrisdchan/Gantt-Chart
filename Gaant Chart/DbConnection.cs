@@ -490,20 +490,10 @@ namespace Gaant_Chart
                 foreach(Task task in model.tasks)
                 {
                     myCommand.CommandText = "UPDATE Tasks SET startDate=@startDate, endDate=@endDate, userAssignedId=@userAssignedId, userCompletedId=@userCompletedId WHERE rowid=@rowid";
-
-                    if(task.completed)
-                    {
-                        myCommand.Parameters.AddWithValue("@startDate", task.startDate);
-                        myCommand.Parameters.AddWithValue("@endDate", task.endDate);
-                        myCommand.Parameters.AddWithValue("@userAssignedId", task.userAssignedId);
-                    }
-                    else
-                    {
-                        myCommand.Parameters.AddWithValue("@startDate", null);
-                        myCommand.Parameters.AddWithValue("@endDate", null);
-                        myCommand.Parameters.AddWithValue("@userCompletedId", task.userCompletedId);
-                    }
-
+                    myCommand.Parameters.AddWithValue("@startDate", null);
+                    myCommand.Parameters.AddWithValue("@endDate", null);
+                    myCommand.Parameters.AddWithValue("@userCompletedId", task.userCompletedId);
+                    myCommand.Parameters.AddWithValue("@userAssignedId", task.userAssignedId);
                     myCommand.Parameters.AddWithValue("@rowid", task.rowid);
                     myCommand.Prepare();
                     myCommand.ExecuteNonQuery();
@@ -530,6 +520,7 @@ namespace Gaant_Chart
 
                 myCommand.Parameters.AddWithValue("@password", user.password);
                 myCommand.Parameters.AddWithValue("@reqPass", reqPass);
+                myCommand.Parameters.AddWithValue("@active", active);
                 myCommand.Parameters.AddWithValue("@rowid", active);
                 myCommand.Parameters.AddWithValue("@category", user.category);
                 myCommand.Prepare();

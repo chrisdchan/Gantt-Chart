@@ -60,9 +60,11 @@ namespace Gaant_Chart.Models
             userCompletedId = -1;
         }
 
-        public void assign(User user)
+        public void assign(User user, DateTime start, DateTime end)
         {
             assignedUser = user;
+            plannedStartDate = start;
+            plannedEndDate = end;
         }
      }
 

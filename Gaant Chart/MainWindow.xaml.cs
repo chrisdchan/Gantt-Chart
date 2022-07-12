@@ -713,7 +713,7 @@ namespace Gaant_Chart
         private void importBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "CSV (*.csv)|*.csv|Excel (*.xlsm)|*.xlsm";
+            openFileDialog.Filter = "Excel (*.xlsm)|*.xlsm";
             openFileDialog.Title = "Select sheet";
             openFileDialog.Multiselect = false;
 
