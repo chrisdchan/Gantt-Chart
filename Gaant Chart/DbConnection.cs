@@ -45,8 +45,15 @@ namespace Gaant_Chart
                     "startDate DATETIME NOT NULL, endDate DATETIME)";
                 myCommand.ExecuteNonQuery();
 
-                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Tasks (modelId INT NOT NULL, " +
-                    "typeId INT NOT NULL, startDate DATETIME, endDate DATETIME, userAssignedId INT, userCompletedId INT)";
+                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Tasks (" +
+                    "modelId INT NOT NULL, " +
+                    "typeId INT NOT NULL, " +
+                    "plannedStartDate DATETIME, " +
+                    "plannedEndDate DATETIME, " +
+                    "startDate DATETIME, " +
+                    "endDate DATETIME, " +
+                    "userAssignedId INT, " +
+                    "userCompletedId INT)";
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Users (" +
@@ -114,12 +121,16 @@ namespace Gaant_Chart
                     long? completedUserId = (task.completedUser == null) ? null : (long?)task.completedUser.rowid;
 
 
-                    myCommand.CommandText = "INSERT INTO Tasks(modelId, typeId, startDate, endDate, userAssignedId, userCompletedId) " +
-                        "VALUES (@modelId, @typeId, @startDate, @endDate, @userAssignedId, @userCompletedId)";
+                    myCommand.CommandText = "INSERT INTO Tasks(modelId, typeId, " +
+                        "plannedStartDate, plannedEndDate, startDate, endDate, userAssignedId, userCompletedId) " +
+                        "VALUES (@modelId, @typeId, @plannedStartDate, @plannedEndDate, " +
+                        "@startDate, @endDate, @userAssignedId, @userCompletedId)";
                     myCommand.Parameters.AddWithValue("@modelId", model.rowid);
                     myCommand.Parameters.AddWithValue("@typeId", task.typeInd);
                     myCommand.Parameters.AddWithValue("@startDate", task.startDate);
+                    myCommand.Parameters.AddWithValue("@plannedStartDate", task.plannedStartDate);
                     myCommand.Parameters.AddWithValue("@endDate", task.endDate);
+                    myCommand.Parameters.AddWithValue("@plannedEndDate", task.plannedEndDate);
                     myCommand.Parameters.AddWithValue("@userAssignedId", assignedUserId);
                     myCommand.Parameters.AddWithValue("@userCompletedId", completedUserId);
                     myCommand.Prepare();
@@ -286,7 +297,6 @@ namespace Gaant_Chart
             return model;
         }
 
-
         public Model getModel(int modelId)
         {
             Model model;
@@ -326,7 +336,9 @@ namespace Gaant_Chart
         {
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT tasks.rowid, tasks.typeId, userAssignedId FROM tasks WHERE modelId = @modelId";
+                myCommand.CommandText = "SELECT rowid, typeId, " +
+                    "plannedStartDate DATETIME, plannedEndDate DATETIME," +
+                    "userAssignedId FROM tasks WHERE modelId = @modelId";
                 myCommand.Parameters.AddWithValue("@modelId", model.rowid);
                 myCommand.Prepare();
 
@@ -336,14 +348,19 @@ namespace Gaant_Chart
                     {
                         int typeId = (int)myDataReader["typeId"];
                         long rowid = (long)myDataReader["rowid"];
+                        DateTime plannedStartDate = (DateTime)myDataReader["plannedStartDate"];
+                        DateTime plannedEndDate = (DateTime)myDataReader["plannedEndDate"];
+                        Task task = model.tasks[typeId];
+
                         if(myDataReader["userAssignedId"].GetType() != typeof(DBNull))
                         {
-                            long assignedUserId = (long)myDataReader["userAssignedId"];
+                            long assignedUserId = (int)myDataReader["userAssignedId"];
                             User assignedUser = data.users[assignedUserId];
-                            model.tasks[typeId].assignedUser = assignedUser;
+                            task.assignedUser = assignedUser;
                         }
-
-                        model.tasks[typeId].rowid = rowid;
+                        task.rowid = rowid;
+                        task.plannedStartDate = plannedStartDate;
+                        task.plannedEndDate = plannedEndDate;
                     }
                 }
             }
@@ -363,7 +380,6 @@ namespace Gaant_Chart
                         DateTime endDate = (DateTime)myDataReader["endDate"];
                         int completedUserId = (int)myDataReader["userCompletedId"];
 
-
                         User user = data.users[completedUserId];
 
                         model.completeTask(user, typeId, startDate, endDate);
@@ -372,7 +388,6 @@ namespace Gaant_Chart
             }
 
             return model;
-
         }
 
         public  Dictionary<long, User> getUsers()
@@ -492,9 +507,15 @@ namespace Gaant_Chart
 
                 foreach(Task task in model.tasks)
                 {
-                    myCommand.CommandText = "UPDATE Tasks SET startDate=@startDate, endDate=@endDate, userAssignedId=@userAssignedId, userCompletedId=@userCompletedId WHERE rowid=@rowid";
+                    myCommand.CommandText = "UPDATE Tasks SET startDate=@startDate, " +
+                        "endDate=@endDate, userAssignedId=@userAssignedId, " +
+                        "userCompletedId=@userCompletedId, " +
+                        "plannedStartDate=@plannedStartDate, plannedEndDate=@plannedEndDate" + 
+                        "WHERE rowid=@rowid";
                     myCommand.Parameters.AddWithValue("@startDate", null);
+                    myCommand.Parameters.AddWithValue("@plannedStartDate", task.plannedStartDate);
                     myCommand.Parameters.AddWithValue("@endDate", null);
+                    myCommand.Parameters.AddWithValue("@plannedEndDate", task.plannedEndDate);
                     myCommand.Parameters.AddWithValue("@userCompletedId", task.userCompletedId);
                     myCommand.Parameters.AddWithValue("@userAssignedId", task.userAssignedId);
                     myCommand.Parameters.AddWithValue("@rowid", task.rowid);

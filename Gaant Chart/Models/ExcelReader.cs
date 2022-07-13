@@ -9,7 +9,7 @@ namespace Gaant_Chart.Models
 {
     public class ExcelReader
     {
-        private int[] taskExcelRows =
+        public int[] taskExcelRows =
         {
             9,
             10,
@@ -27,12 +27,11 @@ namespace Gaant_Chart.Models
             25
         };
 
-        private Boolean useExistingUsers = true;
-
-        private Boolean existingUserError = false;
         private Dictionary<String, User> initalsUserDict;
 
         private IWorksheet mainWs;
+
+        private IApplication application;
 
         private Model model;
 
@@ -41,7 +40,7 @@ namespace Gaant_Chart.Models
         {
             using (ExcelEngine excelEngine = new ExcelEngine())
             {
-                IApplication application = excelEngine.Excel;
+                application = excelEngine.Excel;
 
                 application.DefaultVersion = ExcelVersion.Xlsx;
 

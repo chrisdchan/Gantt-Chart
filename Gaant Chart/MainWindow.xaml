@@ -99,22 +99,13 @@
             x:Name="importBtn"
             Grid.Column="3" Grid.Row="1"
             Grid.ColumnSpan="2" 
-            Margin="5, 60, 5, 0"
+            Margin="5,105 , 5, 0"
             Height="25"
             VerticalAlignment="Top"
             Background="#F4E6FF"
             Click="importBtn_Click"
             Content="Import from Excel"/>
 
-        <Button 
-            Grid.Column="3" Grid.Row="1"
-            Grid.ColumnSpan="2" 
-            Margin="5 105 5 0"
-            Height="25"
-            VerticalAlignment="Top"
-            Background="#50EA12"
-            Click="saveBtn_Click"
-            Content="Save"></Button>
         <Label
             Grid.Row="0"  Grid.RowSpan="2" Grid.Column="6"
             Margin="5 0 5 50"

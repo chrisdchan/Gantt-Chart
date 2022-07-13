@@ -688,11 +688,6 @@ namespace Gaant_Chart
             mouseCaptured = false;
         }
 
-        private void saveBtn_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.MessageBox.Show("No need to save, model is updated upon every change");
-        }
-
         private void help_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start(new ProcessStartInfo
