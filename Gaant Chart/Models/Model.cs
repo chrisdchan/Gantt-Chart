@@ -11,7 +11,7 @@ namespace Gaant_Chart.Models
         public long rowid { get; set; }
         public String modelName { get; set; }
         public DateTime startDate { get; }
-        public DateTime? endDate { get; set; }
+        public DateTime endDate { get; set; }
 
         public DateTime lastUpdated { get; set; }
         public Task[] tasks { get; set; }
@@ -22,7 +22,7 @@ namespace Gaant_Chart.Models
         {
             this.modelName = modelName;
             this.startDate = startDate;
-            this.endDate = null;
+            this.endDate = DateTime.MinValue;
             this.lastCompletedTaskId = -1;
             lastUpdated = DateTime.Now;
 
@@ -30,7 +30,7 @@ namespace Gaant_Chart.Models
         }
 
         // FROM DATABASE
-        public Model(long rowid, String modelName, DateTime startDate, DateTime? endDate, DateTime lastUpated)
+        public Model(long rowid, String modelName, DateTime startDate, DateTime endDate, DateTime lastUpdated)
         {
             this.rowid = rowid; 
             this.modelName = modelName;
@@ -48,7 +48,7 @@ namespace Gaant_Chart.Models
             this.startDate = startDate;
             this.tasks = tasks;
             this.lastCompletedTaskId = lastCompletedTaskId;
-            endDate = null;
+            endDate = DateTime.MinValue;
             lastUpdated = DateTime.Now;
 
             for(int i = 0; i < tasks.Length; i++)

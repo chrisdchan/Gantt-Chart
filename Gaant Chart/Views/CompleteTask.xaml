@@ -9,8 +9,9 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="0.75*"/>
+            <RowDefinition Height="0.75*"/>
+            <RowDefinition Height="0.75*"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
@@ -19,8 +20,12 @@
                    FontSize="25" FontWeight="Bold"
                    TextWrapping="Wrap" TextAlignment="Center"
                    Text="Document Completed Task"/>
-        <Label Grid.Row="1" Content="Date"/>
-        <TextBox Name="dateTbx" Grid.Row="1"
+        <TextBlock x:Name="assignedTxtBlk"
+                   Grid.Row="1" Width="200" 
+                   FontSize="15" Height="30"
+                   VerticalAlignment="Top"/>
+        <Label Grid.Row="2" Content="Date"/>
+        <TextBox Name="dateTbx" Grid.Row="2"
                  Height="40" Width="200"/>
         
         <Button x:Name="cancelBtn" Click="completeTaskBtn_Click"

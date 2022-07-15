@@ -124,8 +124,8 @@ namespace Gaant_Chart.Models
         {
             rectangle.Fill = COMPLETED_COLOR;
             rectangle.Height= BlOCK_HEIGHT;
-            startDate = (task.startDate.HasValue) ? (DateTime)task.startDate : DateTime.MinValue;
-            endDate = (task.endDate.HasValue) ? (DateTime)task.endDate : DateTime.MinValue;
+            startDate = (task.startDate != DateTime.MinValue) ? (DateTime)task.startDate : DateTime.MinValue;
+            endDate = (task.endDate != DateTime.MinValue) ? (DateTime)task.endDate : DateTime.MinValue;
 
             finishInit();
 

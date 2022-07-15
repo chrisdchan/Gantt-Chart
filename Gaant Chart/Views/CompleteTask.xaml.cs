@@ -38,6 +38,8 @@ namespace Gaant_Chart
             user = data.currentUser;
             this.task = task;
 
+            assignedTxtBlk.Text = "Assigned to " + task.assignedUser.name;
+
             earlyExit = true;
             dateTbx.Focus();
 
@@ -101,13 +103,7 @@ namespace Gaant_Chart
 
             if(endDate.TimeOfDay.TotalSeconds == 0)
             {
-                MessageBoxResult res = System.Windows.MessageBox.Show("No time is specified would you like to default to 12:00 AM?", "Time Missing", MessageBoxButton.YesNo);
-                if(res == MessageBoxResult.No)
-                {
-                    dateTbx.Text = dateString;
-                    dateTbx.Focus();
-                    return;
-                }
+                endDate.AddMinutes(1439);
             }
 
             completeTaskLocally();

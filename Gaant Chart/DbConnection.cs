@@ -45,7 +45,7 @@ namespace Gaant_Chart
                     "name TEXT NOT NULL UNIQUE, " +
                     "startDate DATETIME NOT NULL, " +
                     "endDate DATETIME, " +
-                    "lastUpdated DATETIME)";
+                    "lastUpdated DATETIME NOT NULL)";
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Tasks (" +
@@ -104,7 +104,7 @@ namespace Gaant_Chart
         {
             OpenConnection();
             String startDateString = model.startDate.ToString("MM-dd-yyyy");
-            String endDateString = (model.endDate.HasValue) ? ((DateTime)model.endDate).ToString("MM-dd-yyyy") : null;
+            String endDateString = (model.endDate == DateTime.MinValue) ? ((DateTime)model.endDate).ToString("MM-dd-yyyy") : null;
             String lastUpdatedString = model.lastUpdated.ToString("MM-dd-yyyy");
 
             using (SQLiteCommand myCommand = new SQLiteCommand(myConnection))
@@ -246,8 +246,7 @@ namespace Gaant_Chart
                 }
             }
         }
-
-        public int getModelId(String modelName)
+        public int findModelId(String modelName)
         {
             // Will return -1 if model DNE, else return the rowId
             int modelId = -1;
@@ -304,7 +303,7 @@ namespace Gaant_Chart
             return model;
         }
 
-        public Model getModel(int modelId)
+        public Model getModel(long modelId)
         {
             Model model;
             OpenConnection();
@@ -320,8 +319,9 @@ namespace Gaant_Chart
                     {
                         String modelName = (String)myDataReader["name"];
                         DateTime startDate = (DateTime)myDataReader["startDate"];
-                        DateTime? endDate = (DateTime?)myDataReader["endDate"];
                         DateTime lastUpdated = (DateTime)myDataReader["lastUpdated"];
+                        DateTime endDate = (myDataReader["endDate"] == DBNull.Value) ? DateTime.MinValue : (DateTime)myDataReader["endDate"];
+
                         model = new Model(modelId, modelName, startDate, endDate, lastUpdated);
                     }
                     else
@@ -487,10 +487,10 @@ namespace Gaant_Chart
             using (myCommand = new SQLiteCommand(myConnection))
             {
                 myCommand.CommandText = "UPDATE tasks SET startDate = @startDate, endDate = @endDate, " +
-                    "completedUserId = @completedUserId, assignedUserId=@assignedUserId, WHERE rowid = @taskId";
+                    "userCompletedId=@userCompletedId WHERE rowid = @taskId";
                 myCommand.Parameters.AddWithValue("@startDate", startDate);
                 myCommand.Parameters.AddWithValue("@endDate", endDate);
-                myCommand.Parameters.AddWithValue("@userId", userId);
+                myCommand.Parameters.AddWithValue("@userCompletedId", userId);
                 myCommand.Parameters.AddWithValue("@taskId", rowid);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();

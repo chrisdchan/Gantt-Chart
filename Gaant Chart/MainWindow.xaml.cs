@@ -240,9 +240,6 @@ namespace Gaant_Chart
             {
                 myCanvas.Children.Add(dynamicLine.line);
             }
-
-
-
         }
 
         private void addFrameworkElementToCanvas(CanvasElement canvasElement)
@@ -721,7 +718,37 @@ namespace Gaant_Chart
                 String filename = openFileDialog.FileName;
                 ExcelReader excelReader = new ExcelReader(filename);
 
-                data.currentModel = excelReader.model;
+                Model model = excelReader.model;
+
+                long modelId = MainWindow.myDatabase.findModelId(model.modelName);
+
+                if(modelId == - 1)
+                {
+                    MainWindow.myDatabase.insertModel(model);
+                    data.currentModel = model;
+                }
+                else
+                {
+                    Model oldModel = MainWindow.myDatabase.getModel(modelId);
+
+                    String msg = "Replace Existing Model? \n" +
+                        "Click YES to replace model\n" +
+                        "Click NO to load existing model (last updated: " + model.lastUpdated.ToString("MM-dd-yy") + " )";
+
+                        ;
+                    MessageBoxResult res = MessageBox.Show(msg, "Model Already Exists", MessageBoxButton.YesNo);
+
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        MainWindow.myDatabase.updateModel(model);
+                        data.currentModel = model;
+                    }
+                    else if(res == MessageBoxResult.No)
+                    {
+                        data.currentModel = oldModel;
+                    }
+                }
+
                 displayCurrentModel();
             }
         }

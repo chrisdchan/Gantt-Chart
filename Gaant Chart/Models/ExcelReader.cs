@@ -101,6 +101,7 @@ namespace Gaant_Chart.Models
                 if (hasEndDate)
                 {
                     endDate = mainWs.Range[row, 9].DateTime;
+                    endDate = toEndOfDay(endDate);
                 }
 
                 User user = initalsUserDict[userInitals];
@@ -128,16 +129,42 @@ namespace Gaant_Chart.Models
                 String initals = nameWs.Range[r, 2].Value;
                 String category = nameWs.Range[r, 3].Value;
                 String status = nameWs.Range[r, 4].Value;
-
                 Boolean active = (status == "active");
 
-                User user = new User(name, initals, category, active);
+                User user = data.getUser(name);
+
+                if (user == null)
+                {
+                    user = new User(name, initals, category, active);
+
+                    if (user.initials != null && MainWindow.myDatabase.isUserInitialsExist(user))
+                    {
+                        user.initials = String.Concat(name.Split(' ').Select(s => s[0]));
+                        user.initials += user.rowid.ToString();
+                    }
+
+                    MainWindow.myDatabase.insertUser(user);
+                    data.users.Add(user.rowid, user);
+                }
 
                 initalsUserDict.Add(initals, user);
 
                 r++;
                 name = nameWs.Range[r, 1].Value;
             }
+        }
+
+        public User[] getUsers()
+        {
+            User[] users = new User[initalsUserDict.Count];
+            int i = 0;
+            foreach(var kvp in initalsUserDict)
+            {
+                users[i] = kvp.Value;
+                i++;
+            }
+            return users;
+
         }
     }
 }
