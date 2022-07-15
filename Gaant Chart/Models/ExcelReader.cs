@@ -37,6 +37,7 @@ namespace Gaant_Chart.Models
         public Model model { get;  }
         private Dictionary<String, User> initalsUserDict;
         private Task[] tasks;
+        private int lastCompletedTaskId;
 
         public ExcelReader(String pathname)
         {
@@ -62,12 +63,18 @@ namespace Gaant_Chart.Models
                 setInitialsUserDict();
                 setTasks();
 
-                model = new Model(modelName, modelStartDate, tasks);
+                model = new Model(modelName, modelStartDate, tasks, lastCompletedTaskId);
             }
         }
 
         private void setTasks()
         {
+            int MINUTES_IN_DAY = 1439;
+            lastCompletedTaskId = 0;
+
+            Func<DateTime, DateTime> toStartOfDay = date => date.AddMinutes(-date.TimeOfDay.TotalMinutes);
+            Func<DateTime, DateTime> toEndOfDay = date => date.AddMinutes(MINUTES_IN_DAY - date.TimeOfDay.TotalMinutes);
+
             for(int i = 0; i < data.allTasks.Length; i++)
             {
 
@@ -76,6 +83,9 @@ namespace Gaant_Chart.Models
                 DateTime plannedStart = mainWs.Range[row, 5].DateTime;
                 DateTime plannedEnd = mainWs.Range[row, 6].DateTime;
 
+                plannedStart = toStartOfDay(plannedStart);
+                plannedEnd = toEndOfDay(plannedEnd);
+
                 DateTime startDate = DateTime.MinValue;
                 DateTime endDate = DateTime.MinValue;
 
@@ -83,10 +93,15 @@ namespace Gaant_Chart.Models
                 Boolean hasEndDate = !mainWs.Range[row, 9].IsBlank;
 
                 if (hasStartDate)
+                {
                     startDate = mainWs.Range[row, 8].DateTime;
+                    startDate = toStartOfDay(startDate);
+                }
 
                 if (hasEndDate)
+                {
                     endDate = mainWs.Range[row, 9].DateTime;
+                }
 
                 User user = initalsUserDict[userInitals];
 
@@ -94,8 +109,10 @@ namespace Gaant_Chart.Models
                 task.assign(user);
 
                 if (hasStartDate && hasEndDate)
+                {
                     task.complete(user, startDate, endDate);
-
+                    lastCompletedTaskId = i;
+                }
                 tasks[i] = task;
             }
         }

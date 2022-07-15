@@ -42,11 +42,12 @@ namespace Gaant_Chart.Models
         }
 
         //FROM EXCEL
-        public Model(string modelName, DateTime startDate, Task[] tasks)
+        public Model(string modelName, DateTime startDate, Task[] tasks, int lastCompletedTaskId)
         {
             this.modelName = modelName;
             this.startDate = startDate;
             this.tasks = tasks;
+            this.lastCompletedTaskId = lastCompletedTaskId;
             endDate = null;
             lastUpdated = DateTime.Now;
 
