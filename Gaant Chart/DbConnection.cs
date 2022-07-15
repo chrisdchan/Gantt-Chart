@@ -41,8 +41,11 @@ namespace Gaant_Chart
 
             using(SQLiteCommand myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Models (name TEXT NOT NULL UNIQUE, " +
-                    "startDate DATETIME NOT NULL, endDate DATETIME)";
+                myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Models (" +
+                    "name TEXT NOT NULL UNIQUE, " +
+                    "startDate DATETIME NOT NULL, " +
+                    "endDate DATETIME, " +
+                    "lastUpdated DATETIME)";
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Tasks (" +
@@ -102,13 +105,15 @@ namespace Gaant_Chart
             OpenConnection();
             String startDateString = model.startDate.ToString("MM-dd-yyyy");
             String endDateString = (model.endDate.HasValue) ? ((DateTime)model.endDate).ToString("MM-dd-yyyy") : null;
+            String lastUpdatedString = model.lastUpdated.ToString("MM-dd-yyyy");
 
             using (SQLiteCommand myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "INSERT INTO Models(name, startDate, endDate) VALUES (@name, @startDate, @endDate)";
+                myCommand.CommandText = "INSERT INTO Models(name, startDate, endDate, lastUpdated) VALUES (@name, @startDate, @endDate, @lastUpdated)";
                 myCommand.Parameters.AddWithValue("@Name", model.modelName);
-                myCommand.Parameters.AddWithValue("@startDate", startDateString);
-                myCommand.Parameters.AddWithValue("@EndDate", endDateString);
+                myCommand.Parameters.AddWithValue("@startDate", model.startDate);
+                myCommand.Parameters.AddWithValue("@EndDate", model.endDate);
+                myCommand.Parameters.AddWithValue("@lastUpdated", model.lastUpdated);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
 
@@ -270,7 +275,7 @@ namespace Gaant_Chart
             OpenConnection();
             using (myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT rowid, startDate, endDate FROM Models where name = @name";
+                myCommand.CommandText = "SELECT rowid, startDate, endDate, lastUpdated FROM Models where name = @name";
                 myCommand.Parameters.AddWithValue("@name", modelName);
                 myCommand.Prepare();
 
@@ -281,9 +286,11 @@ namespace Gaant_Chart
                         int rowid = myDataReader.GetInt32(0);
                         String startDateString = myDataReader.GetString(1);
                         String endDateString = (myDataReader["endDate"] == DBNull.Value) ? null : (String)myDataReader["endDate"];
-                        DateTime startDate = DateTime.Parse(startDateString);
+                        String lastUpdatedString = (String)myDataReader["lastUpdated"];
+                        DateTime startDate = (DateTime)myDataReader["startDate"];
                         DateTime endDate = DateTime.Parse(endDateString);
-                        model = new Model(rowid, modelName, startDate, endDate);
+                        DateTime lastUpdated = DateTime.Parse(lastUpdatedString);
+                        model = new Model(rowid, modelName, startDate, endDate, lastUpdated);
                     }
                     else
                     {
@@ -303,7 +310,7 @@ namespace Gaant_Chart
             OpenConnection();
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT name, startDate, endDate FROM Models where rowid = @rowid";
+                myCommand.CommandText = "SELECT name, startDate, endDate, lastUpdated FROM Models where rowid = @rowid";
                 myCommand.Parameters.AddWithValue("@rowid", modelId);
                 myCommand.Prepare();
 
@@ -311,13 +318,11 @@ namespace Gaant_Chart
                 {
                     if (myDataReader.Read())
                     {
-                        String modelName = myDataReader.GetString(0);
-                        String startDateString = myDataReader.GetString(1);
-                        String endDateString = (myDataReader["endDate"] == DBNull.Value) ? null : (String)myDataReader["endDate"];
-                        DateTime startDate = DateTime.Parse(startDateString);
-                        DateTime? endDate = (String.IsNullOrEmpty(endDateString)) ? null : (DateTime?)DateTime.Parse(endDateString);
-
-                        model = new Model(modelId, modelName, startDate, endDate);
+                        String modelName = (String)myDataReader["name"];
+                        DateTime startDate = (DateTime)myDataReader["startDate"];
+                        DateTime? endDate = (DateTime?)myDataReader["endDate"];
+                        DateTime lastUpdated = (DateTime)myDataReader["lastUpdated"];
+                        model = new Model(modelId, modelName, startDate, endDate, lastUpdated);
                     }
                     else
                     {
@@ -481,7 +486,8 @@ namespace Gaant_Chart
 
             using (myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "UPDATE tasks SET startDate = @startDate, endDate = @endDate, userId = @userId WHERE rowid = @taskId";
+                myCommand.CommandText = "UPDATE tasks SET startDate = @startDate, endDate = @endDate, " +
+                    "completedUserId = @completedUserId, assignedUserId=@assignedUserId, WHERE rowid = @taskId";
                 myCommand.Parameters.AddWithValue("@startDate", startDate);
                 myCommand.Parameters.AddWithValue("@endDate", endDate);
                 myCommand.Parameters.AddWithValue("@userId", userId);
@@ -498,10 +504,11 @@ namespace Gaant_Chart
 
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "UPDATE Models SET startDate = @startDate, name=@name WHERE rowid=@rowid";
+                myCommand.CommandText = "UPDATE Models SET startDate = @startDate, name=@name, lastUpdated=@lastUpdated WHERE rowid=@rowid";
                 myCommand.Parameters.AddWithValue("@startDate", model.startDate);
                 myCommand.Parameters.AddWithValue("@name", model.modelName);
                 myCommand.Parameters.AddWithValue("@rowid", model.rowid);
+                myCommand.Parameters.AddWithValue("@lastUpdated", model.lastUpdated);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
 

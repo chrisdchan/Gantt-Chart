@@ -143,7 +143,7 @@ namespace Gaant_Chart
                 checkbox.Unchecked += new RoutedEventHandler(System_Unchecked);
 
                 TextBox textbox = new TextBox();
-                textbox.Width = 100;
+                textbox.Width = 150;
                 textbox.Margin = new Thickness(0, 0, 5, 0);
                 textbox.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
                 textbox.Background = new SolidColorBrush(Colors.LightGray);
@@ -721,7 +721,7 @@ namespace Gaant_Chart
                 String filename = openFileDialog.FileName;
                 ExcelReader excelReader = new ExcelReader(filename);
 
-                data.currentModel = excelReader.getModel();
+                data.currentModel = excelReader.model;
                 displayCurrentModel();
             }
         }

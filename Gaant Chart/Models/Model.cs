@@ -12,6 +12,8 @@ namespace Gaant_Chart.Models
         public String modelName { get; set; }
         public DateTime startDate { get; }
         public DateTime? endDate { get; set; }
+
+        public DateTime lastUpdated { get; set; }
         public Task[] tasks { get; set; }
         public int lastCompletedTaskId { get; set; }
 
@@ -22,17 +24,19 @@ namespace Gaant_Chart.Models
             this.startDate = startDate;
             this.endDate = null;
             this.lastCompletedTaskId = -1;
+            lastUpdated = DateTime.Now;
 
             tasks = initDefaultTasks();
         }
 
         // FROM DATABASE
-        public Model(long rowid, String modelName, DateTime startDate, DateTime? endDate)
+        public Model(long rowid, String modelName, DateTime startDate, DateTime? endDate, DateTime lastUpated)
         {
             this.rowid = rowid; 
             this.modelName = modelName;
             this.startDate = startDate;
             this.endDate = endDate;
+            this.lastUpdated = lastUpdated;
 
             tasks = initDefaultTasks();
         }
@@ -44,6 +48,7 @@ namespace Gaant_Chart.Models
             this.startDate = startDate;
             this.tasks = tasks;
             endDate = null;
+            lastUpdated = DateTime.Now;
 
             for(int i = 0; i < tasks.Length; i++)
             {
@@ -63,6 +68,7 @@ namespace Gaant_Chart.Models
         public void addTasks(Task[] tasks)
         {
             this.tasks = tasks;
+            lastUpdated = DateTime.Now;
         }
 
         private Task[] initDefaultTasks()
@@ -88,6 +94,7 @@ namespace Gaant_Chart.Models
         {
             tasks[taskTypeId].complete(user, startDate, endDate);
             lastCompletedTaskId = taskTypeId;
+            lastUpdated = DateTime.Now;
         }
 
         public void uncompleteTask(int taskTypeId)
@@ -113,26 +120,8 @@ namespace Gaant_Chart.Models
             {
                 lastCompletedTaskId = taskTypeId - 1;
             }
+            lastUpdated = DateTime.Now;
         }
 
-    }
-
-    public class TaskCompletor
-    {
-        public long userId { get; set; }
-        public DateTime startDate { get; set; }
-        public DateTime endDate { get; set; }
-
-        public int taskTypeId { get; set; }
-
-        public TaskCompletor(int taskTypeId, long userId, DateTime startDate, DateTime endDate)
-        {
-            this.userId = userId;
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.taskTypeId = taskTypeId;
-        }
-
-       public TaskCompletor(Task task, long userId, DateTime startDate, DateTime endDate) : this(task.typeInd, userId, startDate, endDate) { }
     }
 }

@@ -27,58 +27,47 @@ namespace Gaant_Chart.Models
             25
         };
 
-        private Dictionary<String, User> initalsUserDict;
 
         private IWorksheet mainWs;
+        private IWorksheet nameWs;
 
         private IApplication application;
 
-        private Model model;
-
+        private String pathname;
+        public Model model { get;  }
+        private Dictionary<String, User> initalsUserDict;
+        private Task[] tasks;
 
         public ExcelReader(String pathname)
         {
+            this.pathname = pathname;
+
+            initalsUserDict = new Dictionary<String, User>();
+            tasks = new Task[data.NTASKS];
+
             using (ExcelEngine excelEngine = new ExcelEngine())
             {
                 application = excelEngine.Excel;
-
                 application.DefaultVersion = ExcelVersion.Xlsx;
-
                 IWorkbook workbook = application.Workbooks.Open(pathname);
 
                 mainWs = workbook.Worksheets[0];
                 mainWs.EnableSheetCalculations();
-                IWorksheet nameWs = workbook.Worksheets[1];
+
+                nameWs = workbook.Worksheets[1];
 
                 String modelName = mainWs.Range["B2"].Value;
-                String modelStartDateString = mainWs.Range["B4"].Value;
+                DateTime modelStartDate = mainWs.Range["B4"].DateTime;
 
-                DateTime modelStartDate = stringToDate(modelStartDateString);
+                setInitialsUserDict();
+                setTasks();
 
-                extractAndAddUsers(nameWs);
-
-                if(MainWindow.myDatabase.getModelId(modelName) != -1)
-                {
-                    model = MainWindow.myDatabase.getModel(modelName);
-                }
-                else
-                {
-                    Task[] tasks = getTasks();
-                    model = new Model(modelName, modelStartDate, tasks);
-                    MainWindow.myDatabase.insertModel(model);
-                }
+                model = new Model(modelName, modelStartDate, tasks);
             }
         }
 
-        public Model getModel()
+        private void setTasks()
         {
-            return model;
-        }
-
-        private Task[] getTasks()
-        {
-            Task[] tasks = new Task[data.NTASKS];
-
             for(int i = 0; i < data.allTasks.Length; i++)
             {
 
@@ -109,70 +98,28 @@ namespace Gaant_Chart.Models
 
                 tasks[i] = task;
             }
-
-            return tasks;
         }
 
-        private void invalidDateError()
-        {
-            throw new Exception("Invalid Date");
-        }
-
-        private void extractAndAddUsers(IWorksheet nameWs)
+        private void setInitialsUserDict()
         {
             int r = 2;
 
-            initalsUserDict = new Dictionary<String, User>();
-
             String name = nameWs.Range[r, 1].Value;
-
-            List<User> users = new List<User>();
 
             while(!String.IsNullOrEmpty(name))
             {
-                User user = data.getUser(name);
                 String initals = nameWs.Range[r, 2].Value;
                 String category = nameWs.Range[r, 3].Value;
                 String status = nameWs.Range[r, 4].Value;
 
                 Boolean active = (status == "active");
 
-                if(user == null)
-                {
-                    user = new User(name, initals, category, active);
+                User user = new User(name, initals, category, active);
 
-                    if(user.initials != null && MainWindow.myDatabase.isUserInitialsExist(user))
-                    {
-                        user.initials = String.Concat(name.Split(' ').Select(s => s[0]));
-                        user.initials += user.rowid.ToString();
-                    }
-
-                    MainWindow.myDatabase.insertUser(user);
-                    users.Add(user);
-                }
-                else
-                {
-                    user = data.getUser(name);
-                }
-
-                if(!initalsUserDict.ContainsKey(initals))
-                    initalsUserDict.Add(initals, user);
+                initalsUserDict.Add(initals, user);
 
                 r++;
                 name = nameWs.Range[r, 1].Value;
-            }
-        }
-
-        private DateTime stringToDate(String str)
-        {
-            DateTime date;
-            if (DateTime.TryParse(str, out date))
-            {
-                return date;
-            }
-            else
-            {
-                throw new Exception("Invalid date");
             }
         }
     }
