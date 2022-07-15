@@ -337,7 +337,7 @@ namespace Gaant_Chart
             using(myCommand = new SQLiteCommand(myConnection))
             {
                 myCommand.CommandText = "SELECT rowid, typeId, " +
-                    "plannedStartDate DATETIME, plannedEndDate DATETIME," +
+                    "plannedStartDate, plannedEndDate," +
                     "userAssignedId FROM tasks WHERE modelId = @modelId";
                 myCommand.Parameters.AddWithValue("@modelId", model.rowid);
                 myCommand.Prepare();
@@ -510,7 +510,7 @@ namespace Gaant_Chart
                     myCommand.CommandText = "UPDATE Tasks SET startDate=@startDate, " +
                         "endDate=@endDate, userAssignedId=@userAssignedId, " +
                         "userCompletedId=@userCompletedId, " +
-                        "plannedStartDate=@plannedStartDate, plannedEndDate=@plannedEndDate" + 
+                        "plannedStartDate=@plannedStartDate, plannedEndDate=@plannedEndDate " + 
                         "WHERE rowid=@rowid";
                     myCommand.Parameters.AddWithValue("@startDate", null);
                     myCommand.Parameters.AddWithValue("@plannedStartDate", task.plannedStartDate);

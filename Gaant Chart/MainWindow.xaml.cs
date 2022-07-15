@@ -448,8 +448,12 @@ namespace Gaant_Chart
                 }
             }
 
-            CheckBox nextCheckbox = taskBarCheckBoxes[model.lastCompletedTaskId + 1];
-            nextCheckbox.IsHitTestVisible = true;
+            if(model.lastCompletedTaskId != model.tasks.Length - 1)
+            {
+                CheckBox nextCheckbox = taskBarCheckBoxes[model.lastCompletedTaskId + 1];
+                nextCheckbox.IsHitTestVisible = true;
+
+            }
 
             renderedChecks = true;
         }
