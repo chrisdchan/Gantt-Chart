@@ -33,7 +33,7 @@
         </Grid>
 
         <Grid Grid.Column="1" Background="AliceBlue" 
-              x:Name="addTeamMemberGrid" Visibility="Visible">
+              x:Name="addTeamMemberGrid" Visibility="hidden">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="8*"/>
@@ -115,7 +115,7 @@
                     Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"/>
         </Grid>
 
-        <Grid x:Name="editUserGrid" Visibility="Hidden" Background="AliceBlue"
+        <Grid x:Name="editUserGrid" Visibility="Visible" Background="AliceBlue"
               Grid.Column="1" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -142,7 +142,11 @@
                            VerticalAlignment="Center"/>
             </StackPanel>
 
-            <Label Content="Edit Authorization" Grid.Column="1" Grid.Row="2"/>
+            <StackPanel Grid.Column="1" Grid.Row="2"
+                        Orientation="Horizontal">
+                <ComboBox Width="100" Height="25"/>
+                <Label Content="Edit Authorization" />
+            </StackPanel>
 
             <StackPanel Grid.Row="3" Grid.Column="1" Background="White"
                         x:Name="editAuthorizationSP">

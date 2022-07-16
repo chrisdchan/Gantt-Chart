@@ -36,6 +36,7 @@ namespace Gaant_Chart
             foreach(var item in data.users)
             {
                 User user = item.Value;
+                if (!user.active) continue;
                 ComboBoxItem newComboBoxItem = new ComboBoxItem();
                 newComboBoxItem.Content = user.name;
                 newComboBoxItem.Tag = user;

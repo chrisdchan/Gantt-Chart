@@ -49,14 +49,14 @@ namespace Gaant_Chart
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Tasks (" +
-                    "modelId INT NOT NULL, " +
+                    "modelId INT NOT NULL CHECK (modelId > 0), " +
                     "typeId INT NOT NULL, " +
                     "plannedStartDate DATETIME, " +
                     "plannedEndDate DATETIME, " +
                     "startDate DATETIME, " +
                     "endDate DATETIME, " +
-                    "userAssignedId INT, " +
-                    "userCompletedId INT)";
+                    "userAssignedId INT CHECK (userAssignedId > 0), " +
+                    "userCompletedId INT CHECK (userCompletedId > 0) )";
                 myCommand.ExecuteNonQuery();
 
                 myCommand.CommandText = "CREATE TABLE IF NOT EXISTS Users (" +
@@ -403,7 +403,7 @@ namespace Gaant_Chart
 
             using(myCommand = new SQLiteCommand(myConnection))
             {
-                myCommand.CommandText = "SELECT rowid, name, initials, password, requirePassword, category FROM Users";
+                myCommand.CommandText = "SELECT rowid, name, initials, password, requirePassword, category, active FROM Users";
                 
 
                 using(myDataReader = myCommand.ExecuteReader())
@@ -415,10 +415,13 @@ namespace Gaant_Chart
                         String initials = (String)myDataReader["initials"];
                         String password = (String)myDataReader["password"];
                         String category = (myDataReader["category"].GetType() == typeof(DBNull)) ? null : (String)myDataReader["category"];
+                        int activeInt = (int)myDataReader["active"];
+                        Boolean active = activeInt == 1;
+
                         int reqPassInt = (int) myDataReader["requirePassword"];
                         Boolean reqPass = (reqPassInt != 0);
 
-                        User user = new User(rowid, name, initials, password, reqPass, category);
+                        User user = new User(rowid, name, initials, password, reqPass, category, active);
                         users.Add(rowid, user);
                     }
                 }

@@ -121,11 +121,6 @@ namespace Gaant_Chart
 
         private void setTaskComponentsReadOnly()
         {
-            foreach(CheckBox checkBox in taskBarCheckBoxes)
-            {
-                checkBox.IsHitTestVisible = false;
-            }
-
             foreach(TextBox textBox in taskBarTextBoxes)
             {
                 textBox.IsReadOnly = true;
@@ -387,7 +382,6 @@ namespace Gaant_Chart
                 TextBox textbox = taskBarTextBoxes[i];
                 dockpanel.Background = uncompletedColor;
                 checkbox.IsChecked = false;
-                checkbox.IsHitTestVisible = false;
                 textbox.Text = "";
             }
             renderedChecks = true;
@@ -432,7 +426,6 @@ namespace Gaant_Chart
                 if (task.completed)
                 {
                     dockpanel.Background = completedColor;
-                    checkbox.IsHitTestVisible = true;
                     checkbox.IsChecked = true;
                     textbox.Text =  task.completedUser.name + " | " + ((DateTime)task.endDate).ToString("M/d/y");
                 }
@@ -440,7 +433,6 @@ namespace Gaant_Chart
                 {
                     dockpanel.Background = uncompletedColor;
                     checkbox.IsChecked = false;
-                    checkbox.IsHitTestVisible = false;
                     textbox.Text = "";
                 }
             }
@@ -448,8 +440,6 @@ namespace Gaant_Chart
             if(model.lastCompletedTaskId != model.tasks.Length - 1)
             {
                 CheckBox nextCheckbox = taskBarCheckBoxes[model.lastCompletedTaskId + 1];
-                nextCheckbox.IsHitTestVisible = true;
-
             }
 
             renderedChecks = true;
@@ -524,7 +514,6 @@ namespace Gaant_Chart
             }
             else
             {
-
                 addCompletedTaskBlock(task);
             }
         }
@@ -533,6 +522,7 @@ namespace Gaant_Chart
         {
 
             if (!renderedChecks) return;
+            if (data.currentModel == null) return;
 
             CheckBox checkbox = sender as CheckBox; 
             int taskTypeId = (int)checkbox.Tag;
@@ -735,7 +725,6 @@ namespace Gaant_Chart
                         "Click YES to replace model\n" +
                         "Click NO to load existing model (last updated: " + model.lastUpdated.ToString("MM-dd-yy") + " )";
 
-                        ;
                     MessageBoxResult res = MessageBox.Show(msg, "Model Already Exists", MessageBoxButton.YesNo);
 
                     if (res == MessageBoxResult.Yes)

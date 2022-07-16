@@ -129,7 +129,7 @@ namespace Gaant_Chart.Models
                 String initals = nameWs.Range[r, 2].Value;
                 String category = nameWs.Range[r, 3].Value;
                 String status = nameWs.Range[r, 4].Value;
-                Boolean active = (status == "active");
+                Boolean active = (status == "Active");
 
                 User user = data.getUser(name);
 

@@ -39,7 +39,8 @@ namespace Gaant_Chart.Models
                     string initials,
                     string password,
                     Boolean reqPass,
-                    string category)
+                    string category,
+                    Boolean active)
         {
             this.rowid = rowid;
             this.name = name;
@@ -47,6 +48,7 @@ namespace Gaant_Chart.Models
             this.password = password;
             this.reqPass = reqPass;
             this.category = category;
+            this.active = active;
         }
 
         // FROM Admin
