@@ -37,6 +37,7 @@ namespace Gaant_Chart
         public static DbConnection myDatabase { get; set; }
 
         public static EventHandler LoadExistingModelEvent { get; set; }
+        public static Grid grid { get; set; }
         private static Dictionary<int, (CheckBox, TextBox)> taskComponents { get; set; }
 
         private static double heightPerTask { get; set; }
@@ -50,8 +51,11 @@ namespace Gaant_Chart
 
         private CanvasView view { get; set; }
 
+
         private  ModelDisplay modelDisplay { get; set; }
         private CanvasDisplay canvasDisplay { get; set; }
+
+        private CanvasGraph canvasGraph { get; set; }
 
         private Boolean renderedChecks = true;
 
@@ -65,36 +69,47 @@ namespace Gaant_Chart
             myDatabase = new DbConnection();
             view = new CanvasView(DateTime.Now, DEFAULT_DAYS_IN_VIEW);
 
+            grid = mainGrid;
 
             // Cache user data from database
             data.initUsers();
 
 
             // set up the canvas
+            canvasGraph = new CanvasGraph();
+
 
             createTaskBar();
-            initCanvas();
+            //initCanvas();
             initTaskBarLists();
             setTaskComponentsReadOnly();
 
+            Loaded += delegate
+            {
+                canvasGraph.load();
+            };
         }
 
         private void displayCurrentModel()
         {
 
             Model model = data.currentModel;
-            view = new CanvasView(data.currentModel, 28);
+            canvasGraph.loadModel(model);
+            //view = new CanvasView(data.currentModel, 28);
 
-            myCanvas.Visibility = Visibility.Visible;
+            //myCanvas.Visibility = Visibility.Visible;
 
 
-            label_ModelID.Content = model.modelName;
             txtDisplayModelName.Text = data.currentModel.modelName;
 
-            initTaskBlocks();
+            //canvasDisplay = new CanvasDisplay(view);
+
+
+
+            //initTaskBlocks();
             initTaskBarWithModel();
 
-            updateCanvas();
+            //updateCanvas();
         }
 
         private void displayCurrentUser()
@@ -208,7 +223,7 @@ namespace Gaant_Chart
         {
             if(isCurrentModel())
             {
-                foreach(TaskDisplay taskDisplay in Enumerable.Concat(modelDisplay.plannedBlocks, modelDisplay.completedBlocks))
+                foreach(oldTaskDisplay taskDisplay in Enumerable.Concat(modelDisplay.plannedBlocks, modelDisplay.completedBlocks))
                 {
                     UIElement element = taskDisplay.rectangle;
                     myCanvas.Children.Remove(element);
@@ -216,7 +231,7 @@ namespace Gaant_Chart
 
                 modelDisplay.resize(view);
 
-                foreach(TaskDisplay taskDisplay in Enumerable.Concat(modelDisplay.plannedBlocks, modelDisplay.completedBlocks))
+                foreach(oldTaskDisplay taskDisplay in Enumerable.Concat(modelDisplay.plannedBlocks, modelDisplay.completedBlocks))
                 {
                     addRectToCanvas(taskDisplay);
                 }
@@ -249,7 +264,6 @@ namespace Gaant_Chart
         {
             removeDynamicElements();
             canvasDisplay.resize(view);
-            renderDynamicElements();
 
             updateTaskBlocks();
             updateSlider();
@@ -292,12 +306,12 @@ namespace Gaant_Chart
             
             view.changeStartDate(model.startDate);
 
-            foreach(TaskDisplay taskDisplay in modelDisplay.plannedBlocks)
+            foreach(oldTaskDisplay taskDisplay in modelDisplay.plannedBlocks)
             {
                 addRectToCanvas(taskDisplay);
             }
 
-            foreach(TaskDisplay taskDisplay in modelDisplay.completedBlocks)
+            foreach(oldTaskDisplay taskDisplay in modelDisplay.completedBlocks)
             {
                 addRectToCanvas(taskDisplay);
             }
@@ -305,25 +319,25 @@ namespace Gaant_Chart
 
         private void removeAllTaskBlocks()
         {
-            foreach(TaskDisplay taskDisplay in modelDisplay.plannedBlocks)
+            foreach(oldTaskDisplay taskDisplay in modelDisplay.plannedBlocks)
             {
                 removeRectFromCanvas(taskDisplay);
             }
 
-            foreach(TaskDisplay taskDisplay in modelDisplay.completedBlocks)
+            foreach(oldTaskDisplay taskDisplay in modelDisplay.completedBlocks)
             {
                 removeRectFromCanvas(taskDisplay);
             }
 
         }
 
-        private void removeRectFromCanvas(TaskDisplay taskDisplay)
+        private void removeRectFromCanvas(oldTaskDisplay taskDisplay)
         {
             Rectangle rect = taskDisplay.rectangle;
             myCanvas.Children.Remove(rect);
         }
 
-        private void addRectToCanvas(TaskDisplay taskDisplay)
+        private void addRectToCanvas(oldTaskDisplay taskDisplay)
         {
             Rectangle rect = taskDisplay.rectangle;
             myCanvas.Children.Add(rect);
@@ -477,6 +491,7 @@ namespace Gaant_Chart
             int taskTypeId = (int)checkbox.Tag;
             Model model = data.currentModel;
 
+            Trace.WriteLine(view.startDate.ToString());
 
             if (!isCurrentModel())
             {
@@ -498,6 +513,13 @@ namespace Gaant_Chart
             if (!user.authorization[taskTypeId])
             {
                 MessageBox.Show("User is not authorized to complete task");
+                checkbox.IsChecked = false;
+                return;
+            }
+
+            if(taskTypeId != 0 && !model.tasks[taskTypeId - 1].completed)
+            {
+                MessageBox.Show("Previous task is not completed");
                 checkbox.IsChecked = false;
                 return;
             }
@@ -557,7 +579,7 @@ namespace Gaant_Chart
 
         private void addCompletedTaskBlock(Models.Task task)
         {
-            TaskDisplay taskDisplay = modelDisplay.addAndGetCompletedTask(task);
+            oldTaskDisplay taskDisplay = modelDisplay.addAndGetCompletedTask(task);
             addRectToCanvas(taskDisplay);
             initTaskBarWithModel();
         }

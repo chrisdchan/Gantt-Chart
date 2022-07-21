@@ -195,7 +195,6 @@ namespace Gaant_Chart.Models
                 if(dateLabel.leftoffset <= view.RIGHT_OUTER_BORDER + 90)
                 {
                     dates.Add(dateLabel);
-
                 }
             }
         }

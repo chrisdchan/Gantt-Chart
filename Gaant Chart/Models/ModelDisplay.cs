@@ -10,8 +10,8 @@ namespace Gaant_Chart.Models
 {
     public class ModelDisplay
     {
-        public List<TaskDisplay> plannedBlocks { get; set; }
-        public List<TaskDisplay> completedBlocks { get; set; }
+        public List<oldTaskDisplay> plannedBlocks { get; set; }
+        public List<oldTaskDisplay> completedBlocks { get; set; }
 
         public Model model { get; }
 
@@ -22,8 +22,8 @@ namespace Gaant_Chart.Models
             this.model = model;
             this.view = view;
 
-            plannedBlocks = new List<TaskDisplay>();
-            completedBlocks = new List<TaskDisplay>();
+            plannedBlocks = new List<oldTaskDisplay>();
+            completedBlocks = new List<oldTaskDisplay>();
 
             initCompletedBlocks();
             initPlannedBlocks();
@@ -35,7 +35,7 @@ namespace Gaant_Chart.Models
             {
                 if(task.completed)
                 {
-                    TaskDisplay taskDisplay = new CompletedTaskDisplay(task, view);
+                    oldTaskDisplay taskDisplay = new CompletedTaskDisplay(task, view);
                     completedBlocks.Add(taskDisplay);
                 }
                 else
@@ -49,26 +49,26 @@ namespace Gaant_Chart.Models
         {
             foreach(Task task in model.tasks)
             {
-                TaskDisplay taskDisplay = new PlannedTaskDisplay(task, view);
+                oldTaskDisplay taskDisplay = new PlannedTaskDisplay(task, view);
                 plannedBlocks.Add(taskDisplay);
             }
         }
 
-        public TaskDisplay addAndGetCompletedTask(Task task)
+        public oldTaskDisplay addAndGetCompletedTask(Task task)
         {
-            TaskDisplay taskDisplay = new CompletedTaskDisplay(task, view);
+            oldTaskDisplay taskDisplay = new CompletedTaskDisplay(task, view);
             completedBlocks.Add(taskDisplay);
             return taskDisplay;
         }
 
         public void resize(CanvasView view)
         {
-            foreach(TaskDisplay taskDisplay in plannedBlocks)
+            foreach(oldTaskDisplay taskDisplay in plannedBlocks)
             {
                 taskDisplay.resize(view);
             }
 
-            foreach(TaskDisplay taskDisplay in completedBlocks)
+            foreach(oldTaskDisplay taskDisplay in completedBlocks)
             {
                 taskDisplay.resize(view);
             }

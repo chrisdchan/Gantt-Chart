@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         ResizeMode="NoResize" Height="800" Width="1300"
         Title="MainWindow">
-    <Grid>
+    <Grid x:Name="mainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>

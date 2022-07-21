@@ -38,7 +38,10 @@ namespace Gaant_Chart
             user = data.currentUser;
             this.task = task;
 
-            assignedTxtBlk.Text = "Assigned to " + task.assignedUser.name;
+            if (task.assignedUser != null)
+                assignedTxtBlk.Text = "Assigned to " + task.assignedUser.name;
+            else
+                assignedTxtBlk.Text = "Unassigned Task";
 
             earlyExit = true;
             dateTbx.Focus();
@@ -68,14 +71,14 @@ namespace Gaant_Chart
 
             if(String.IsNullOrEmpty(dateString))
             {
-                MessageBoxResult res = System.Windows.MessageBox.Show("Would you like to use today's date as the start date?", "Invalid Date", MessageBoxButton.YesNo);
+                MessageBoxResult res = MessageBox.Show("Would you like to use today's date as the start date?", "Invalid Date", MessageBoxButton.YesNo);
                 if(res == MessageBoxResult.Yes)
                 {
                     endDate = DateTime.Now;
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("Please Enter a valid date");
+                    MessageBox.Show("Please Enter a valid date");
                     return;
                 }
             }

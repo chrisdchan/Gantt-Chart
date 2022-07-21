@@ -103,6 +103,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Display\CanvasGraph.cs" />
+    <Compile Include="Display\TaskDisplay.cs" />
     <Compile Include="Models\ExcelReader.cs" />
     <Compile Include="Views\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
@@ -124,7 +126,7 @@
     <Compile Include="Models\ModelDisplay.cs" />
     <Compile Include="Models\ModelTag.cs" />
     <Compile Include="Models\Task.cs" />
-    <Compile Include="Models\TaskDisplay.cs" />
+    <Compile Include="Models\oldTaskDisplay.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Views\RegNewModel.xaml.cs">
       <DependentUpon>RegNewModel.xaml</DependentUpon>
@@ -190,6 +192,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

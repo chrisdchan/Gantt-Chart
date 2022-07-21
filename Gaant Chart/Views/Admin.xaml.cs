@@ -119,6 +119,10 @@ namespace Gaant_Chart
                 ComboBoxItem comboBoxItem = new ComboBoxItem();
                 comboBoxItem.Content = kvp.Key;
                 categoryCombo.Items.Add(comboBoxItem);
+
+                ComboBoxItem editComboBoxItem = new ComboBoxItem();
+                editComboBoxItem.Content = kvp.Key;
+                editUserCategoryComboBox.Items.Add(editComboBoxItem);
             }
         }
 
@@ -278,10 +282,16 @@ namespace Gaant_Chart
             String password = editPasswordTxt.Text;
             Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
             Boolean[] authorization = setEditAuthorization();
+            String category;
+            if (editUserCategoryComboBox.SelectedItem != null)
+                category = (String)(editUserCategoryComboBox.SelectedItem as ComboBoxItem).Content;
+            else
+                category = null;
 
             editUser.password = password;
             editUser.authorization = authorization;
             editUser.reqPass = reqPass;
+            editUser.category = category;
 
             MainWindow.myDatabase.updateUser(editUser);
 
@@ -308,6 +318,24 @@ namespace Gaant_Chart
             for(int i = 0; i < authorizationSP.Children.Count; i++)
             {
                 CheckBox checkbox = authorizationSP.Children[i] as CheckBox;
+                checkbox.IsChecked = authorization[i];
+            }
+
+            isCategoryResetOn = true;
+
+        }
+
+        private void editUserCategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (categoryCombo.SelectedItem == null) return;
+            String category = (categoryCombo.SelectedItem as ComboBoxItem).Content as String;
+            Boolean[] authorization = data.categoryAuthorization[category];
+
+            isCategoryResetOn = false;
+
+            for(int i = 0; i < authorizationSP.Children.Count; i++)
+            {
+                CheckBox checkbox = editAuthorizationSP.Children[i] as CheckBox;
                 checkbox.IsChecked = authorization[i];
             }
 

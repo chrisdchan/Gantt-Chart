@@ -11,14 +11,11 @@ namespace Gaant_Chart.Models
         public long rowid { get; set; }
         public readonly String name;
         public int typeInd { get; set; }
-        public long userCompletedId { get; set; }
-        public long userAssignedId { get; set; }
-
         public User completedUser { get; set; }
         public User assignedUser { get; set; }
 
-        public DateTime startDate { get; set; }
-        public DateTime endDate { get; set; }
+        public DateTime? startDate { get; set; }
+        public DateTime? endDate { get; set; }
         public DateTime plannedStartDate { get; set; }
         public DateTime plannedEndDate { get; set; }
 
@@ -36,11 +33,30 @@ namespace Gaant_Chart.Models
             this.plannedStartDate = plannedStartDate;
             this.plannedEndDate = plannedEndDate;
 
-            startDate = DateTime.MinValue;
-            endDate = DateTime.MinValue;
+            startDate = null;
+            endDate = null;
             completedUser = null;
             assignedUser = null;
             rowid = -1;
+        }
+
+        public Task(long rowid, int typeInd, 
+            DateTime plannedStartDate, DateTime plannedEndDate,
+            DateTime? startDate, DateTime? endDate,
+            User assignedUser, User completedUser)
+        {
+            this.rowid = rowid;
+            this.typeInd = typeInd;
+            this.plannedStartDate = plannedStartDate;
+            this.plannedEndDate = plannedEndDate;
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.assignedUser = assignedUser;
+            this.completedUser = completedUser;
+
+            name = data.allTasks[typeInd];
+            if (completedUser != null) completed = true;
+            
         }
 
         public void complete(User user, DateTime start, DateTime end)
@@ -54,10 +70,10 @@ namespace Gaant_Chart.Models
 
         public void uncomplete()
         {
-            startDate = DateTime.MinValue;
-            endDate = DateTime.MinValue;
+            startDate = null;
+            endDate = null;
             completed = false;
-            userCompletedId = -1;
+            completedUser = null;
         }
 
         public void assign(User user)

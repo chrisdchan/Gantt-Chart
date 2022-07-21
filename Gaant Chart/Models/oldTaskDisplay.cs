@@ -8,7 +8,7 @@ using System.Windows.Shapes;
 
 namespace Gaant_Chart.Models
 {
-    public abstract class TaskDisplay
+    public abstract class oldTaskDisplay
     {
         private Task task { get; }
         private CanvasView view { get; set; }
@@ -22,15 +22,15 @@ namespace Gaant_Chart.Models
 
         public Boolean inView { get; set; }
 
-        protected DateTime startDate { get; set; }
-        protected DateTime endDate { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
         private double numDays { get; set; }
 
 
         protected SolidColorBrush COMPLETED_COLOR = new SolidColorBrush(Color.FromRgb(149, 219, 139));
         protected SolidColorBrush PLANNED_COLOR = new SolidColorBrush(Color.FromRgb(254, 212, 158));
 
-        public TaskDisplay(Task task, CanvasView view )
+        public oldTaskDisplay(Task task, CanvasView view )
         {
             this.task = task;
             this.view = view;
@@ -102,7 +102,7 @@ namespace Gaant_Chart.Models
 
     }
 
-    public class PlannedTaskDisplay : TaskDisplay 
+    public class PlannedTaskDisplay : oldTaskDisplay 
     { 
         public PlannedTaskDisplay(Task task, CanvasView view) : base(task, view)
         {
@@ -117,15 +117,15 @@ namespace Gaant_Chart.Models
 
     }
 
-    public class CompletedTaskDisplay : TaskDisplay
+    public class CompletedTaskDisplay : oldTaskDisplay
     {
         public double BlOCK_HEIGHT = 22;
         public CompletedTaskDisplay(Task task, CanvasView view) : base(task, view)
         {
             rectangle.Fill = COMPLETED_COLOR;
             rectangle.Height= BlOCK_HEIGHT;
-            startDate = (task.startDate != DateTime.MinValue) ? (DateTime)task.startDate : DateTime.MinValue;
-            endDate = (task.endDate != DateTime.MinValue) ? (DateTime)task.endDate : DateTime.MinValue;
+            startDate = task.startDate.Value;
+            endDate = task.endDate.Value;
 
             finishInit();
 

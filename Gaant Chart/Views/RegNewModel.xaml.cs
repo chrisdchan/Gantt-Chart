@@ -71,6 +71,7 @@ namespace Gaant_Chart
                     data.currentModel = MainWindow.myDatabase.getModel(existingModelId);
                     earlyExit = false;
                     this.Close();
+                    return;
                 }
                 else return;
             }
