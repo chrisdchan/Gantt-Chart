@@ -44,6 +44,8 @@ namespace Gaant_Chart
         private double DATE_ROTATION = 285; // 285
         private double GROUPLABEL_ROTATION = 270;
 
+        private double DEFAULT_DAYS_IN_VIEW = 28;
+
 
         private SolidColorBrush RED = new SolidColorBrush(Colors.Red);
         private SolidColorBrush PINK = new SolidColorBrush(Color.FromRgb(252, 180, 180));
@@ -178,6 +180,7 @@ namespace Gaant_Chart
             canvas.PreviewMouseMove += new MouseEventHandler(canvasPreviewMouseMove);
             canvas.PreviewMouseDown += new MouseButtonEventHandler(canvasPreviewMouseDown);
             canvas.PreviewMouseWheel += new MouseWheelEventHandler(canvasMouseWheel);
+            canvas.MouseLeave += new MouseEventHandler(canvasMouseLeave);
         }
         private void makeCanvasHittable()
         {
@@ -340,9 +343,10 @@ namespace Gaant_Chart
         }
         public void loadModel(Model model)
         {
+            canvas.Visibility = Visibility.Visible;
             modelStartDate = model.startDate;
             viewStartDate = model.startDate;
-            viewEndDate = model.startDate.AddDays(28);
+            viewEndDate = model.startDate.AddDays(DEFAULT_DAYS_IN_VIEW);
 
             modelNameLabel.Content = model.modelName;
 
@@ -354,6 +358,20 @@ namespace Gaant_Chart
             }
 
             drawDynamicLinesAndDates();
+        }
+        public void reloadModel(Model model)
+        {
+            clearTaskBlocks();
+            foreach (Task task in model.tasks)
+                addTaskBlocks(task);
+        }
+        public void addCompletedTask(Task task)
+        {
+            if(task.completed)
+            {
+                TaskDisplay taskDisplay = new TaskDisplay(task.startDate.Value, task.endDate.Value, task.typeInd);
+                initCompletedTask(taskDisplay);
+            }
         }
         private void clearTaskBlocks()
         {
@@ -381,7 +399,7 @@ namespace Gaant_Chart
         }
         private void drawDates()
         {
-            for(DateTime date = cielDate(viewStartDate); date < viewEndDate; date = date.AddDays(1))
+            for(DateTime date = cielDate(viewStartDate); date <= viewEndDate; date = date.AddDays(1))
             {
                 if(isWeekFromModelStart(date))
                 {
@@ -447,11 +465,26 @@ namespace Gaant_Chart
         }
         private void rerenderCanvas()
         {
-            drawDynamicLinesAndDates();
-            updateTaskPositions();
+            if(data.currentModel != null)
+            {
+                drawDynamicLinesAndDates();
+                updateTaskPositions();
+            }
         }
-
-        private void addDays(double n)
+        public void clearCanvas()
+        {
+            clearTaskBlocks();
+            clearDynamicLinesAndDates();
+            modelNameLabel.Content = "";
+            canvas.Visibility = Visibility.Hidden;
+        }
+        public void resetPosition()
+        {
+            viewStartDate = modelStartDate;
+            viewEndDate = viewStartDate.AddDays(DEFAULT_DAYS_IN_VIEW);
+            rerenderCanvas();
+        }
+        public void addDays(double n)
         {
             double numDays = (viewEndDate - viewStartDate).TotalDays;
             if (numDays + n <= 365 && numDays + n >= 1)
@@ -474,7 +507,7 @@ namespace Gaant_Chart
         }
         private void canvasPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if(mouseCaptured)
+            if(mouseCaptured && data.currentModel != null)
             {
                 Point position = e.GetPosition(sender as IInputElement);
                 double daysPerPixel = (viewEndDate - viewStartDate).TotalDays / GRAPH_WIDTH;
@@ -482,10 +515,15 @@ namespace Gaant_Chart
                 viewStartDate = referenceStartDate.AddDays(dayOffset);
                 viewEndDate = referenceEndDate.AddDays(dayOffset);
 
+
                 rerenderCanvas();
             }    
         }
         private void canvasPreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            mouseCaptured = false;
+        }
+        private void canvasMouseLeave(object sender, MouseEventArgs e)
         {
             mouseCaptured = false;
         }

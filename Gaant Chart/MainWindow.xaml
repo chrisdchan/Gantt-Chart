@@ -113,44 +113,27 @@
             VerticalAlignment="Center"
             FontWeight="Bold" FontSize="15"
             Content="Progress Tracker Chart"></Label>
-        <DockPanel HorizontalAlignment="Center"
+        <DockPanel HorizontalAlignment="Right"
                     Grid.Row="0" Grid.Column="6"
                     Grid.RowSpan="2"
                     Height="40"
                      Margin="5 10 5 0">
             <Button Content="Zoom In" Width="75" Height="25"
+                    Margin="10, 0, 10, 0"
                     VerticalContentAlignment="Center"
-                    Click="leftBtn_Click" HorizontalAlignment="Center"></Button> 
-            <Slider Width="675" x:Name="slider"  Margin="10, 0, 10, 0" HorizontalAlignment="Center" 
-                    VerticalAlignment="Center"
-                    Maximum="100" Minimum="0"  Value="50" IsHitTestVisible="False"></Slider>
+                    Click="zoomInBtn_Click" HorizontalAlignment="Center"></Button> 
             <Button Content="Zoom Out" Width="75" Height="25" 
+                    Margin="10, 0, 10, 0"
                     VerticalContentAlignment="Center"
-                    HorizontalAlignment="left" Click="rightBtn_Click"></Button>
+                    HorizontalAlignment="left" Click="zoomOutBtn_Click"></Button>
+            <Button Content="Reset Position" Width="100" Height="25"
+                    Margin="10, 0, 10, 0" Click="resetPosition_Click"/>
         </DockPanel>
 
         <Rectangle Grid.Column="5" Grid.Row="1"
             Grid.RowSpan="6"
             Margin="10 65 10 25"
             Fill="Black"></Rectangle>
-
-        <Canvas 
-            Grid.Column="5" Grid.Row="1"
-            Grid.RowSpan="6"
-            Focusable="True"
-            Margin="10 65 10 25"
-            Background="Black"
-            HorizontalAlignment="Left" VerticalAlignment="Top"
-            Width="0" Height="0"
-            PreviewMouseWheel="myCanvas_MouseWheel"
-            PreviewMouseDown="myCanvas_PreviewMouseDown"
-            PreviewMouseMove="myCanvas_PreviewMouseMove"
-            PreviewMouseUp="myCanvas_PreviewMouseUp"
-            Name="myCanvas" Visibility="Hidden">
-
-            <Label Foreground="#32EC00" FontSize="25"
-                    Name="label_ModelID"></Label>
-        </Canvas>
 
         <StackPanel Grid.Row="2" Grid.Column="0"
                     Grid.ColumnSpan="5" Grid.RowSpan="5"

@@ -59,7 +59,7 @@ namespace Gaant_Chart
 
             if((endDate - startDate).TotalDays < 0.5)
             {
-                startDate = (DateTime)model.tasks[model.lastCompletedTaskId].startDate;
+                startDate = ((DateTime)model.tasks[model.lastCompletedTaskId].endDate).AddDays(-1);
             }
 
             return startDate;

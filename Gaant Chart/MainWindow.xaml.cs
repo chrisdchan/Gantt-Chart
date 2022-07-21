@@ -35,26 +35,13 @@ namespace Gaant_Chart
     {
 
         public static DbConnection myDatabase { get; set; }
-
         public static EventHandler LoadExistingModelEvent { get; set; }
         public static Grid grid { get; set; }
         private static Dictionary<int, (CheckBox, TextBox)> taskComponents { get; set; }
-
-        private static double heightPerTask { get; set; }
-
-        private const int DEFAULT_DAYS_IN_VIEW = 28;
-
         private List<CheckBox> taskBarCheckBoxes { get; set; }
         private List <TextBox> taskBarTextBoxes { get; set; }
 
         private List<DockPanel> dockPanels { get; set; }
-
-        private CanvasView view { get; set; }
-
-
-        private  ModelDisplay modelDisplay { get; set; }
-        private CanvasDisplay canvasDisplay { get; set; }
-
         private CanvasGraph canvasGraph { get; set; }
 
         private Boolean renderedChecks = true;
@@ -67,7 +54,6 @@ namespace Gaant_Chart
 
             // create database connection
             myDatabase = new DbConnection();
-            view = new CanvasView(DateTime.Now, DEFAULT_DAYS_IN_VIEW);
 
             grid = mainGrid;
 
@@ -78,9 +64,7 @@ namespace Gaant_Chart
             // set up the canvas
             canvasGraph = new CanvasGraph();
 
-
             createTaskBar();
-            //initCanvas();
             initTaskBarLists();
             setTaskComponentsReadOnly();
 
@@ -94,22 +78,12 @@ namespace Gaant_Chart
         {
 
             Model model = data.currentModel;
+
             canvasGraph.loadModel(model);
-            //view = new CanvasView(data.currentModel, 28);
-
-            //myCanvas.Visibility = Visibility.Visible;
-
 
             txtDisplayModelName.Text = data.currentModel.modelName;
 
-            //canvasDisplay = new CanvasDisplay(view);
-
-
-
-            //initTaskBlocks();
             initTaskBarWithModel();
-
-            //updateCanvas();
         }
 
         private void displayCurrentUser()
@@ -141,8 +115,6 @@ namespace Gaant_Chart
                 textBox.IsReadOnly = true;
             }
         }
-
-
         private void createTaskBar()
         {
             foreach(String taskname in data.allTasks)
@@ -182,169 +154,6 @@ namespace Gaant_Chart
             }
             
         }
-
-        // NOTE: The top left corner for lines is (-100, -100), Components start at (0, 0)
-
-        private void initCanvas()
-        {
-            Canvas.SetLeft(label_ModelID, 25);
-            Canvas.SetTop(label_ModelID, 50);
-
-            canvasDisplay = new CanvasDisplay(view);
-
-            foreach(CanvasElement canvasElement in canvasDisplay.canvasTexts)
-            {
-                addFrameworkElementToCanvas(canvasElement);
-            }
-
-            foreach(CanvasLine canvasLine in canvasDisplay.staticLines)
-            {
-                myCanvas.Children.Add(canvasLine.line);
-            }
-
-            renderDynamicElements();
-            initInivisibleRectangle();
-        }
-
-        private void initInivisibleRectangle()
-        {
-            Rectangle background = new Rectangle();
-            background.Width = view.RIGHT_OUTER_BORDER - view.LEFT_OUTER_BORDER;
-            background.Height = view.BOTTOM_BORDER - view.TOP_BORDER;
-            background.Opacity = 0.001;
-            background.Fill = new SolidColorBrush(Colors.White);
-            myCanvas.Children.Add(background);
-
-            Canvas.SetTop(background, view.LABEL_TOP_OFFSET);
-            Canvas.SetLeft(background, view.LABEL_LEFT_MARGIN);
-        }
-
-        private void updateTaskBlocks()
-        {
-            if(isCurrentModel())
-            {
-                foreach(oldTaskDisplay taskDisplay in Enumerable.Concat(modelDisplay.plannedBlocks, modelDisplay.completedBlocks))
-                {
-                    UIElement element = taskDisplay.rectangle;
-                    myCanvas.Children.Remove(element);
-                }
-
-                modelDisplay.resize(view);
-
-                foreach(oldTaskDisplay taskDisplay in Enumerable.Concat(modelDisplay.plannedBlocks, modelDisplay.completedBlocks))
-                {
-                    addRectToCanvas(taskDisplay);
-                }
-            }
-        }
-
-
-        private void renderDynamicElements()
-        {
-            foreach(CanvasElement canvasElement in canvasDisplay.dates)
-            {
-                addFrameworkElementToCanvas(canvasElement);
-            }
-
-            foreach(CanvasLine dynamicLine in canvasDisplay.dynamicLines)
-            {
-                myCanvas.Children.Add(dynamicLine.line);
-            }
-        }
-
-        private void addFrameworkElementToCanvas(CanvasElement canvasElement)
-        {
-            FrameworkElement element = canvasElement.element;
-            myCanvas.Children.Add(element);
-            Canvas.SetLeft(element, canvasElement.leftoffset);
-            Canvas.SetTop(element, canvasElement.topoffset);
-        }
-
-        private void updateCanvas()
-        {
-            removeDynamicElements();
-            canvasDisplay.resize(view);
-
-            updateTaskBlocks();
-            updateSlider();
-        }
-
-        private void updateSlider()
-        {
-            double daysOffset = (view.startDate - view.modelStartDate).TotalDays;
-            slider.Value = 50 + (daysOffset / 180) * 50;
-        }
-
-        private void removeDynamicElements()
-        {
-            foreach(CanvasLine canvasLine in canvasDisplay.dynamicLines)
-            {
-                UIElement element = canvasLine.line;
-                myCanvas.Children.Remove(element);
-            }
-
-            foreach(CanvasElement canvasElement in canvasDisplay.dates)
-            {
-                UIElement element = canvasElement.element;
-                myCanvas.Children.Remove(element);
-            }
-
-        }
-
-        private void initTaskBlocks()
-        {
-            Model model = data.currentModel;
-
-            if (model == null) return;
-
-            if(modelDisplay != null)
-            {
-                removeAllTaskBlocks();
-            }
-
-            modelDisplay = new ModelDisplay(model, view);
-            
-            view.changeStartDate(model.startDate);
-
-            foreach(oldTaskDisplay taskDisplay in modelDisplay.plannedBlocks)
-            {
-                addRectToCanvas(taskDisplay);
-            }
-
-            foreach(oldTaskDisplay taskDisplay in modelDisplay.completedBlocks)
-            {
-                addRectToCanvas(taskDisplay);
-            }
-        }
-
-        private void removeAllTaskBlocks()
-        {
-            foreach(oldTaskDisplay taskDisplay in modelDisplay.plannedBlocks)
-            {
-                removeRectFromCanvas(taskDisplay);
-            }
-
-            foreach(oldTaskDisplay taskDisplay in modelDisplay.completedBlocks)
-            {
-                removeRectFromCanvas(taskDisplay);
-            }
-
-        }
-
-        private void removeRectFromCanvas(oldTaskDisplay taskDisplay)
-        {
-            Rectangle rect = taskDisplay.rectangle;
-            myCanvas.Children.Remove(rect);
-        }
-
-        private void addRectToCanvas(oldTaskDisplay taskDisplay)
-        {
-            Rectangle rect = taskDisplay.rectangle;
-            myCanvas.Children.Add(rect);
-            Canvas.SetLeft(rect, taskDisplay.leftOffset);
-            Canvas.SetTop(rect, taskDisplay.topOffset);
-        }
-
         private void initTaskBarLists()
         {
             taskBarTextBoxes = new List<TextBox>();
@@ -491,8 +300,6 @@ namespace Gaant_Chart
             int taskTypeId = (int)checkbox.Tag;
             Model model = data.currentModel;
 
-            Trace.WriteLine(view.startDate.ToString());
-
             if (!isCurrentModel())
             {
                 MessageBox.Show("No Model is selected");
@@ -536,8 +343,9 @@ namespace Gaant_Chart
             }
             else
             {
-                addCompletedTaskBlock(task);
+                canvasGraph.addCompletedTask(task);
             }
+            setTaskBarWithModel();
         }
 
         private void System_Unchecked(object sender, RoutedEventArgs e)
@@ -564,7 +372,7 @@ namespace Gaant_Chart
             }
 
             initTaskBarWithModel();
-            initTaskBlocks();
+            canvasGraph.reloadModel(model);
 
         }
         private Boolean isCurrentModel()
@@ -575,13 +383,6 @@ namespace Gaant_Chart
         private Boolean isCurrentUser()
         {
             return data.currentUser != null;
-        }
-
-        private void addCompletedTaskBlock(Models.Task task)
-        {
-            oldTaskDisplay taskDisplay = modelDisplay.addAndGetCompletedTask(task);
-            addRectToCanvas(taskDisplay);
-            initTaskBarWithModel();
         }
 
         private void btnRegNewModel_clicked(object sender, RoutedEventArgs e)
@@ -595,7 +396,7 @@ namespace Gaant_Chart
         {
             if(data.users.Count == 0)
             {
-                System.Windows.MessageBox.Show("No Users Exist: Initialize Users in Admin Settings");
+                MessageBox.Show("No Users Exist: Initialize Users in Admin Settings");
                 return;
             }
             Login win2 = new Login();
@@ -613,7 +414,7 @@ namespace Gaant_Chart
                 win2.ShowDialog();
                 if (!win2.earlyExist) displayCurrentModel();
             }
-            else System.Windows.MessageBox.Show("No Models Created");
+            else MessageBox.Show("No Models Created");
         }
 
         private void adminBtn_Click(object sender, RoutedEventArgs e)
@@ -632,74 +433,28 @@ namespace Gaant_Chart
 
                 if(win2.deletedCurrentModel)
                 {
+                    canvasGraph.clearCanvas();
                     resetTaskbarWithoutModel();
-                    myCanvas.Visibility = Visibility.Hidden;
                     txtDisplayModelName.Text = "";
                 }
             }
             else
             {
                 adminTxt.Text = "";
-                System.Windows.MessageBox.Show("Wrong Password");
+                MessageBox.Show("Wrong Password");
             }
         }
 
-        private void myCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void zoomInBtn_Click(object sender, RoutedEventArgs e)
         {
-            if(e.Delta > 0)
-            {
-                view.addOneDay();
-                updateCanvas();
-            }
-            else
-            {
-                view.removeOneDay();
-                updateCanvas();
-            }
+            canvasGraph.addDays(-1);
         }
 
-        private void rightBtn_Click(object sender, RoutedEventArgs e)
+        private void zoomOutBtn_Click(object sender, RoutedEventArgs e)
         {
-            view.addOneDay();
-            updateCanvas();
-
+            canvasGraph.addDays(1);
         }
 
-        private void leftBtn_Click(object sender, RoutedEventArgs e)
-        {
-            view.removeOneDay();
-            updateCanvas();
-        }
-
-        private Point referencePoint;
-        private DateTime referenceDate;
-        Boolean mouseCaptured = false;
-
-        private void myCanvas_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            referencePoint = e.GetPosition(myCanvas);
-            referenceDate = view.startDate;
-            mouseCaptured = true;
-        }
-
-        private void myCanvas_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-
-            if (referencePoint == null) return;
-            if (!mouseCaptured) return;
-
-            Point position = e.GetPosition(sender as IInputElement);
-
-            double dayOffset = (referencePoint.X - position.X) / view.pixelsPerDay;
-
-            view.changeStartDate(referenceDate.AddDays(dayOffset));
-            updateCanvas();
-         }
-
-        private void myCanvas_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            mouseCaptured = false;
-        }
 
         private void help_Click(object sender, RoutedEventArgs e)
         {
@@ -712,9 +467,10 @@ namespace Gaant_Chart
 
         private void clearModel_Click(object sender, RoutedEventArgs e)
         {
-            resetTaskbarWithoutModel();
-            myCanvas.Visibility = Visibility.Hidden;
+            data.currentModel = null;
             txtDisplayModelName.Text = "";
+            resetTaskbarWithoutModel();
+            canvasGraph.clearCanvas();
 
         }
 
@@ -762,6 +518,11 @@ namespace Gaant_Chart
 
                 displayCurrentModel();
             }
+        }
+
+        private void resetPosition_Click(object sender, RoutedEventArgs e)
+        {
+            canvasGraph.resetPosition();
         }
     }
 }

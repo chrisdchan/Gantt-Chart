@@ -109,7 +109,7 @@
     <Compile Include="Views\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="data.cs" />
+    <Compile Include="Utilities\DataCache.cs" />
     <Compile Include="Views\CompleteTask.xaml.cs">
       <DependentUpon>CompleteTask.xaml</DependentUpon>
     </Compile>
@@ -119,14 +119,9 @@
     <Compile Include="Views\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\CanvasDisplay.cs" />
-    <Compile Include="Models\CanvasElement.cs" />
-    <Compile Include="Models\CanvasView.cs" />
     <Compile Include="Models\Model.cs" />
-    <Compile Include="Models\ModelDisplay.cs" />
     <Compile Include="Models\ModelTag.cs" />
     <Compile Include="Models\Task.cs" />
-    <Compile Include="Models\oldTaskDisplay.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Views\RegNewModel.xaml.cs">
       <DependentUpon>RegNewModel.xaml</DependentUpon>
@@ -155,7 +150,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DbConnection.cs" />
+    <Compile Include="Utilities\DbConnection.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
