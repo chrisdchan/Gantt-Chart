@@ -18,10 +18,8 @@ namespace Gaant_Chart
         public SQLiteConnection myConnection;
         public SQLiteCommand myCommand;
         public SQLiteDataReader myDataReader;
-
         public DbConnection()
         {
-
             String dbName = "GaantDb.db";
 
             if (!File.Exists("./" + dbName))
@@ -34,7 +32,6 @@ namespace Gaant_Chart
             createTables();
             insertTaskIdentifiers();
         }
-
         private void createTables()
         {
             this.OpenConnection();
@@ -79,7 +76,6 @@ namespace Gaant_Chart
             this.CloseConnection();
 
         }
-
         private void insertTaskIdentifiers()
         {
             this.OpenConnection();
@@ -99,14 +95,9 @@ namespace Gaant_Chart
             }
             this.CloseConnection();
         }
-
         public void insertModel(Model model)
         {
             OpenConnection();
-            String startDateString = model.startDate.ToString("MM-dd-yyyy");
-            String endDateString = (model.endDate == DateTime.MinValue) ? ((DateTime)model.endDate).ToString("MM-dd-yyyy") : null;
-            String lastUpdatedString = model.lastUpdated.ToString("MM-dd-yyyy");
-
             using (SQLiteCommand myCommand = new SQLiteCommand(myConnection))
             {
                 myCommand.CommandText = "INSERT INTO Models(name, startDate, endDate, lastUpdated) VALUES (@name, @startDate, @endDate, @lastUpdated)";
@@ -186,7 +177,6 @@ namespace Gaant_Chart
             }
             CloseConnection();
         }
-
         public Boolean isUserExist(User user)
         {
             OpenConnection();
@@ -209,7 +199,6 @@ namespace Gaant_Chart
             return isUserInDB;
 
         }
-
         public Boolean isUserInitialsExist(User user)
         {
             OpenConnection();
@@ -267,7 +256,6 @@ namespace Gaant_Chart
 
             return modelId;
         }
-
         public Model getModel(String modelName)
         {
             Model model;
@@ -309,7 +297,6 @@ namespace Gaant_Chart
             CloseConnection();
             return model;
         }
-
         public Model getModel(long modelId)
         {
             Model model;
@@ -345,13 +332,12 @@ namespace Gaant_Chart
                 }
 
                 (Task[] tasks, int lastCompleted) = getTasks(modelId);
-                model = new Model(modelName, startDate, tasks, lastCompleted);
+                model = new Model(modelId, modelName, startDate, endDate, lastUpdated, tasks, lastCompleted);
             }
 
             CloseConnection();
             return model;
         }
-
         private (Task[], int) getTasks(long modelId)
         {
             Task[] tasks = new Task[data.NTASKS];
@@ -411,8 +397,6 @@ namespace Gaant_Chart
             }
             return (tasks, lastCompleted);
         }
-
-
         private Model fillUncompleteModelWithTasks(Model model)
         {
             using(myCommand = new SQLiteCommand(myConnection))
@@ -474,7 +458,6 @@ namespace Gaant_Chart
 
             return model;
         }
-
         public  Dictionary<long, User> getUsers()
         {
             Dictionary<long, User> users = new Dictionary<long, User>();
@@ -517,7 +500,6 @@ namespace Gaant_Chart
 
             return users;
         }
-
         private Boolean[] getAuthorization(long userid)
         {
             Boolean[] authorization = new Boolean[data.allTasks.Length];
@@ -535,7 +517,6 @@ namespace Gaant_Chart
             }
             return authorization;
         }
-        
         public List<ModelTag> getModelTags()
         {
             List<ModelTag> modelTags = new List<ModelTag>();
@@ -559,7 +540,6 @@ namespace Gaant_Chart
 
             return modelTags;
         }
-
         public void completeTask(long rowid, DateTime startDate, DateTime endDate)
         {
             this.OpenConnection();
@@ -580,7 +560,6 @@ namespace Gaant_Chart
             }
             this.CloseConnection();
         }
-
         public void updateModel(Model model)
         {
             OpenConnection();
@@ -595,7 +574,6 @@ namespace Gaant_Chart
                 myCommand.Parameters.AddWithValue("@lastUpdated", model.lastUpdated);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
-
 
                 foreach(Task task in model.tasks)
                 {
@@ -624,12 +602,11 @@ namespace Gaant_Chart
 
                     myCommand.Parameters.AddWithValue("@rowid", task.rowid);
                     myCommand.Prepare();
-                    myCommand.ExecuteNonQuery();
+                    int rowsAffected = myCommand.ExecuteNonQuery();
                 }
             }
             CloseConnection();
         }
-
         public void updateUser(User user)
         {
             OpenConnection();
@@ -643,7 +620,7 @@ namespace Gaant_Chart
                     "password = @password, " +
                     "requirePassword = @reqPass, " +
                     "active = @active, " + 
-                    "cateogry=@category, " +
+                    "category = @category " +
                     "WHERE rowid = @rowid";
 
                 myCommand.Parameters.AddWithValue("@password", user.password);
@@ -659,7 +636,6 @@ namespace Gaant_Chart
             }
             CloseConnection();
         }
-
         private void deleteAuthorizations(User user)
         {
             myCommand.CommandText = "DELETE FROM Authorization WHERE userid = @userid";
@@ -667,8 +643,7 @@ namespace Gaant_Chart
             myCommand.Prepare();
             myCommand.ExecuteNonQuery();
         }
-
-        public void deleteModel(int modelId)
+        public void deleteModel(long modelId)
         {
             OpenConnection();
             using(myCommand = new SQLiteCommand(myConnection))
@@ -679,21 +654,20 @@ namespace Gaant_Chart
             CloseConnection();
 
         }
-        private void deleteModelFromModelDB(int modelId)
+        private void deleteModelFromModelDB(long modelId)
         {
             myCommand.CommandText = "DELETE FROM Models WHERE rowid = @rowid";
             myCommand.Parameters.AddWithValue("@rowid", modelId);
             myCommand.Prepare();
             myCommand.ExecuteNonQuery();
         }
-        private void deleteModelFromTasksDB(int modelId)
+        private void deleteModelFromTasksDB(long modelId)
         {
             myCommand.CommandText = "DELETE FROM Tasks WHERE modelId = @modelId";
             myCommand.Parameters.AddWithValue("@modelId", modelId);
             myCommand.Prepare();
             myCommand.ExecuteNonQuery();
         }
-
         private void OpenConnection()
         {
             if(myConnection.State != System.Data.ConnectionState.Open)

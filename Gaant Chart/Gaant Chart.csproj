@@ -105,7 +105,7 @@
     </ApplicationDefinition>
     <Compile Include="Display\CanvasGraph.cs" />
     <Compile Include="Display\TaskDisplay.cs" />
-    <Compile Include="Models\ExcelReader.cs" />
+    <Compile Include="Utilities\ExcelReader.cs" />
     <Compile Include="Views\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>
     </Compile>

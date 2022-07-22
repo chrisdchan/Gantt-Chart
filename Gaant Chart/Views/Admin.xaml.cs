@@ -32,13 +32,13 @@ namespace Gaant_Chart
 
 
         private Boolean isCategoryResetOn = false;
+        private Boolean isEditCategoryResetOn = false;
 
         public Admin()
         {
             InitializeComponent();
 
-            navAddTeamMemberBtn.Foreground = toggleColor;
-            navRemoveModelBtn.Foreground = notToggleColor;
+            hideAllComponents();
 
             initAuthorizationCheckBoxes();
 
@@ -50,6 +50,13 @@ namespace Gaant_Chart
 
             deletedCurrentModel = false;
             updatedCurrentUser = false;
+        }
+
+        private void hideAllComponents()
+        {
+            addTeamMemberGrid.Visibility = Visibility.Hidden;
+            removeModelGrid.Visibility = Visibility.Hidden;
+            editUserGrid.Visibility = Visibility.Hidden;
         }
 
         private void createUserBtn_Click(object sender, RoutedEventArgs e)
@@ -72,10 +79,10 @@ namespace Gaant_Chart
 
             String initials = initialsTxt.Text;
             String category;
-            if (categoryCombo.SelectedItem == null)
+            if (addUserCategoryComboBox.SelectedItem == null)
                 category = null;
             else
-                category = (categoryCombo.SelectedItem as ComboBoxItem).Content as String;
+                category = (addUserCategoryComboBox.SelectedItem as ComboBoxItem).Content as String;
 
             Boolean[] authorization = setAuthorization();
 
@@ -96,7 +103,6 @@ namespace Gaant_Chart
             data.users.Add(user.rowid, user);
 
         }
-
         private void initAuthorizationCheckBoxes()
         {
             foreach(String taskname in data.allTasks)
@@ -111,21 +117,19 @@ namespace Gaant_Chart
                 authorizationSP.Children.Add(checkbox);
             }
         }
-
         private void initCategoryComboBox()
         {
             foreach(var kvp in data.categoryAuthorization)
             {
                 ComboBoxItem comboBoxItem = new ComboBoxItem();
                 comboBoxItem.Content = kvp.Key;
-                categoryCombo.Items.Add(comboBoxItem);
+                addUserCategoryComboBox.Items.Add(comboBoxItem);
 
                 ComboBoxItem editComboBoxItem = new ComboBoxItem();
                 editComboBoxItem.Content = kvp.Key;
                 editUserCategoryComboBox.Items.Add(editComboBoxItem);
             }
         }
-
         private Boolean[] setAuthorization()
         {
             Boolean[] authorization = new bool[data.allTasks.Length];
@@ -138,30 +142,24 @@ namespace Gaant_Chart
 
             return authorization;
         }
-
         private Boolean[] setEditAuthorization()
         {
             Boolean[] authorization = new bool[data.allTasks.Length];
 
-            for(int i = 0; i < authorizationSP.Children.Count; i++)
+            for(int i = 0; i < editAuthorizationSP.Children.Count; i++)
             {
                 CheckBox checkbox = editAuthorizationSP.Children[i] as CheckBox;
                 authorization[i] = (Boolean) checkbox.IsChecked;
             }
 
             return authorization;
-
         }
-
-
-
         private void navAddTeamMemberBtn_Click(object sender, RoutedEventArgs e)
         {
             resetToNothing();
             navAddTeamMemberBtn.Foreground = toggleColor;
             addTeamMemberGrid.Visibility = Visibility.Visible;
         }
-
         private void navRemoveModelBtn_Click(object sender, RoutedEventArgs e)
         {
             resetToNothing();
@@ -173,9 +171,7 @@ namespace Gaant_Chart
             resetToNothing();
             navEditUserBtn.Foreground = toggleColor;
             editUserGrid.Visibility = Visibility.Visible;
-
         }
-
         private void resetToNothing()
         {
             navAddTeamMemberBtn.Foreground = notToggleColor;
@@ -186,7 +182,6 @@ namespace Gaant_Chart
             editUserGrid.Visibility = Visibility.Hidden;
 
         }
-
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(deleteModelComboBox.SelectedIndex > 0)
@@ -199,14 +194,16 @@ namespace Gaant_Chart
                 deleteModelComboBox.Foreground = notToggleColor;
             }
         }
-
         private void authorizedCheckBoxChanged(object sender, RoutedEventArgs e)
         {
             if(isCategoryResetOn)
-                categoryCombo.SelectedItem = null;
+                addUserCategoryComboBox.SelectedItem = null;
         }
-
-
+        private void editAuthorizedCheckBoxChanged(object sender, RoutedEventArgs e)
+        {
+            if(isEditCategoryResetOn)
+                editUserCategoryComboBox.SelectedItem = null;
+        }
         private void populateDelteModelComoboBox()
         {
             List<ModelTag> modelTags = MainWindow.myDatabase.getModelTags();
@@ -225,7 +222,6 @@ namespace Gaant_Chart
             deleteModelComboBox.Items.Clear();
             deleteModelComboBox.Items.Add(descriptionComboBoxItem);
         }
-
         private void deleteModelBtn_Click(object sender, RoutedEventArgs e)
         {
             int modelId = (int)(deleteModelComboBox.SelectedItem as ComboBoxItem).Tag;
@@ -234,7 +230,6 @@ namespace Gaant_Chart
             populateDelteModelComoboBox();
             deletedCurrentModel = true;
         }
-
         private void initEditUserCombobox()
         {
             foreach(var kvp in data.users)
@@ -246,7 +241,6 @@ namespace Gaant_Chart
                 editUserCombobox.Items.Add(comboboxitem);
             }
         }
-
         private void editUserCombobox_Selected(object sender, RoutedEventArgs e)
         {
             ComboBoxItem comboBoxItem = editUserCombobox.SelectedItem as ComboBoxItem;
@@ -257,7 +251,6 @@ namespace Gaant_Chart
             initEditUserInfo(user);
             editUser = user;
         }
-
         private void initEditUserInfo(User user)
         {
             editAuthorizationSP.Children.Clear();
@@ -268,19 +261,31 @@ namespace Gaant_Chart
                 checkbox.IsChecked = user.authorization[i];
                 checkbox.Height = 15;
                 checkbox.Margin = new Thickness(0, 5, 0, 5);
+                checkbox.Checked += new RoutedEventHandler(editAuthorizedCheckBoxChanged);
+                checkbox.Unchecked += new RoutedEventHandler(editAuthorizedCheckBoxChanged);
                 editAuthorizationSP.Children.Add(checkbox);
             }
 
             editPasswordTxt.Text = user.password;
             editReqPassCheckbox.IsChecked = user.reqPass;
-
+            editUserActiveComboBox.IsChecked = user.active;
+            editUserCategoryComboBox.SelectedItem = getEditUserCategoryComboBoxItem(user.category);
         }
 
+        private ComboBoxItem getEditUserCategoryComboBoxItem(String category)
+        {
+            foreach(ComboBoxItem comboBoxItem in editUserCategoryComboBox.Items)
+            {
+                if ((String)comboBoxItem.Content == category) return comboBoxItem;
+            }
+            return null;
+        }
         private void updateUserBtn_Click(object sender, RoutedEventArgs e)
         {
             
             String password = editPasswordTxt.Text;
-            Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
+            Boolean reqPass = (bool)editReqPassCheckbox.IsChecked;
+            Boolean active = (bool)editUserActiveComboBox.IsChecked;
             Boolean[] authorization = setEditAuthorization();
             String category;
             if (editUserCategoryComboBox.SelectedItem != null)
@@ -292,6 +297,7 @@ namespace Gaant_Chart
             editUser.authorization = authorization;
             editUser.reqPass = reqPass;
             editUser.category = category;
+            editUser.active = active;
 
             MainWindow.myDatabase.updateUser(editUser);
 
@@ -306,11 +312,10 @@ namespace Gaant_Chart
                 updatedCurrentUser = true;
             }
         }
-
         private void categoryCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (categoryCombo.SelectedItem == null) return;
-            String category = (categoryCombo.SelectedItem as ComboBoxItem).Content as String;
+            if (addUserCategoryComboBox.SelectedItem == null) return;
+            String category = (addUserCategoryComboBox.SelectedItem as ComboBoxItem).Content as String;
             Boolean[] authorization = data.categoryAuthorization[category];
 
             isCategoryResetOn = false;
@@ -322,25 +327,21 @@ namespace Gaant_Chart
             }
 
             isCategoryResetOn = true;
-
         }
-
         private void editUserCategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (categoryCombo.SelectedItem == null) return;
-            String category = (categoryCombo.SelectedItem as ComboBoxItem).Content as String;
+            if (editUserCategoryComboBox.SelectedItem == null) return;
+            String category = (editUserCategoryComboBox.SelectedItem as ComboBoxItem).Content as String;
             Boolean[] authorization = data.categoryAuthorization[category];
 
-            isCategoryResetOn = false;
+            isEditCategoryResetOn = false;
 
-            for(int i = 0; i < authorizationSP.Children.Count; i++)
+            for(int i = 0; i < editAuthorizationSP.Children.Count; i++)
             {
                 CheckBox checkbox = editAuthorizationSP.Children[i] as CheckBox;
                 checkbox.IsChecked = authorization[i];
             }
-
-            isCategoryResetOn = true;
-
+            isEditCategoryResetOn = true;
         }
     }
 }

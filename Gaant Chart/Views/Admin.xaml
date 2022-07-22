@@ -16,7 +16,7 @@
 
         <StackPanel Grid.Column="0">
             <Button x:Name="navAddTeamMemberBtn" Content="Add Team Member"
-                    Click="navAddTeamMemberBtn_Click" Foreground="Black"
+                    Click="navAddTeamMemberBtn_Click" Foreground="Gray"
                     Width="100" FontSize="10"
                     Height="30" Margin="0, 5"/>
             <Button x:Name="navRemoveModelBtn" Content="Remove Model"
@@ -28,12 +28,8 @@
                     Click="navEditUserBtn_Click" Foreground="Gray"/>
         </StackPanel>
 
-        <Grid x:Name="defaultGrid">
-
-        </Grid>
-
         <Grid Grid.Column="1" Background="AliceBlue" 
-              x:Name="addTeamMemberGrid" Visibility="hidden">
+              x:Name="addTeamMemberGrid" Visibility="Hidden">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="8*"/>
@@ -68,10 +64,11 @@
 
             <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="2">
                 <Label Content="Authorization"/>
-                <ComboBox Text="Category" x:Name="categoryCombo"
+                <Label Content="Category:" Margin="60, 0, 0, 0"/>
+                <ComboBox x:Name="addUserCategoryComboBox"
                           Height="20" Width="75" 
                           FontSize="12"
-                          Margin="130, 0, 0, 0" SelectionChanged="categoryCombo_SelectionChanged"/>
+                          Margin="10, 0, 0, 0" SelectionChanged="categoryCombo_SelectionChanged"/>
             </StackPanel>
 
             <StackPanel Grid.Row="3" Grid.Column="1" Background="White"
@@ -115,7 +112,7 @@
                     Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"/>
         </Grid>
 
-        <Grid x:Name="editUserGrid" Visibility="visible" Background="AliceBlue"
+        <Grid x:Name="editUserGrid" Visibility="Visible" Background="AliceBlue"
               Grid.Column="1" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"/>
@@ -131,11 +128,12 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Column="1">
-                <ComboBox  Height="20" Width="100" x:Name="editUserCombobox"
+                <Label Content="Select User: " VerticalAlignment="Center"/>
+                <ComboBox  Height="25" Width="100" x:Name="editUserCombobox"
                             Grid.ColumnSpan="3" Margin="0, 0, 0, 0" SelectionChanged="editUserCombobox_Selected"
                           HorizontalAlignment="Left" Text="Select User"/>
-                <CheckBox Content="Active" VerticalAlignment="Center"
-                          Height="15" Margin="180, 0, 0, 0"/>
+                <CheckBox Content="Active" VerticalAlignment="Center" x:Name="editUserActiveComboBox"
+                          Height="15" Margin="72, 0, 0, 0"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1"
@@ -149,13 +147,13 @@
             <StackPanel Grid.Column="1" Grid.Row="2"
                         Orientation="Horizontal">
                 <Label Content="Edit Authorization" />
+                <Label Content="Category:" Margin="60, 0, 0, 0"/>
                 <ComboBox x:Name="editUserCategoryComboBox" SelectionChanged="editUserCategoryComboBox_SelectionChanged"
-                          Width="100" Height="25" Margin="125, 0, 0, 2"/>
+                          Width="75" Height="25" Margin="10, 0, 0, 0"/>
             </StackPanel>
 
             <StackPanel Grid.Row="3" Grid.Column="1" Background="White"
                         x:Name="editAuthorizationSP">
-                
             </StackPanel>
 
             <Button x:Name="updateUserBtn" Click="updateUserBtn_Click"

@@ -37,7 +37,6 @@ namespace Gaant_Chart
             InitializeComponent();
             earlyExist = true;
 
-            
             if (modelTags == null) return;
             foreach(ModelTag modelTag in modelTags)
             {

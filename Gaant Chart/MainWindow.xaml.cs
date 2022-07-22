@@ -76,13 +76,9 @@ namespace Gaant_Chart
 
         private void displayCurrentModel()
         {
-
             Model model = data.currentModel;
-
             canvasGraph.loadModel(model);
-
             txtDisplayModelName.Text = data.currentModel.modelName;
-
             initTaskBarWithModel();
         }
 
@@ -345,6 +341,7 @@ namespace Gaant_Chart
             {
                 canvasGraph.addCompletedTask(task);
             }
+
             setTaskBarWithModel();
         }
 
@@ -507,7 +504,9 @@ namespace Gaant_Chart
 
                     if (res == MessageBoxResult.Yes)
                     {
-                        MainWindow.myDatabase.updateModel(model);
+                        MainWindow.myDatabase.deleteModel(oldModel.rowid);
+                        MainWindow.myDatabase.insertModel(model);
+
                         data.currentModel = model;
                     }
                     else if(res == MessageBoxResult.No)

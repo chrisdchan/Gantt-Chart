@@ -45,9 +45,7 @@ namespace Gaant_Chart
 
             earlyExit = true;
             dateTbx.Focus();
-
         }
-
         private DateTime computeStartDate()
         {
             if(task.typeInd == 0)

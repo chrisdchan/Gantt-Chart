@@ -66,7 +66,6 @@ namespace Gaant_Chart.Models
                 model = new Model(modelName, modelStartDate, tasks, lastCompletedTaskId);
             }
         }
-
         private void setTasks()
         {
             int MINUTES_IN_DAY = 1439;
@@ -117,7 +116,6 @@ namespace Gaant_Chart.Models
                 tasks[i] = task;
             }
         }
-
         private void setInitialsUserDict()
         {
             int r = 2;

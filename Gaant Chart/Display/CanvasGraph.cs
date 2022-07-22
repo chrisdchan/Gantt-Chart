@@ -71,6 +71,7 @@ namespace Gaant_Chart
         public CanvasGraph()
         {
             canvas = new Canvas();
+            canvas.Visibility = Visibility.Hidden;
             addCanvasToApp();
             initMapFunctions();
             initModelLabel();
@@ -92,7 +93,7 @@ namespace Gaant_Chart
             taskBlockTypeToPixel = typeId => TOP_START_OFF + typeId * TASK_HEIGHT;
             taskLabelToPixel = typeId => LABEL_TOP_OFFSET + LABEL_VERTICAL_SPACE * typeId;
             floorDate = date => date.AddMinutes(-date.TimeOfDay.TotalMinutes);
-            isWeekFromModelStart = date => (date - modelStartDate).TotalDays % 7 == 0;
+            isWeekFromModelStart = date => (date - cielDate(modelStartDate)).TotalDays % 7 == 0;
             degToRad = deg => deg * Math.PI / 180;
         }
         private double dateToPixel(DateTime date)
@@ -109,7 +110,8 @@ namespace Gaant_Chart
             }
             else
             {
-                return date.AddMinutes(1440 - date.TimeOfDay.TotalMinutes);
+                double timeOfDay = date.TimeOfDay.TotalMinutes;
+                return date.AddMinutes(1440 - timeOfDay);
             }
         }
         private void initModelLabel()
