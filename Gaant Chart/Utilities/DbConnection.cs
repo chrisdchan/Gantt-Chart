@@ -542,7 +542,7 @@ namespace Gaant_Chart
         }
         public void completeTask(long rowid, DateTime startDate, DateTime endDate)
         {
-            this.OpenConnection();
+            OpenConnection();
 
             User user = data.currentUser;
             long userId = user.rowid;
@@ -558,8 +558,24 @@ namespace Gaant_Chart
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();
             }
-            this.CloseConnection();
+            CloseConnection();
         }
+
+        public void completeModel(Model model)
+        {
+            OpenConnection();
+
+            using (myCommand = new SQLiteCommand(myConnection))
+            {
+                myCommand.CommandText = "UPDATE models SET endDate = @endDate WHERE rowid = @rowid";
+                myCommand.Parameters.AddWithValue("@endDate", model.endDate);
+                myCommand.Parameters.AddWithValue("@rowid", model.rowid);
+                myCommand.Prepare();
+                myCommand.ExecuteNonQuery();
+            }
+            CloseConnection();
+        }
+
         public void updateModel(Model model)
         {
             OpenConnection();
@@ -626,7 +642,7 @@ namespace Gaant_Chart
                 myCommand.Parameters.AddWithValue("@password", user.password);
                 myCommand.Parameters.AddWithValue("@reqPass", reqPass);
                 myCommand.Parameters.AddWithValue("@active", active);
-                myCommand.Parameters.AddWithValue("@rowid", active);
+                myCommand.Parameters.AddWithValue("@rowid", user.rowid);
                 myCommand.Parameters.AddWithValue("@category", user.category);
                 myCommand.Prepare();
                 myCommand.ExecuteNonQuery();

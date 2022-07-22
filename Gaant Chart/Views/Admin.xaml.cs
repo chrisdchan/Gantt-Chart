@@ -38,7 +38,7 @@ namespace Gaant_Chart
         {
             InitializeComponent();
 
-            hideAllComponents();
+            resetToNothing();
 
             initAuthorizationCheckBoxes();
 
@@ -52,12 +52,6 @@ namespace Gaant_Chart
             updatedCurrentUser = false;
         }
 
-        private void hideAllComponents()
-        {
-            addTeamMemberGrid.Visibility = Visibility.Hidden;
-            removeModelGrid.Visibility = Visibility.Hidden;
-            editUserGrid.Visibility = Visibility.Hidden;
-        }
 
         private void createUserBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -93,6 +87,8 @@ namespace Gaant_Chart
 
             nameTxt.Text = "";
             passwordTxt.Text = "";
+            initialsTxt.Text = "";
+            reqPassCheckBox.IsChecked = false;
 
             foreach(CheckBox checkbox in authorizationSP.Children)
             {
@@ -271,7 +267,6 @@ namespace Gaant_Chart
             editUserActiveComboBox.IsChecked = user.active;
             editUserCategoryComboBox.SelectedItem = getEditUserCategoryComboBoxItem(user.category);
         }
-
         private ComboBoxItem getEditUserCategoryComboBoxItem(String category)
         {
             foreach(ComboBoxItem comboBoxItem in editUserCategoryComboBox.Items)
@@ -282,6 +277,11 @@ namespace Gaant_Chart
         }
         private void updateUserBtn_Click(object sender, RoutedEventArgs e)
         {
+            if(editUserCombobox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a user");
+                return;
+            }
             
             String password = editPasswordTxt.Text;
             Boolean reqPass = (bool)editReqPassCheckbox.IsChecked;
@@ -300,12 +300,13 @@ namespace Gaant_Chart
             editUser.active = active;
 
             MainWindow.myDatabase.updateUser(editUser);
-
+            data.initUsers();
 
             editAuthorizationSP.Children.Clear();
             editPasswordTxt.Text = "";
             editReqPassCheckbox.IsChecked = false;
             editUserCombobox.SelectedIndex = -1;
+            editUserActiveComboBox.IsChecked = false;
 
             if(editUser == data.currentUser)
             {

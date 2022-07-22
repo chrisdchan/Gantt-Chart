@@ -24,10 +24,25 @@
                    Grid.Row="1" Width="200" 
                    FontSize="15" Height="30"
                    VerticalAlignment="Top"/>
-        <Label Grid.Row="2" Content="Date"/>
-        <TextBox Name="dateTbx" Grid.Row="2"
-                 Height="40" Width="200"/>
-        
+        <Label Grid.Row="2" Content="Date" Height="25" VerticalAlignment="Center"
+               Margin="18, 0, 0, 60"/>
+        <TextBox Name="dateTbx" Grid.Row="2" HorizontalAlignment="Left" Margin="20, 0, 0 , 0"
+                 Height="30" Width="100"/>
+        <Label Content="Time" Grid.Row="2" VerticalAlignment="Center"
+                Height="25"
+               Margin="150, 0, 0, 60"/>
+        <TextBox Grid.Row="2" Height="30" Width="30" x:Name="hoursTxt" Text="11"
+                 Margin="50, 0, 0, 0" TextAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label Content=":" Grid.Row="2" Margin="93, 0, 0, 0" Width="15" Height="30"
+               VerticalAlignment="Center"/>
+        <TextBox Grid.Row="2" Height="30" Width="30" x:Name="minutesTxt"
+                 Margin="130, 0, 0, 0" Text="59" TextAlignment="Center" VerticalContentAlignment="Center"/>
+        <ComboBox Grid.Row="2" Width="45" x:Name="timeComboBox" 
+                  Margin="220, 0, 0, 0" Height="30">
+            <ComboBoxItem Content="AM"/>
+            <ComboBoxItem Content="PM" IsSelected="True"/>
+        </ComboBox>
+
         <Button x:Name="cancelBtn" Click="completeTaskBtn_Click"
                 Grid.Row="3"
                 Height="40" Width="100"
@@ -43,7 +58,6 @@
                 HorizontalAlignment="Right"
                 Margin="0, 0, 50, 0"
                 FontSize="15" Content="Cancel"/>
-        
 
     </Grid>
 </Window>

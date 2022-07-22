@@ -65,7 +65,7 @@ namespace Gaant_Chart
 
         private Func<int, double> taskBlockTypeToPixel;
         private Func<int, double> taskLabelToPixel;
-        private Func<DateTime, DateTime> floorDate;
+        public static Func<DateTime, DateTime> floorDate;
         private Func<DateTime, Boolean> isWeekFromModelStart;
         private Func<double, double> degToRad;
         public CanvasGraph()
@@ -119,7 +119,7 @@ namespace Gaant_Chart
             modelNameLabel = new Label();
             modelNameLabel.FontSize = 25;
             modelNameLabel.Foreground = GREEN;
-            modelNameLabel.Width = 100;
+            modelNameLabel.Width = 200;
             modelNameLabel.Height = 50;
             canvas.Children.Add(modelNameLabel);
 

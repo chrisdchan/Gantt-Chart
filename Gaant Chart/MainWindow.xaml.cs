@@ -48,6 +48,8 @@ namespace Gaant_Chart
 
         private String ADMIN_PASSWORD = "physics123!";
 
+        private String adminInput = "";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -416,7 +418,7 @@ namespace Gaant_Chart
 
         private void adminBtn_Click(object sender, RoutedEventArgs e)
         {
-            String password = adminTxt.Text;
+            String password = adminInput;
             if(password.ToLower() == ADMIN_PASSWORD)
             {
                 adminTxt.Text = "";
@@ -522,6 +524,53 @@ namespace Gaant_Chart
         private void resetPosition_Click(object sender, RoutedEventArgs e)
         {
             canvasGraph.resetPosition();
+        }
+
+        private Boolean addingStars = false;
+
+        private void adminTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (addingStars) return;
+
+            int n = adminTxt.Text.Length;
+            if (n == 0)
+            {
+                adminInput = "";
+                return;
+            }
+
+            char c = adminTxt.Text[n - 1];
+
+            if(n > adminInput.Length)
+            {
+                adminInput += c;
+            }
+            else
+            {
+                int i = adminInput.Length;
+                while(i > n)
+                {
+                    adminInput = adminInput.Remove(adminInput.Length - 1);
+                    i--;
+                }
+            }
+
+            String displayText = "";
+
+
+            for(int i = 0; i < n - 1; i++)
+            {
+                displayText += "*";
+            }
+
+            displayText += c;
+
+            addingStars = true;
+            adminTxt.Text = displayText;
+            addingStars = false;
+
+            adminTxt.SelectionStart = n;
+            adminTxt.SelectionLength = 0;
         }
     }
 }

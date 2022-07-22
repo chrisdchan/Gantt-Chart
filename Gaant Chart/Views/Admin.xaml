@@ -112,7 +112,7 @@
                     Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"/>
         </Grid>
 
-        <Grid x:Name="editUserGrid" Visibility="Visible" Background="AliceBlue"
+        <Grid x:Name="editUserGrid" Visibility="Hidden" Background="AliceBlue"
               Grid.Column="1" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"/>
@@ -129,18 +129,18 @@
 
             <StackPanel Orientation="Horizontal" Grid.Column="1">
                 <Label Content="Select User: " VerticalAlignment="Center"/>
-                <ComboBox  Height="25" Width="100" x:Name="editUserCombobox"
+                <ComboBox  Height="25" Width="150" x:Name="editUserCombobox"
                             Grid.ColumnSpan="3" Margin="0, 0, 0, 0" SelectionChanged="editUserCombobox_Selected"
                           HorizontalAlignment="Left" Text="Select User"/>
                 <CheckBox Content="Active" VerticalAlignment="Center" x:Name="editUserActiveComboBox"
-                          Height="15" Margin="72, 0, 0, 0"/>
+                          Height="15" Margin="30, 0, 0, 0"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1"
                         Grid.ColumnSpan="3" Margin="0, 0, 0, 0">
                 <Label Content="Change Password" VerticalAlignment="Center"/>
                 <TextBox x:Name="editPasswordTxt" Width="100" Height="25" Margin="3, 0, 0, 0"/>
-                <CheckBox  Content="Require Pass" x:Name="editReqPassCheckbox" Margin="40, 0, 0, 0"
+                <CheckBox  Content="Require Pass" x:Name="editReqPassCheckbox" Margin="30, 0, 0, 0"
                            VerticalAlignment="Center"/>
             </StackPanel>
 

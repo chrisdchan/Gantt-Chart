@@ -97,6 +97,10 @@ namespace Gaant_Chart.Models
             tasks[taskTypeId].complete(user, startDate, endDate);
             lastCompletedTaskId = taskTypeId;
             lastUpdated = DateTime.Now;
+            if(taskTypeId == data.allTasks.Length - 1)
+            {
+                this.endDate = endDate;
+            }
         }
 
         public void uncompleteTask(int taskTypeId)
@@ -122,6 +126,12 @@ namespace Gaant_Chart.Models
             {
                 lastCompletedTaskId = taskTypeId - 1;
             }
+
+            if(taskTypeId == data.allTasks.Length - 1)
+            {
+                endDate = null;
+            }
+
             lastUpdated = DateTime.Now;
         }
 
