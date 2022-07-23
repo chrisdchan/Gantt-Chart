@@ -17,18 +17,12 @@ namespace Gaant_Chart
         public DateTime viewEndDate { get; set; }
         public DateTime modelStartDate { get;set; }
 
-        private double TOP_START_OFF = 120;
+        private (double width, double height) canvasSize { get; set; }
+        private (double outerLeft, double innerLeft, double right, double top, double bottom) borders { get; set; }
+
         private double TASK_HEIGHT = 31.9;
-
         private double BLOCK_HEIGHT = 30;
-
-        private double RIGHT_OUTER_BORDER = 713;
-        private double LEFT_INNER_BORDER = 125;
-        private double LEFT_OUTER_BORDER = -80;
         private double GRAPH_WIDTH = 588;
-
-        private double BOTTOM_BORDER = 465;
-        private double TOP_BORDER = 15;
 
         private double DAYLINE_LENGTH = 5;
         private double LABEL_LEFT_MARGIN = 20;
@@ -41,7 +35,7 @@ namespace Gaant_Chart
         private double GROUPLABEL_ROTATION = 270;
 
         private double DEFAULT_DAYS_IN_VIEW = 28;
-
+        private double N_TASK_TYPES = data.allTasks.Length;
 
         private SolidColorBrush RED = new SolidColorBrush(Colors.Red);
         private SolidColorBrush PINK = new SolidColorBrush(Color.FromRgb(252, 180, 180));
@@ -53,27 +47,26 @@ namespace Gaant_Chart
         protected SolidColorBrush COMPLETED_COLOR = new SolidColorBrush(Color.FromRgb(149, 219, 139));
         protected SolidColorBrush PLANNED_COLOR = new SolidColorBrush(Color.FromRgb(254, 212, 158));
 
-
         private List<TaskDisplay> taskDisplays = new List<TaskDisplay>();
         private List<DateDisplay> dateDisplays = new List<DateDisplay>();
         private List<LineDisplay> lineDisplays = new List<LineDisplay>();
+        private List<Line> staticLines = new List<Line>();
+        private List<Label> staticLabels = new List<Label>();
         private Label modelNameLabel;
 
+        public static Func<DateTime, DateTime> floorDate;
         private Func<int, double> taskBlockTypeToPixel;
         private Func<int, double> taskLabelToPixel;
-        public static Func<DateTime, DateTime> floorDate;
         private Func<DateTime, Boolean> isWeekFromModelStart;
         private Func<double, double> degToRad;
+        private Func<double, double> toRawLineDim;
         public CanvasGraph()
         {
             canvas = new Canvas();
             canvas.Visibility = Visibility.Hidden;
             addCanvasToApp();
-            initMapFunctions();
+            addCanvasEventHandlers();
             initModelLabel();
-            drawStaticLines();
-            addTaskLabels();
-            addGroupLabels();
         }
         private void addCanvasToApp()
         {
@@ -86,17 +79,38 @@ namespace Gaant_Chart
         }
         private void initMapFunctions()
         {
-            taskBlockTypeToPixel = typeId => TOP_START_OFF + typeId * TASK_HEIGHT;
-            taskLabelToPixel = typeId => LABEL_TOP_OFFSET + LABEL_VERTICAL_SPACE * typeId;
+            taskBlockTypeToPixel = typeId => borders.top + typeId * (borders.bottom - borders.top) / N_TASK_TYPES;
+            taskLabelToPixel = typeId => borders.top + typeId * (borders.bottom - borders.top) / N_TASK_TYPES;
             floorDate = date => date.AddMinutes(-date.TimeOfDay.TotalMinutes);
             isWeekFromModelStart = date => (date - cielDate(modelStartDate)).TotalDays % 7 == 0;
             degToRad = deg => deg * Math.PI / 180;
+            toRawLineDim = val => val - 100;
         }
         private double dateToPixel(DateTime date)
         {
             if (date < viewStartDate || date > viewEndDate) throw new Exception("date out of range");
             double pixelsPerDay = GRAPH_WIDTH / (viewEndDate - viewStartDate).TotalDays;
-            return LEFT_INNER_BORDER + (date - viewStartDate).TotalDays * pixelsPerDay + 100;
+            return borders.innerLeft + (date - viewStartDate).TotalDays * pixelsPerDay;
+        }
+        public void load()
+        {
+            setCanvasDimensions();
+            makeCanvasHittable();
+            initMapFunctions();
+            drawStaticLines();
+            addTaskLabels();
+            addGroupLabels();
+        }
+        private void setCanvasDimensions()
+        {
+            canvasSize = (canvas.ActualWidth, canvas.ActualHeight);
+            borders = (
+                outerLeft: canvasSize.width * 0.05,
+                innerLeft: canvasSize.width * 0.3,
+                right: canvasSize.width * 0.95,
+                top: canvasSize.height * 0.2,
+                bottom: canvasSize.height * 0.98
+            );
         }
         private DateTime cielDate(DateTime date)
         {
@@ -167,11 +181,6 @@ namespace Gaant_Chart
             Canvas.SetLeft(textBlock, leftOffset);
             Canvas.SetTop(textBlock, topOffset);
         }
-        public void load()
-        {
-            makeCanvasHittable();
-            addCanvasEventHandlers();
-        }
         private void addCanvasEventHandlers()
         {
             canvas.PreviewMouseUp += new MouseButtonEventHandler(canvasPreviewMouseUp);
@@ -179,12 +188,13 @@ namespace Gaant_Chart
             canvas.PreviewMouseDown += new MouseButtonEventHandler(canvasPreviewMouseDown);
             canvas.PreviewMouseWheel += new MouseWheelEventHandler(canvasMouseWheel);
             canvas.MouseLeave += new MouseEventHandler(canvasMouseLeave);
+            canvas.SizeChanged += new SizeChangedEventHandler(canvasSizeChanged);
         }
         private void makeCanvasHittable()
         {
             Rectangle rectangle = new Rectangle();
-            rectangle.Width = canvas.ActualWidth;
-            rectangle.Height = canvas.ActualHeight;
+            rectangle.Width = canvasSize.width;
+            rectangle.Height = canvasSize.height;
             rectangle.Fill = WHITE;
             rectangle.Opacity = 0.1;
 
@@ -195,59 +205,67 @@ namespace Gaant_Chart
         }
         private void drawStaticLines()
         {
+            clearStaticLines();
+
             addStaticLine(
-                LEFT_OUTER_BORDER, BOTTOM_BORDER,
-                LEFT_INNER_BORDER, BOTTOM_BORDER,
+                toRawLineDim(borders.outerLeft), toRawLineDim(borders.bottom),
+                toRawLineDim(borders.innerLeft), toRawLineDim(borders.bottom),
                 RED);
             addStaticLine(
-                LEFT_OUTER_BORDER, TOP_BORDER,
-                LEFT_OUTER_BORDER, BOTTOM_BORDER,
+                toRawLineDim(borders.outerLeft), toRawLineDim(borders.top),
+                toRawLineDim(borders.outerLeft), toRawLineDim(borders.bottom),
                 RED);
 
             addStaticLine(
-                LEFT_OUTER_BORDER, TOP_BORDER,
-                LEFT_INNER_BORDER, TOP_BORDER,
+                toRawLineDim(borders.outerLeft), toRawLineDim(borders.top),
+                toRawLineDim(borders.innerLeft), toRawLineDim(borders.top),
                 RED );
 
             addStaticLine(
-                LEFT_OUTER_BORDER, TOP_BORDER,
-                LEFT_INNER_BORDER, TOP_BORDER,
+                toRawLineDim(borders.outerLeft), toRawLineDim(borders.top),
+                toRawLineDim(borders.innerLeft), toRawLineDim(borders.top),
                 RED );
 
             addStaticLine(
-                LEFT_INNER_BORDER, TOP_BORDER,
-                LEFT_INNER_BORDER, BOTTOM_BORDER,
+                toRawLineDim(borders.innerLeft), toRawLineDim(borders.top),
+                toRawLineDim(borders.innerLeft), toRawLineDim(borders.bottom),
                 RED );
             addStaticLine(
-                    LEFT_OUTER_BORDER, TOP_BORDER + TASK_HEIGHT * 5,
-                    LEFT_INNER_BORDER, TOP_BORDER + TASK_HEIGHT * 5,
+                    toRawLineDim(borders.outerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 5,
+                    toRawLineDim(borders.innerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 5,
                     RED );
 
             addStaticLine(
-                    LEFT_OUTER_BORDER, TOP_BORDER + TASK_HEIGHT * 10,
-                    LEFT_INNER_BORDER, TOP_BORDER + TASK_HEIGHT * 10,
+                    toRawLineDim(borders.outerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 10,
+                    toRawLineDim(borders.innerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 10,
                     RED );
             
             addStaticLine(
-                    LEFT_OUTER_BORDER, TOP_BORDER + TASK_HEIGHT * 12,
-                    LEFT_INNER_BORDER, TOP_BORDER + TASK_HEIGHT * 12,
+                    toRawLineDim(borders.outerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 12,
+                    toRawLineDim(borders.innerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 12,
                     RED );
 
             addStaticLine(
-                LEFT_INNER_BORDER, BOTTOM_BORDER,
-                RIGHT_OUTER_BORDER, BOTTOM_BORDER,
+                toRawLineDim(borders.innerLeft), toRawLineDim(borders.bottom),
+                borders.right, toRawLineDim(borders.bottom),
                 DULL_GREEN );
 
             addStaticLine(
-                RIGHT_OUTER_BORDER, TOP_BORDER,
-                RIGHT_OUTER_BORDER, BOTTOM_BORDER,
+                borders.right, toRawLineDim(borders.top),
+                borders.right, toRawLineDim(borders.bottom),
                 DULL_GREEN );
 
             addStaticLine(
-                LEFT_INNER_BORDER, TOP_BORDER,
-                RIGHT_OUTER_BORDER, TOP_BORDER,
+                toRawLineDim(borders.innerLeft), toRawLineDim(borders.top),
+                borders.right, toRawLineDim(borders.top),
                 PISS);
-
+        }
+        private void clearStaticLines()
+        {
+            foreach(Line line in staticLines)
+            {
+                canvas.Children.Remove(line);
+            }
         }
         private Line addStaticLine(double x1, double y1, double x2, double y2, SolidColorBrush color)
         {
@@ -260,6 +278,7 @@ namespace Gaant_Chart
             line.Margin = new Thickness(100);
 
             canvas.Children.Add(line);
+            staticLines.Add(line);
 
             return line;
         }
@@ -430,24 +449,23 @@ namespace Gaant_Chart
                 double x = dateToPixel(date);
                 LineDisplay lineDisplay = new LineDisplay(date);
                 lineDisplay.line.X1 = x;
-                lineDisplay.line.Y1 = TOP_BORDER + 100;
+                lineDisplay.line.Y1 = borders.top;
                 lineDisplay.line.X2 = x;
 
                 if(isWeekFromModelStart(date))
                 {
-                    lineDisplay.line.Y2 = BOTTOM_BORDER + 100;
+                    lineDisplay.line.Y2 = borders.bottom;
                     lineDisplay.line.Stroke = GRAY;
                 }
                 else
                 {
-                    lineDisplay.line.Y2 = TOP_BORDER + DAYLINE_LENGTH + 100;
+                    lineDisplay.line.Y2 = borders.top + DAYLINE_LENGTH;
                     lineDisplay.line.Stroke = PISS;
                 }
 
                 lineDisplays.Add(lineDisplay);
                 canvas.Children.Add(lineDisplay.line);
             }
-
         }
         private void clearDynamicLinesAndDates()
         {
@@ -469,7 +487,7 @@ namespace Gaant_Chart
                 updateTaskPositions();
             }
         }
-        public void clearCanvas()
+        public void clearModel()
         {
             clearTaskBlocks();
             clearDynamicLinesAndDates();
@@ -535,6 +553,14 @@ namespace Gaant_Chart
             {
                 addDays(-1);
             }
+        }
+        private void canvasSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            setCanvasDimensions();
+            initMapFunctions();
+            drawStaticLines();
+            addTaskLabels();
+            addGroupLabels();
         }
     }
 }

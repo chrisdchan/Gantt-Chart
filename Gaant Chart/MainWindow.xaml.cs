@@ -421,7 +421,7 @@ namespace Gaant_Chart
 
                 if(win2.deletedCurrentModel)
                 {
-                    canvasGraph.clearCanvas();
+                    canvasGraph.clearModel();
                     resetTaskbarWithoutModel();
                     txtDisplayModelName.Text = "";
                 }
@@ -458,7 +458,7 @@ namespace Gaant_Chart
             data.currentModel = null;
             txtDisplayModelName.Text = "";
             resetTaskbarWithoutModel();
-            canvasGraph.clearCanvas();
+            canvasGraph.clearModel();
 
         }
 

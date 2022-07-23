@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gaant_Chart"
         mc:Ignorable="d"
-        ResizeMode="NoResize" Height="800" Width="1300"
+        Height="1080" Width="1920"
         Title="MainWindow">
     <Grid x:Name="mainGrid">
         <Grid.ColumnDefinitions>
@@ -14,7 +14,7 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="860"/>
+            <ColumnDefinition Width="7.5*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height=".75*"/>
