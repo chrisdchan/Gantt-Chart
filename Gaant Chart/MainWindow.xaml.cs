@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Data.SQLite;
 using Gaant_Chart.Models;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -37,7 +27,6 @@ namespace Gaant_Chart
         public static DbConnection myDatabase { get; set; }
         public static EventHandler LoadExistingModelEvent { get; set; }
         public static Grid grid { get; set; }
-        private static Dictionary<int, (CheckBox, TextBox)> taskComponents { get; set; }
         private List<CheckBox> taskBarCheckBoxes { get; set; }
         private List <TextBox> taskBarTextBoxes { get; set; }
 

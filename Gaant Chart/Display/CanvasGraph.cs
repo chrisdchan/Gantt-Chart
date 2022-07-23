@@ -2,8 +2,6 @@
 using Gaant_Chart.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,7 +17,6 @@ namespace Gaant_Chart
         public DateTime viewEndDate { get; set; }
         public DateTime modelStartDate { get;set; }
 
-        private double LEFT_START_OFF = 225;
         private double TOP_START_OFF = 120;
         private double TASK_HEIGHT = 31.9;
 
@@ -39,7 +36,6 @@ namespace Gaant_Chart
         private double LABEL_VERTICAL_SPACE = 32;
 
         private double DATE_TOP_OFFSET = 40;
-        private double DATE_LEFT_OFFSET = 210;
 
         private double DATE_ROTATION = 285; // 285
         private double GROUPLABEL_ROTATION = 270;

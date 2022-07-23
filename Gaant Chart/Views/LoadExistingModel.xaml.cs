@@ -1,17 +1,8 @@
 ﻿using Gaant_Chart.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Gaant_Chart
 {
@@ -21,16 +12,7 @@ namespace Gaant_Chart
 
     public partial class LoadExistingModel : Window
     {
-        private List<(String, int)> ModelNames;
-
-        private int modelId;
-
         public Boolean earlyExist { get; set; }
-
-        public int getModelId()
-        {
-            return modelId;
-        }
        
         public LoadExistingModel(List<ModelTag> modelTags)
         {
@@ -38,6 +20,7 @@ namespace Gaant_Chart
             earlyExist = true;
 
             if (modelTags == null) return;
+
             foreach(ModelTag modelTag in modelTags)
             {
                 ComboBoxItem comboBoxItem = new ComboBoxItem();
@@ -50,7 +33,7 @@ namespace Gaant_Chart
         private void btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
             earlyExist = true;
-            this.Close();
+            Close();
         }
 
         private void btn_Open_Click(object sender, RoutedEventArgs e)
@@ -64,7 +47,7 @@ namespace Gaant_Chart
                 int modelId = (int)(myComboBox.SelectedItem as ComboBoxItem).Tag;
                 data.currentModel = MainWindow.myDatabase.getModel(modelId);
                 earlyExist = false;
-                this.Close();
+                Close();
             }
         }
     }
