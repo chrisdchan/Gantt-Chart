@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gaant_Chart"
         mc:Ignorable="d"
-        Height="1080" Width="1920"
+        Height="800" Width="1000"
+        SizeChanged="Window_SizeChanged"
         Title="MainWindow">
     <Grid x:Name="mainGrid">
         <Grid.ColumnDefinitions>
@@ -17,8 +18,17 @@
             <ColumnDefinition Width="7.5*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height=".75*"/>
-            <RowDefinition Height="1.5*"/>
+            <RowDefinition Height="2.5*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
@@ -100,7 +110,7 @@
             x:Name="importBtn"
             Grid.Column="3" Grid.Row="1"
             Grid.ColumnSpan="2" 
-            Margin="5,105 , 5, 0"
+            Margin="5,105, 5, 0"
             Height="25"
             VerticalAlignment="Top"
             Background="#F4E6FF"
@@ -132,12 +142,12 @@
         </DockPanel>
 
         <Rectangle Grid.Column="5" Grid.Row="1"
-            Grid.RowSpan="6"
+            Grid.RowSpan="15"
             Margin="10 65 10 25"
             Fill="Black"></Rectangle>
 
         <StackPanel Grid.Row="2" Grid.Column="0"
-                    Grid.ColumnSpan="5" Grid.RowSpan="5"
+                    Grid.ColumnSpan="5" Grid.RowSpan="13"
                     x:Name="taskBarStackPanel"
                     Margin="10 0 0 0">
         </StackPanel>

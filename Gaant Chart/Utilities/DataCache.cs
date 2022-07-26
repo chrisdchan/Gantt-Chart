@@ -42,6 +42,13 @@ namespace Gaant_Chart
             ("Physics Modeling and Reports", 16)
         };
 
+        public static (String, int, int)[] taskLabelGroupPosition = new (String name, int index, int length)[]
+        {
+            ("Segmentation Tasks", 0, 5),
+            ("Segmentation Review and Approval", 5, 5),
+            ("Mesh Preperation and Export to Physics", 10, 2),
+            ("Physics Modeling and Reports", 12, 2)
+        };
 
         public static Dictionary<String, Boolean[]> categoryAuthorization = new Dictionary<String, Boolean[]>()
         {

@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gaant_Chart"
         mc:Ignorable="d" ResizeMode="NoResize"
-        Title="CompleteTask" Height="350" Width="300">
+        Title="CompleteTask" Height="300" Width="300">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="0.75*"/>
-            <RowDefinition Height="0.75*"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="1*"/>
             <RowDefinition Height="0.75*"/>
         </Grid.RowDefinitions>
 
@@ -26,8 +26,9 @@
                    VerticalAlignment="Top"/>
         <Label Grid.Row="2" Content="Date" Height="25" VerticalAlignment="Center"
                Margin="18, 0, 0, 60"/>
-        <TextBox Name="dateTbx" Grid.Row="2" HorizontalAlignment="Left" Margin="20, 0, 0 , 0"
-                 Height="30" Width="100"/>
+        <TextBox Name="dateTbx" Grid.Row="2" HorizontalAlignment="Left" Margin="15, 0, 0 , 0"
+                 Height="30" Width="75"/>
+        <DatePicker Name="datePicker" Grid.Row="2" Width="30" Height="30" HorizontalAlignment="Left" Margin="100, 0, 0, 0"/>
         <Label Content="Time" Grid.Row="2" VerticalAlignment="Center"
                 Height="25"
                Margin="150, 0, 0, 60"/>

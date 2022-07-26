@@ -17,10 +17,6 @@ namespace Gaant_Chart
         public DateTime viewEndDate { get; set; }
         public DateTime modelStartDate { get;set; }
 
-        private (double width, double height) canvasSize { get; set; }
-        private (double outerLeft, double innerLeft, double right, double top, double bottom) borders { get; set; }
-
-        private double TASK_HEIGHT = 31.9;
         private double BLOCK_HEIGHT = 30;
         private double GRAPH_WIDTH = 588;
 
@@ -47,25 +43,41 @@ namespace Gaant_Chart
         protected SolidColorBrush COMPLETED_COLOR = new SolidColorBrush(Color.FromRgb(149, 219, 139));
         protected SolidColorBrush PLANNED_COLOR = new SolidColorBrush(Color.FromRgb(254, 212, 158));
 
-        private List<TaskDisplay> taskDisplays = new List<TaskDisplay>();
+        private List<TaskDisplay> completedTaskDisplays = new List<TaskDisplay>();
+        private List<TaskDisplay> plannedTaskDisplays = new List<TaskDisplay>();
+
         private List<DateDisplay> dateDisplays = new List<DateDisplay>();
         private List<LineDisplay> lineDisplays = new List<LineDisplay>();
         private List<Line> staticLines = new List<Line>();
-        private List<Label> staticLabels = new List<Label>();
+        private List<Label> taskLabels = new List<Label>();
+        private List<TextBlock> taskGroupLabels = new List<TextBlock>();
+
         private Label modelNameLabel;
+        private Rectangle hittableRect;
 
         public static Func<DateTime, DateTime> floorDate;
-        private Func<int, double> taskBlockTypeToPixel;
-        private Func<int, double> taskLabelToPixel;
         private Func<DateTime, Boolean> isWeekFromModelStart;
         private Func<double, double> degToRad;
         private Func<double, double> toRawLineDim;
+        private (
+            Func<double> outerLeft, Func<double> innerLeft, 
+            Func<double> right, Func<double> top, 
+            Func<double> tick, Func<double> firstRed,
+            Func<double> secondRed, Func<double> thirdRed,
+            Func<double> bottom) borders { get; set; }
+
+        private (Func<double> width, Func<double> height, Func<int, double> top, Func<double> font) taskLabelSize;
+        private (Func<double, double> width, Func<double> height, Func<int, double, double> top,  Func<double> font) taskGroupLabelSize;
+        private (Func<double> height, Func<int, double> top) completedTaskSize;
+        private (Func<double> height, Func<int, double> top) plannedTaskSize;
+        private (Func<double> width, Func<double> height, Func<double> top, Func<double> font) dateSize;
         public CanvasGraph()
         {
             canvas = new Canvas();
             canvas.Visibility = Visibility.Hidden;
             addCanvasToApp();
             addCanvasEventHandlers();
+            initMapFunctions();
             initModelLabel();
         }
         private void addCanvasToApp()
@@ -74,13 +86,49 @@ namespace Gaant_Chart
 
             Grid.SetColumn(canvas, 5);
             Grid.SetRow(canvas, 1);
-            Grid.SetRowSpan(canvas, 6);
+            Grid.SetRowSpan(canvas, 15);
             canvas.Margin = new Thickness(10, 65, 10, 25);
         }
         private void initMapFunctions()
         {
-            taskBlockTypeToPixel = typeId => borders.top + typeId * (borders.bottom - borders.top) / N_TASK_TYPES;
-            taskLabelToPixel = typeId => borders.top + typeId * (borders.bottom - borders.top) / N_TASK_TYPES;
+            borders = (
+                outerLeft: () => canvas.ActualWidth * 0.025,
+                innerLeft: () => canvas.ActualWidth * 0.3,
+                right: () => canvas.ActualWidth * 0.96,
+                top: () => canvas.ActualHeight * 0.2,
+                tick: () => canvas.ActualHeight * 0.21,
+                firstRed: () => borders.tick() + 5 * (borders.bottom() - borders.tick()) / N_TASK_TYPES,
+                secondRed: () => borders.tick() + 10 * (borders.bottom() - borders.tick()) / N_TASK_TYPES,
+                thirdRed: () => borders.tick() + 12 * (borders.bottom() - borders.tick()) / N_TASK_TYPES,
+                bottom: () => canvas.ActualHeight * 0.98
+            );
+            taskLabelSize = (
+                width: () => borders.innerLeft() - borders.outerLeft(),
+                height: () => (borders.bottom() - borders.tick()) / N_TASK_TYPES,
+                top: typeId => borders.tick() + typeId * (borders.bottom() - borders.top()) / N_TASK_TYPES,
+                font: () => Math.Min(taskLabelSize.height() * 0.375, taskLabelSize.width() * 0.06)
+                );
+            taskGroupLabelSize = (
+                width: length => Math.Min(length, 3.5) * taskLabelSize.height(),
+                height: () => taskLabelSize.width() * 0.5,
+                top: (index, length) => borders.tick() + index * taskLabelSize.height() + (length - Math.Min(length, 3.5)) * taskLabelSize.height() * 0.5,
+                font: () => taskLabelSize.font() * 0.9
+                );
+            plannedTaskSize = (
+                height: () => (borders.bottom() - borders.tick()) / N_TASK_TYPES,
+                top: typeId => borders.tick() + typeId * plannedTaskSize.height()
+                );
+            completedTaskSize = (
+                height: () => plannedTaskSize.height() * 0.85,
+                top: typeId => plannedTaskSize.top(typeId) + plannedTaskSize.height() * 0.075
+                );
+            dateSize = (
+                width: () => canvas.ActualHeight * 0.175,
+                height: () => canvas.ActualWidth * 0.045,
+                top: () => borders.top() - dateSize.height() * Math.Cos(degToRad(-DATE_ROTATION)) - dateSize.width() * Math.Sin(degToRad(-DATE_ROTATION)),
+                font: () => taskLabelSize.font() * 1.2
+                );
+
             floorDate = date => date.AddMinutes(-date.TimeOfDay.TotalMinutes);
             isWeekFromModelStart = date => (date - cielDate(modelStartDate)).TotalDays % 7 == 0;
             degToRad = deg => deg * Math.PI / 180;
@@ -89,28 +137,12 @@ namespace Gaant_Chart
         private double dateToPixel(DateTime date)
         {
             if (date < viewStartDate || date > viewEndDate) throw new Exception("date out of range");
-            double pixelsPerDay = GRAPH_WIDTH / (viewEndDate - viewStartDate).TotalDays;
-            return borders.innerLeft + (date - viewStartDate).TotalDays * pixelsPerDay;
+            double pixelsPerDay = (borders.right() - borders.innerLeft()) / (viewEndDate - viewStartDate).TotalDays;
+            return borders.innerLeft() + (date - viewStartDate).TotalDays * pixelsPerDay;
         }
         public void load()
         {
-            setCanvasDimensions();
-            makeCanvasHittable();
-            initMapFunctions();
             drawStaticLines();
-            addTaskLabels();
-            addGroupLabels();
-        }
-        private void setCanvasDimensions()
-        {
-            canvasSize = (canvas.ActualWidth, canvas.ActualHeight);
-            borders = (
-                outerLeft: canvasSize.width * 0.05,
-                innerLeft: canvasSize.width * 0.3,
-                right: canvasSize.width * 0.95,
-                top: canvasSize.height * 0.2,
-                bottom: canvasSize.height * 0.98
-            );
         }
         private DateTime cielDate(DateTime date)
         {
@@ -136,50 +168,95 @@ namespace Gaant_Chart
             Canvas.SetLeft(modelNameLabel, 30);
             Canvas.SetTop(modelNameLabel, 30);
         }
-        private void addTaskLabels()
+        private void initTaskLabels()
         {
             for(int i = 0; i < data.allTasks.Length; i++) 
-                addTaskLabel(data.allTasks[i], i);
+                initTaskLabel(data.allTasks[i], i);
         }
-        private void addTaskLabel(String taskName, int taskTypeId)
+        private void initTaskLabel(String taskName, int taskTypeId)
         {
             Label label = new Label();
             label.Content = taskName;
 
-            label.FontSize = 10;
+            label.FontSize = taskLabelSize.font();
             label.Foreground = WHITE;
-            label.Width = 200;
-            label.Height = 30;
+            label.Width = taskLabelSize.width();
+            label.Height = taskLabelSize.height();
             label.HorizontalContentAlignment = HorizontalAlignment.Right;
 
             canvas.Children.Add(label);
+            taskLabels.Add(label);
 
-            Canvas.SetTop(label, taskLabelToPixel(taskTypeId));
-            Canvas.SetLeft(label, LABEL_LEFT_MARGIN);
+            Canvas.SetTop(label, taskLabelSize.top(taskTypeId));
+            Canvas.SetLeft(label, borders.outerLeft());
         }
-        private void addGroupLabels()
+        private void updateTaskLabels()
         {
-            addGroupLabel("Segmentation", 100, 35, 150);
-            addGroupLabel("Segmentation Review and Approval", 100,  30, 305);
-            addGroupLabel("Mesh Prep and Export", 50, 30, 440);
-            addGroupLabel("Physics Modeling and Report", 50, 20, 505.6);
+            if(taskLabels.Count == 0)
+            {
+                initTaskLabels();
+            }
+
+            int i = 0;
+            foreach(Label label in taskLabels)
+            {
+                updateTaskLabel(label, i);
+                i++;
+            }
         }
-        private void addGroupLabel(String name, double width, double leftOffset, double topOffset)
+        private void updateTaskLabel(Label label, int taskTypeId)
         {
-            TextBlock textBlock = new TextBlock();
-            textBlock.Text = name;
-            textBlock.Width = width;
-            textBlock.FontSize = 10;
-            textBlock.Foreground = WHITE;
-            textBlock.TextWrapping = TextWrapping.Wrap;
-            textBlock.TextAlignment = TextAlignment.Center;
-            textBlock.VerticalAlignment = VerticalAlignment.Bottom;
-            textBlock.LayoutTransform = new RotateTransform(GROUPLABEL_ROTATION);
+            label.FontSize = taskLabelSize.font();
+            label.Width = taskLabelSize.width();
+            label.Height = taskLabelSize.height();
 
-            canvas.Children.Add(textBlock);
+            Canvas.SetLeft(label, borders.outerLeft());
+            Canvas.SetTop(label, taskLabelSize.top(taskTypeId));
+        }
+        private void initGroupLabels()
+        {
+            for(int i = 0; i < 4; i++)
+            {
+                (String name, int index, int length) = data.taskLabelGroupPosition[i];
+                TextBlock textBlock = new TextBlock();
+                textBlock.Text = name;
+                textBlock.Foreground = WHITE;
+                textBlock.TextWrapping = TextWrapping.Wrap;
+                textBlock.TextAlignment = TextAlignment.Center;
+                textBlock.VerticalAlignment = VerticalAlignment.Bottom;
+                textBlock.LayoutTransform = new RotateTransform(GROUPLABEL_ROTATION);
 
-            Canvas.SetLeft(textBlock, leftOffset);
-            Canvas.SetTop(textBlock, topOffset);
+                textBlock.Width = taskGroupLabelSize.width(length);
+                textBlock.Height = taskGroupLabelSize.height();
+                textBlock.FontSize = taskGroupLabelSize.font();
+
+                canvas.Children.Add(textBlock);
+                taskGroupLabels.Add(textBlock);
+
+                Canvas.SetLeft(textBlock, borders.outerLeft());
+                Canvas.SetTop(textBlock, taskGroupLabelSize.top(index, length));
+            }
+        }
+        private void updateGroupLabels()
+        {
+            if(taskGroupLabels.Count <= 0)
+            {
+                initGroupLabels();
+                return;
+            }
+
+            for(int i = 0; i < 4; i++)
+            {
+                TextBlock textBlock = taskGroupLabels[i];
+                (String name, int index, int length) = data.taskLabelGroupPosition[i];
+
+                textBlock.Width = taskGroupLabelSize.width(length);
+                textBlock.Height = taskGroupLabelSize.height();
+                textBlock.FontSize = taskGroupLabelSize.font();
+
+                Canvas.SetLeft(textBlock, borders.outerLeft());
+                Canvas.SetTop(textBlock, taskGroupLabelSize.top(index, length));
+            }
         }
         private void addCanvasEventHandlers()
         {
@@ -190,74 +267,82 @@ namespace Gaant_Chart
             canvas.MouseLeave += new MouseEventHandler(canvasMouseLeave);
             canvas.SizeChanged += new SizeChangedEventHandler(canvasSizeChanged);
         }
-        private void makeCanvasHittable()
+        private void initHittableRect()
         {
-            Rectangle rectangle = new Rectangle();
-            rectangle.Width = canvasSize.width;
-            rectangle.Height = canvasSize.height;
-            rectangle.Fill = WHITE;
-            rectangle.Opacity = 0.1;
+            hittableRect = new Rectangle();
+            hittableRect.Fill = WHITE;
+            hittableRect.Opacity = 0.1;
+            hittableRect.Width = canvas.ActualWidth;
+            hittableRect.Height = canvas.ActualHeight;
 
-            canvas.Children.Add(rectangle);
+            canvas.Children.Add(hittableRect);
 
-            Canvas.SetLeft(rectangle, 0);
-            Canvas.SetTop(rectangle, 0);
+            Canvas.SetLeft(hittableRect, 0);
+            Canvas.SetTop(hittableRect, 0);
+        }
+        private void updateHittableRect()
+        {
+            if (hittableRect == null)
+                initHittableRect();
+
+            hittableRect.Width = canvas.ActualWidth;
+            hittableRect.Height = canvas.ActualHeight;
         }
         private void drawStaticLines()
         {
             clearStaticLines();
 
             addStaticLine(
-                toRawLineDim(borders.outerLeft), toRawLineDim(borders.bottom),
-                toRawLineDim(borders.innerLeft), toRawLineDim(borders.bottom),
+                toRawLineDim(borders.outerLeft()), toRawLineDim(borders.bottom()),
+                toRawLineDim(borders.innerLeft()), toRawLineDim(borders.bottom()),
                 RED);
             addStaticLine(
-                toRawLineDim(borders.outerLeft), toRawLineDim(borders.top),
-                toRawLineDim(borders.outerLeft), toRawLineDim(borders.bottom),
+                toRawLineDim(borders.outerLeft()), toRawLineDim(borders.top()),
+                toRawLineDim(borders.outerLeft()), toRawLineDim(borders.bottom()),
                 RED);
 
             addStaticLine(
-                toRawLineDim(borders.outerLeft), toRawLineDim(borders.top),
-                toRawLineDim(borders.innerLeft), toRawLineDim(borders.top),
+                toRawLineDim(borders.outerLeft()), toRawLineDim(borders.top()),
+                toRawLineDim(borders.innerLeft()), toRawLineDim(borders.top()),
                 RED );
 
             addStaticLine(
-                toRawLineDim(borders.outerLeft), toRawLineDim(borders.top),
-                toRawLineDim(borders.innerLeft), toRawLineDim(borders.top),
+                toRawLineDim(borders.outerLeft()), toRawLineDim(borders.top()),
+                toRawLineDim(borders.innerLeft()), toRawLineDim(borders.top()),
                 RED );
 
             addStaticLine(
-                toRawLineDim(borders.innerLeft), toRawLineDim(borders.top),
-                toRawLineDim(borders.innerLeft), toRawLineDim(borders.bottom),
+                toRawLineDim(borders.innerLeft()), toRawLineDim(borders.top()),
+                toRawLineDim(borders.innerLeft()), toRawLineDim(borders.bottom()),
                 RED );
             addStaticLine(
-                    toRawLineDim(borders.outerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 5,
-                    toRawLineDim(borders.innerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 5,
+                    toRawLineDim(borders.outerLeft()), toRawLineDim(borders.firstRed()),
+                    toRawLineDim(borders.innerLeft()), toRawLineDim(borders.firstRed()),
                     RED );
 
             addStaticLine(
-                    toRawLineDim(borders.outerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 10,
-                    toRawLineDim(borders.innerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 10,
+                    toRawLineDim(borders.outerLeft()), toRawLineDim(borders.secondRed()),
+                    toRawLineDim(borders.innerLeft()), toRawLineDim(borders.secondRed()),
                     RED );
             
             addStaticLine(
-                    toRawLineDim(borders.outerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 12,
-                    toRawLineDim(borders.innerLeft), toRawLineDim(borders.top) + TASK_HEIGHT * 12,
+                    toRawLineDim(borders.outerLeft()), toRawLineDim(borders.thirdRed()),
+                    toRawLineDim(borders.innerLeft()), toRawLineDim(borders.thirdRed()),
                     RED );
 
             addStaticLine(
-                toRawLineDim(borders.innerLeft), toRawLineDim(borders.bottom),
-                borders.right, toRawLineDim(borders.bottom),
+                toRawLineDim(borders.innerLeft()), toRawLineDim(borders.bottom()),
+                toRawLineDim(borders.right()), toRawLineDim(borders.bottom()),
                 DULL_GREEN );
 
             addStaticLine(
-                borders.right, toRawLineDim(borders.top),
-                borders.right, toRawLineDim(borders.bottom),
+                toRawLineDim(borders.right()), toRawLineDim(borders.top()),
+                toRawLineDim(borders.right()), toRawLineDim(borders.bottom()),
                 DULL_GREEN );
 
             addStaticLine(
-                toRawLineDim(borders.innerLeft), toRawLineDim(borders.top),
-                borders.right, toRawLineDim(borders.top),
+                toRawLineDim(borders.innerLeft()), toRawLineDim(borders.top()),
+                toRawLineDim(borders.right()), toRawLineDim(borders.top()),
                 PISS);
         }
         private void clearStaticLines()
@@ -284,12 +369,31 @@ namespace Gaant_Chart
         }
         private void updateTaskPositions()
         {
-            foreach(TaskDisplay taskDisplay in taskDisplays)
+            foreach(TaskDisplay taskDisplay in completedTaskDisplays)
             {
-                updateTaskPosition(taskDisplay);
+                updateCompletedTask(taskDisplay);
+            }
+
+            foreach(TaskDisplay taskDisplay in plannedTaskDisplays)
+            {
+                updatePlannedTask(taskDisplay);
             }
         }
-        private void updateTaskPosition(TaskDisplay taskDisplay)
+        private void updatePlannedTask(TaskDisplay taskDisplay)
+        {
+            Rectangle rect = taskDisplay.rectangle;
+            rect.Height = plannedTaskSize.height();
+            Canvas.SetTop(rect, plannedTaskSize.top(taskDisplay.taskTypeId));
+            updateTask(taskDisplay);
+        }
+        private void updateCompletedTask(TaskDisplay taskDisplay)
+        {
+            Rectangle rect = taskDisplay.rectangle;
+            rect.Height = completedTaskSize.height();
+            Canvas.SetTop(rect, completedTaskSize.top(taskDisplay.taskTypeId));
+            updateTask(taskDisplay);
+        }
+        private void updateTask(TaskDisplay taskDisplay)
         {
             Rectangle rect = taskDisplay.rectangle;
             DateTime start = taskDisplay.startDate;
@@ -307,29 +411,33 @@ namespace Gaant_Chart
             {
                 rect.Width = 0;
             }
-
-
         }
         private void initCompletedTask(TaskDisplay taskDisplay)
         {
             Rectangle rect = taskDisplay.rectangle;
             rect.Fill = COMPLETED_COLOR;
             rect.Opacity = 0.8;
-            rect.Height = BLOCK_HEIGHT - 8;
+            rect.Height = completedTaskSize.height();
+
+            canvas.Children.Add(rect);
+            completedTaskDisplays.Add(taskDisplay);
 
             initTask(taskDisplay);
 
-            Canvas.SetTop(rect, taskBlockTypeToPixel(taskDisplay.taskTypeId) + 4);
+            Canvas.SetTop(rect, completedTaskSize.top(taskDisplay.taskTypeId));
         }
         private void initPlannedTask(TaskDisplay taskDisplay)
         {
             Rectangle rect = taskDisplay.rectangle;
             rect.Fill = PLANNED_COLOR;
-            rect.Height = BLOCK_HEIGHT;
+            rect.Height = plannedTaskSize.height();
+
+            canvas.Children.Add(rect);
+            plannedTaskDisplays.Add(taskDisplay);
 
             initTask(taskDisplay);
 
-            Canvas.SetTop(rect, taskBlockTypeToPixel(taskDisplay.taskTypeId));
+            Canvas.SetTop(rect, plannedTaskSize.top(taskDisplay.taskTypeId));
         }
         private void initTask(TaskDisplay taskDisplay)
         {
@@ -354,8 +462,6 @@ namespace Gaant_Chart
                 rect.Width = 0;
             }
 
-            canvas.Children.Add(rect);
-            taskDisplays.Add(taskDisplay);
             Canvas.SetLeft(rect, leftOffset);
         }
         public void loadModel(Model model)
@@ -392,7 +498,11 @@ namespace Gaant_Chart
         }
         private void clearTaskBlocks()
         {
-            foreach(TaskDisplay taskDisplay in taskDisplays)
+            foreach(TaskDisplay taskDisplay in completedTaskDisplays)
+            {
+                canvas.Children.Remove(taskDisplay.rectangle);
+            }
+            foreach(TaskDisplay taskDisplay in plannedTaskDisplays)
             {
                 canvas.Children.Remove(taskDisplay.rectangle);
             }
@@ -423,22 +533,22 @@ namespace Gaant_Chart
                     DateDisplay dateDisplay = new DateDisplay(date);
                     dateDisplay.label.Content = date.ToString("MM/dd/y");
                     dateDisplay.label.Foreground = GREEN;
-                    dateDisplay.label.FontSize = 14;
-                    dateDisplay.label.Height = 25;
-                    dateDisplay.label.Width = 70;
+                    dateDisplay.label.FontSize = dateSize.font();
+                    dateDisplay.label.Height = dateSize.height();
+                    dateDisplay.label.Width = dateSize.width();
                     dateDisplay.label.LayoutTransform = new RotateTransform(DATE_ROTATION);
+                    dateDisplay.label.VerticalContentAlignment = VerticalAlignment.Center;
 
                     dateDisplays.Add(dateDisplay);
                     canvas.Children.Add(dateDisplay.label);
 
-                    double width_i = dateDisplay.label.Height * Math.Sin(degToRad(-DATE_ROTATION));
+                    double width_i = dateDisplay.label.Height * Math.Sin(degToRad(-DATE_ROTATION)) * 0.5;
                     double leftOffset = dateToPixel(date) - width_i;
 
                     Canvas.SetLeft(dateDisplay.label, leftOffset);
-                    Canvas.SetTop(dateDisplay.label, DATE_TOP_OFFSET);
+                    Canvas.SetTop(dateDisplay.label, dateSize.top());
                 }
             }
-
         }
         private void drawDyanimcLines()
         {
@@ -449,17 +559,17 @@ namespace Gaant_Chart
                 double x = dateToPixel(date);
                 LineDisplay lineDisplay = new LineDisplay(date);
                 lineDisplay.line.X1 = x;
-                lineDisplay.line.Y1 = borders.top;
+                lineDisplay.line.Y1 = borders.top();
                 lineDisplay.line.X2 = x;
 
                 if(isWeekFromModelStart(date))
                 {
-                    lineDisplay.line.Y2 = borders.bottom;
+                    lineDisplay.line.Y2 = borders.bottom();
                     lineDisplay.line.Stroke = GRAY;
                 }
                 else
                 {
-                    lineDisplay.line.Y2 = borders.top + DAYLINE_LENGTH;
+                    lineDisplay.line.Y2 = borders.tick();
                     lineDisplay.line.Stroke = PISS;
                 }
 
@@ -556,11 +666,12 @@ namespace Gaant_Chart
         }
         private void canvasSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            setCanvasDimensions();
-            initMapFunctions();
+            updateHittableRect();
+            updateTaskLabels();
+            updateGroupLabels();
             drawStaticLines();
-            addTaskLabels();
-            addGroupLabels();
+            drawDynamicLinesAndDates();
+            updateTaskPositions();
         }
     }
 }

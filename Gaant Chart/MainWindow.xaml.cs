@@ -104,6 +104,7 @@ namespace Gaant_Chart
         }
         private void createTaskBar()
         {
+            Grid grid = mainGrid;
             foreach(String taskname in data.allTasks)
             {
                 CheckBox checkbox = new CheckBox();
@@ -112,7 +113,7 @@ namespace Gaant_Chart
                 checkbox.Unchecked += new RoutedEventHandler(System_Unchecked);
 
                 TextBox textbox = new TextBox();
-                textbox.Width = 150;
+                textbox.Width = 200;
                 textbox.Margin = new Thickness(0, 0, 5, 0);
                 textbox.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
                 textbox.Background = new SolidColorBrush(Colors.LightGray);
@@ -173,7 +174,6 @@ namespace Gaant_Chart
                 i++;
             }
         }
-
         
         private void initTaskBarWithModel()
         {
@@ -298,7 +298,7 @@ namespace Gaant_Chart
 
             if(!isCurrentUser())
             {
-                System.Windows.MessageBox.Show("No User Logged In");
+                MessageBox.Show("No User Logged In");
                 checkbox.IsChecked = false;
                 return;
             }
@@ -351,8 +351,8 @@ namespace Gaant_Chart
             {
                 String lastTaskName = (task.typeInd == 0) ? "NONE" : model.tasks[task.typeInd - 1].name;
 
-                System.Windows.MessageBoxResult res = MessageBox.Show("WARNING: The last saved task will be " + lastTaskName, "Undo Task?", MessageBoxButton.YesNo);
-                if(res == System.Windows.MessageBoxResult.Yes)
+                MessageBoxResult res = MessageBox.Show("WARNING: The last saved task will be " + lastTaskName, "Undo Task?", MessageBoxButton.YesNo);
+                if(res == MessageBoxResult.Yes)
                 {
                     model.uncompleteTask(taskTypeId);
                     myDatabase.updateModel(model);
@@ -560,6 +560,11 @@ namespace Gaant_Chart
 
             adminTxt.SelectionStart = n;
             adminTxt.SelectionLength = 0;
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
         }
     }
 }
