@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Gaant_Chart
@@ -12,8 +13,12 @@ namespace Gaant_Chart
     {
         public Boolean earlyExist { get; set; }
         private Boolean firstFocus = true;
+        private Label clickedLabel { get; set; }
+        private Label selectedLabel { get; set; }
 
-        private SolidColorBrush GRAY = new SolidColorBrush(Colors.Gray);
+        private SolidColorBrush labelBackgroundColor = new SolidColorBrush(Color.FromRgb(215, 215, 215));
+        private SolidColorBrush labelHoverColor = new SolidColorBrush(Color.FromRgb(235, 235, 235));
+ 
         private ModelNameTrie trie { get; set; }
        
         public LoadExistingModel(List<ModelTag> modelTags)
@@ -38,28 +43,11 @@ namespace Gaant_Chart
 
             populateModelList("");
         }
-
         private void btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
             earlyExist = true;
             Close();
         }
-
-        private void btn_Open_Click(object sender, RoutedEventArgs e)
-        {
-            //if(myComboBox.SelectedItem == null)
-            //{
-            //    MessageBox.Show("Please select a model");
-            //}
-            //else 
-            //{
-            //    int modelId = (int)(myComboBox.SelectedItem as ComboBoxItem).Tag;
-            //    data.currentModel = MainWindow.myDatabase.getModel(modelId);
-            //    earlyExist = false;
-            //    Close();
-            //}
-        }
-
         private Boolean dontSearch = false;
         private void searchTxt_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -72,27 +60,58 @@ namespace Gaant_Chart
 
             String text = searchTxt.Text;
             populateModelList(text);
-
         }
-
         private void populateModelList(String text)
         {
             List<(String, long)> suggestions = trie.suggest(text);
 
-            int n = Math.Min(suggestions.Count, 5);
-
-            for(int i = 0; i < n; i++)
+            for(int i = 0; i < suggestions.Count; i++)
             {
                 (String name, long id) = suggestions[i];
 
                 Label label = new Label();
                 label.Content = name;
                 label.Tag = id;
-                label.FontSize = 15;
-                label.Width = 250;
-                label.Height = 30;
-                label.Background = new SolidColorBrush(Colors.Beige);
+                label.FontSize = 18;
+                label.Width = 225;
+                label.Height = 45;
+                label.Background = labelBackgroundColor;
+                label.MouseEnter += new MouseEventHandler(onMouseEnter);
+                label.MouseLeave += new MouseEventHandler(onMouseLeave);
+                label.PreviewMouseDown += new MouseButtonEventHandler(onMouseDown);
+                label.PreviewMouseUp += new MouseButtonEventHandler(onMouseUp);
+
                 modelNamesSP.Children.Add(label);
+            }
+        }
+        private void onMouseEnter(object sender, MouseEventArgs e)
+        {
+            Label label = sender as Label;
+            label.Background = labelHoverColor;
+        }
+        private void onMouseLeave(object sender, MouseEventArgs e)
+        {
+            Label label = sender as Label;
+            label.Background = labelBackgroundColor;
+        }
+        private Boolean clickdown = false;
+        private void onMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            clickdown = true;
+            clickedLabel = sender as Label;
+        }
+        private void onMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if(clickdown)
+            {
+                Label thisLabel = sender as Label;
+                if(thisLabel == clickedLabel)
+                {
+                    long modelId = (long)(thisLabel.Tag);
+                    data.currentModel = MainWindow.myDatabase.getModel(modelId);
+                    earlyExist = false;
+                    Close();  
+                }
             }
         }
     }
