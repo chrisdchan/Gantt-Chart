@@ -20,13 +20,6 @@ namespace Gaant_Chart
         private double BLOCK_HEIGHT = 30;
         private double GRAPH_WIDTH = 588;
 
-        private double DAYLINE_LENGTH = 5;
-        private double LABEL_LEFT_MARGIN = 20;
-        private double LABEL_TOP_OFFSET = 120;
-        private double LABEL_VERTICAL_SPACE = 32;
-
-        private double DATE_TOP_OFFSET = 40;
-
         private double DATE_ROTATION = 285; // 285
         private double GROUPLABEL_ROTATION = 270;
 
@@ -270,8 +263,8 @@ namespace Gaant_Chart
         private void initHittableRect()
         {
             hittableRect = new Rectangle();
-            hittableRect.Fill = WHITE;
-            hittableRect.Opacity = 0.1;
+            hittableRect.Fill = new SolidColorBrush(Colors.Black);
+            hittableRect.Opacity = 0.05;
             hittableRect.Width = canvas.ActualWidth;
             hittableRect.Height = canvas.ActualHeight;
 
@@ -636,11 +629,10 @@ namespace Gaant_Chart
             if(mouseCaptured && data.currentModel != null)
             {
                 Point position = e.GetPosition(sender as IInputElement);
-                double daysPerPixel = (viewEndDate - viewStartDate).TotalDays / GRAPH_WIDTH;
+                double daysPerPixel = (viewEndDate - viewStartDate).TotalDays / (borders.right() - borders.innerLeft());
                 double dayOffset = (referencePoint.X - position.X) * daysPerPixel;
                 viewStartDate = referenceStartDate.AddDays(dayOffset);
                 viewEndDate = referenceEndDate.AddDays(dayOffset);
-
 
                 rerenderCanvas();
             }    

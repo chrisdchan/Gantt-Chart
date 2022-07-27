@@ -12,9 +12,7 @@ namespace Gaant_Chart
     public partial class LoadExistingModel : Window
     {
         public Boolean earlyExist { get; set; }
-        private Boolean firstFocus = true;
         private Label clickedLabel { get; set; }
-        private Label selectedLabel { get; set; }
 
         private SolidColorBrush labelBackgroundColor = new SolidColorBrush(Color.FromRgb(215, 215, 215));
         private SolidColorBrush labelHoverColor = new SolidColorBrush(Color.FromRgb(235, 235, 235));
