@@ -19,26 +19,35 @@
                HorizontalAlignment="Center" VerticalAlignment="Center"
                Content="Select Existing Model"></Label>
             
-        <TextBox FontSize="25" Grid.Row="1"
+
+        <TextBox FontSize="18" Grid.Row="1"
                 Height="50" Width="250" 
                  VerticalContentAlignment="Center"
+                 VerticalAlignment="Bottom"
+                 BorderThickness="0"
                  x:Name="searchTxt"
-                 Padding="5"
+                 Padding="7, 0, 0, 0"
                  TextChanged="searchTxt_TextChanged"
-                 Foreground="Gray">
+                 GotFocus="searchTxt_GotFocus"
+                 LostFocus="searchTxt_LostFocus"
+                 Foreground="#EAEAEA">
                 <TextBox.Resources>
                 <Style TargetType="{x:Type Border}">
-                    <Setter Property="CornerRadius" Value="10"/>
-                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="CornerRadius" Value="10, 10, 0, 0"/>
+                    <Setter Property="BorderThickness" Value="0, 0, 0, 1"/>
+                    <Setter Property="BorderBrush" Value="White"/>
                 </Style>
                 </TextBox.Resources>
         </TextBox>
 
+        <Separator Background="White" Width="220" Margin="5, 0, 20, 7.5"
+                   Grid.Row="1" VerticalAlignment="Bottom"/>
+
         <ScrollViewer 
-            Grid.Row="2" Width="250"
+            Grid.Row="2" Width="267" Margin="16, 0, 0, 0"
             Height="200" VerticalAlignment="Top">
-            <StackPanel 
-            x:Name="modelNamesSP">
+            <StackPanel Width="250" 
+                        x:Name="modelNamesSP">
         </StackPanel>
         </ScrollViewer>
 

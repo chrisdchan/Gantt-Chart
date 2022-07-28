@@ -11,14 +11,15 @@ namespace Gaant_Chart
 {
     public partial class LoadExistingModel : Window
     {
-        public Boolean earlyExist { get; set; }
+        public Boolean earlyExist { get; set;}
         private Label clickedLabel { get; set; }
 
-        private SolidColorBrush labelBackgroundColor = new SolidColorBrush(Color.FromRgb(215, 215, 215));
-        private SolidColorBrush labelHoverColor = new SolidColorBrush(Color.FromRgb(235, 235, 235));
+        private SolidColorBrush labelBackgroundColor = new SolidColorBrush(Color.FromRgb(235, 235, 235));
+        private SolidColorBrush labelHoverColor = new SolidColorBrush(Color.FromRgb(245, 245, 245));
+        private SolidColorBrush BLACK = new SolidColorBrush(Colors.Black);
+        private SolidColorBrush GRAY = new SolidColorBrush(Colors.Gray);
  
         private ModelNameTrie trie { get; set; }
-       
         public LoadExistingModel(List<ModelTag> modelTags)
         {
             InitializeComponent();
@@ -30,16 +31,15 @@ namespace Gaant_Chart
 
             foreach(ModelTag modelTag in modelTags)
             {
-                ComboBoxItem comboBoxItem = new ComboBoxItem();
-                comboBoxItem.Content = modelTag.name;
-                comboBoxItem.Tag = modelTag.id;
-                comboBoxItem.FontSize = 15;
-                //myComboBox.Items.Add(comboBoxItem);
-
                 trie.insert(modelTag.name, modelTag.id);
             }
-
             populateModelList("");
+
+            dontSearch = true;
+            searchTxt.Text = "Search Database";
+            dontSearch = false;
+            searchTxt.Foreground = GRAY;
+            searchTxt.Background = labelBackgroundColor;
         }
         private void btn_Cancel_Click(object sender, RoutedEventArgs e)
         {
@@ -53,10 +53,12 @@ namespace Gaant_Chart
             if (trie == null) return;
             if (modelNamesSP == null) return;
 
-
             modelNamesSP.Children.Clear();
 
+
             String text = searchTxt.Text;
+            searchTxt.Foreground = BLACK;
+
             populateModelList(text);
         }
         private void populateModelList(String text)
@@ -71,8 +73,11 @@ namespace Gaant_Chart
                 label.Content = name;
                 label.Tag = id;
                 label.FontSize = 18;
-                label.Width = 225;
+                label.Width = 250;
                 label.Height = 45;
+                label.Padding = new Thickness(7, 0, 0, 0);
+                label.HorizontalAlignment = HorizontalAlignment.Center;
+                label.VerticalContentAlignment = VerticalAlignment.Center;
                 label.Background = labelBackgroundColor;
                 label.MouseEnter += new MouseEventHandler(onMouseEnter);
                 label.MouseLeave += new MouseEventHandler(onMouseLeave);
@@ -110,6 +115,24 @@ namespace Gaant_Chart
                     earlyExist = false;
                     Close();  
                 }
+            }
+        }
+        private Boolean hasText = false;
+        private void searchTxt_GotFocus(object sender, RoutedEventArgs e)
+        {
+            dontSearch = true;
+            searchTxt.Text = "";
+            dontSearch = false;
+        }
+        private void searchTxt_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if(!hasText)
+            {
+                dontSearch = true;
+                searchTxt.Foreground = GRAY;
+                searchTxt.Text = "Search Database";
+                populateModelList("");
+                dontSearch = false;
             }
         }
     }

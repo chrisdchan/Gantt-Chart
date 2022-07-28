@@ -11,6 +11,7 @@ using CheckBox = System.Windows.Controls.CheckBox;
 using TextBox = System.Windows.Controls.TextBox;
 using Label = System.Windows.Controls.Label;
 using MessageBox = System.Windows.MessageBox;
+using Gaant_Chart.Components;
 
 namespace Gaant_Chart
 {
@@ -33,12 +34,12 @@ namespace Gaant_Chart
         private List<DockPanel> dockPanels { get; set; }
         private CanvasGraph canvasGraph { get; set; }
 
+
         private Boolean renderedChecks = true;
 
         private String ADMIN_PASSWORD = "physics123!";
 
-        private String adminInput = "";
-
+        private PasswordTextBox adminPasswordTxt;
         public MainWindow()
         {
             InitializeComponent();
@@ -56,6 +57,7 @@ namespace Gaant_Chart
             canvasGraph = new CanvasGraph();
 
             createTaskBar();
+            createAdminPasswordBox();
             initTaskBarLists();
             setTaskComponentsReadOnly();
 
@@ -63,6 +65,20 @@ namespace Gaant_Chart
             {
                 canvasGraph.load();
             };
+        }
+
+        private void createAdminPasswordBox()
+        {
+            adminPasswordTxt = new PasswordTextBox();
+            TextBox textbox = adminPasswordTxt.textbox;
+
+            mainGrid.Children.Add(textbox);
+            Grid.SetRow(textbox, 0);
+            Grid.SetColumn(textbox, 6);
+            textbox.VerticalAlignment = VerticalAlignment.Top;
+            textbox.Margin = new Thickness(0, 35, 150, 0);
+            textbox.Width = 100;
+            textbox.Height = 20;
         }
 
         private void displayCurrentModel()
@@ -407,10 +423,9 @@ namespace Gaant_Chart
 
         private void adminBtn_Click(object sender, RoutedEventArgs e)
         {
-            String password = adminInput;
+            String password = adminPasswordTxt.password;
             if(password.ToLower() == ADMIN_PASSWORD)
             {
-                adminTxt.Text = "";
                 Admin win2 = new Admin();
                 win2.ShowDialog();
                 if(win2.updatedCurrentUser)
@@ -428,9 +443,9 @@ namespace Gaant_Chart
             }
             else
             {
-                adminTxt.Text = "";
                 MessageBox.Show("Wrong Password");
             }
+            adminPasswordTxt.textbox.Text = "";
         }
 
         private void zoomInBtn_Click(object sender, RoutedEventArgs e)
@@ -442,7 +457,6 @@ namespace Gaant_Chart
         {
             canvasGraph.addDays(1);
         }
-
 
         private void help_Click(object sender, RoutedEventArgs e)
         {
@@ -513,53 +527,6 @@ namespace Gaant_Chart
         private void resetPosition_Click(object sender, RoutedEventArgs e)
         {
             canvasGraph.resetPosition();
-        }
-
-        private Boolean addingStars = false;
-
-        private void adminTxt_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (addingStars) return;
-
-            int n = adminTxt.Text.Length;
-            if (n == 0)
-            {
-                adminInput = "";
-                return;
-            }
-
-            char c = adminTxt.Text[n - 1];
-
-            if(n > adminInput.Length)
-            {
-                adminInput += c;
-            }
-            else
-            {
-                int i = adminInput.Length;
-                while(i > n)
-                {
-                    adminInput = adminInput.Remove(adminInput.Length - 1);
-                    i--;
-                }
-            }
-
-            String displayText = "";
-
-
-            for(int i = 0; i < n - 1; i++)
-            {
-                displayText += "*";
-            }
-
-            displayText += c;
-
-            addingStars = true;
-            adminTxt.Text = displayText;
-            addingStars = false;
-
-            adminTxt.SelectionStart = n;
-            adminTxt.SelectionLength = 0;
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)

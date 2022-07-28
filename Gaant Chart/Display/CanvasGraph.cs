@@ -17,9 +17,6 @@ namespace Gaant_Chart
         public DateTime viewEndDate { get; set; }
         public DateTime modelStartDate { get;set; }
 
-        private double BLOCK_HEIGHT = 30;
-        private double GRAPH_WIDTH = 588;
-
         private double DATE_ROTATION = 285; // 285
         private double GROUPLABEL_ROTATION = 270;
 

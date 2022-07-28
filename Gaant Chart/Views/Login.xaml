@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Gaant_Chart"
         mc:Ignorable="d" ResizeMode="NoResize"
         Title="Login" Height="450" Width="400">
-    <Grid>
+    <Grid x:Name="mainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
@@ -19,18 +19,17 @@
                HorizontalAlignment="Center" VerticalAlignment="Center"
             Content="Login"></Label>
 
-        <Label Grid.Row="1" Content="Name"></Label>
-        <ComboBox Grid.Row="1" x:Name="comboBox"
-                  Height="40" Width="300">
-
+        <Label Grid.Row="1" Content="Name" FontSize="18"></Label>
+        <ComboBox  x:Name="comboBox" Grid.Row="1" FontSize="18"
+                   VerticalContentAlignment="Center"
+                   Width="300" Height="50" Margin="0, 10, 0, 0"
+                   BorderThickness="0">
         </ComboBox>
 
-        <Label Grid.Row="2" Content="Password"></Label>
-        <TextBox Grid.Row="2" x:Name="passwordTxt"
-                 Height="40" Width="300"></TextBox>
+        <Label Grid.Row="2" Content="Password" FontSize="18"></Label>
 
         <Button x:Name="submitBtn" Click="submitBtn_Click"
-                Grid.Row="3"
+                Grid.Row="3" 
                 Height="40" Width="175"
                 HorizontalAlignment="Left"
                 Margin="50, 0, 0, 0"
