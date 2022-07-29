@@ -3,6 +3,7 @@ using Gaant_Chart.Models;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Gaant_Chart
 {
@@ -34,6 +35,8 @@ namespace Gaant_Chart
             textbox.Width = 300;
             textbox.Height = 50;
             textbox.FontSize = 18;
+
+            textbox.KeyDown += textbox_KeyDown;
         }
         private void displayUsers()
         {
@@ -54,6 +57,18 @@ namespace Gaant_Chart
             this.Close();
         }
         private void submitBtn_Click(object sender, RoutedEventArgs e)
+        {
+            handleSubmit();
+        }
+
+        private void textbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                handleSubmit();
+            }
+        }
+        private void handleSubmit()
         {
             if(comboBox.SelectedItem == null)
             {
@@ -82,6 +97,7 @@ namespace Gaant_Chart
             data.currentUser = currentUser;
             earlyExit = false;
             Close();
+
         }
     }
 }

@@ -37,10 +37,9 @@ namespace Gaant_Chart
             if (!submitStatus) return;
 
             String modelName = tbModelID.Text;
-            String dateString = tbDate.Text;
             DateTime date;
 
-            if(String.IsNullOrEmpty(dateString))
+            if(datePicker.SelectedDate == null)
             {
                 // If there is no date, allow user to choose to use today's date
                 MessageBoxResult res = System.Windows.MessageBox.Show("Would you like to use today's date as the start date?", "Invalid Date", MessageBoxButton.YesNo);
@@ -54,12 +53,9 @@ namespace Gaant_Chart
                     return;
                 }
             }
-            else if(!DateTime.TryParse(dateString, out date))
+            else
             {
-                // If date is invalid, return and clear the text field
-                System.Windows.MessageBox.Show("Invalid Date Form, please use MM-dd-yyyy");
-                tbDate.Text = "";
-                return;
+                date = (DateTime)datePicker.SelectedDate;
             }
 
             int existingModelId = MainWindow.myDatabase.findModelId(modelName);
@@ -105,5 +101,6 @@ namespace Gaant_Chart
             else btnCreateModel.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#BEBEBE"));
 
         }
+
     }
 }

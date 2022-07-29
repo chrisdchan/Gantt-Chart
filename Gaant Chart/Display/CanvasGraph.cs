@@ -357,7 +357,7 @@ namespace Gaant_Chart
 
             return line;
         }
-        private void updateTaskPositions()
+        public void updateTaskPositions()
         {
             foreach(TaskDisplay taskDisplay in completedTaskDisplays)
             {

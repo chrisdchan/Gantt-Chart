@@ -19,7 +19,7 @@ namespace Gaant_Chart
 
         public Boolean earlyExit;
 
-        public CompleteTask(Models.Task task)
+        public CompleteTask(Task task)
         {
             InitializeComponent();
 
@@ -33,7 +33,6 @@ namespace Gaant_Chart
                 assignedTxtBlk.Text = "Unassigned Task";
 
             earlyExit = true;
-            dateTbx.Focus();
         }
         private DateTime computeStartDate()
         {
@@ -50,16 +49,12 @@ namespace Gaant_Chart
                     startDate = ((DateTime)model.tasks[model.lastCompletedTaskId].endDate).AddDays(-1);
                 }
             }
-
-
             return startDate;
         }
-
         private void completeTaskBtn_Click(object sender, RoutedEventArgs e)
         {
-            String dateString = dateTbx.Text;
 
-            if(String.IsNullOrEmpty(dateString))
+            if(datePicker.SelectedDate == null)
             {
                 MessageBoxResult res = MessageBox.Show("Would you like to use today's date as the start date?", "Invalid Date", MessageBoxButton.YesNo);
                 if(res == MessageBoxResult.Yes)
@@ -72,11 +67,9 @@ namespace Gaant_Chart
                     return;
                 }
             }
-            else if(!DateTime.TryParse(dateString, out endDate))
+            else
             {
-                MessageBox.Show("Invalid Date Form, please use MM-dd-yy");
-                dateTbx.Text = "";
-                return;
+                endDate = (DateTime)datePicker.SelectedDate;
             }
 
             String hourString = hoursTxt.Text;
@@ -85,12 +78,17 @@ namespace Gaant_Chart
             double hours = 0;
             double minutes = 0;
 
+            Boolean preSetTimeFlag = false;
+
             if (String.IsNullOrEmpty(hourString) || String.IsNullOrEmpty(minuteString))
             {
                 MessageBoxResult res = MessageBox.Show("Would you like to use 11:59PM ?", "No Time Entered", MessageBoxButton.YesNo);
                 if(res == MessageBoxResult.Yes)
                 {
-                    endDate = DateTime.Now;
+
+                    hours = 23;
+                    minutes = 59;
+                    preSetTimeFlag = true;
                 }
                 else
                 {
@@ -102,17 +100,19 @@ namespace Gaant_Chart
             else if(!Double.TryParse(hourString, out hours))
             {
                 MessageBox.Show("Invalid Time, please use numbers");
-                dateTbx.Text = "";
+                hoursTxt.Text = "";
+                minutesTxt.Text = "";
                 return;
             }
-            else if( !Double.TryParse(minuteString, out minutes))
+            else if(!Double.TryParse(minuteString, out minutes))
             {
                 MessageBox.Show("Invalid Time, please use numbers");
-                dateTbx.Text = "";
+                hoursTxt.Text = "";
+                minutesTxt.Text = "";
                 return;
             }
 
-            if(timeComboBox.SelectedIndex == 1)
+            if(!preSetTimeFlag && timeComboBox.SelectedIndex == 1)
             {
                 hours += 12;
             }
@@ -120,11 +120,10 @@ namespace Gaant_Chart
             endDate = CanvasGraph.floorDate(endDate);
             endDate = endDate.AddHours(hours).AddMinutes(minutes);
 
-
             if(task.typeInd == 0 && endDate < model.startDate)
             {
                 MessageBox.Show("INVALID DATE: Cannot complete a task before the model start date (" + model.startDate.ToString() + ")");
-                dateTbx.Text = "";
+                datePicker.SelectedDate = null;
                 return;
             }
 
@@ -132,7 +131,7 @@ namespace Gaant_Chart
             {
                 DateTime lastCompleted = (DateTime)model.tasks[task.typeInd - 1].endDate;
                 MessageBox.Show("INVALID DATE: Cannot complete a task before a prerequisite task was completed (" + lastCompleted.ToString() + ")");
-                dateTbx.Text = "";
+                datePicker.SelectedDate = null;
                 return;
             }
 
@@ -144,13 +143,11 @@ namespace Gaant_Chart
 
             this.Close();
         }
-
         private void completeTaskLocally()
         {
             startDate = computeStartDate();
             model.completeTask(user, task.typeInd, startDate, endDate);
         }
-
         private void updateDatabase()
         {
             MainWindow.myDatabase.completeTask(task.rowid, startDate, endDate);
@@ -159,7 +156,6 @@ namespace Gaant_Chart
                 MainWindow.myDatabase.completeModel(model);
             }
         }
-
         private void cancelBtn_Click(object sender, RoutedEventArgs e)
         {
             this.Close();   

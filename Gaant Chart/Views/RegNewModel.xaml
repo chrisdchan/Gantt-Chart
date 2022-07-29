@@ -29,10 +29,12 @@
         <Label Grid.Row="1" Grid.Column="0"
                Grid.ColumnSpan="2"
                Margin="90, 0, 0, 0"
-               FontWeight="Bold" FontSize="15"
+               FontWeight="Bold" FontSize="20"
                Content="Model ID"></Label>
         <TextBox Grid.Row="1" Grid.Column="0"
                  Grid.ColumnSpan="2"
+                 VerticalContentAlignment="Center"
+                 FontSize="18"
                  Height="40" Width="200"
                  Name="tbModelID"
                  TextChanged="tbModelID_TextChanged"
@@ -41,13 +43,16 @@
         <Label Grid.Row="2" Grid.Column="0"
                Grid.ColumnSpan="2"
                Margin="90, 0, 0, 0"
-               FontWeight="Bold" FontSize="15"
+               FontWeight="Bold" FontSize="20"
                Content="Start Date/Scan Date"></Label>
-        <TextBox Grid.Row="2" Grid.Column="0"
-                 Grid.ColumnSpan="2"
-                 Height="40" Width="200"
-                 Name="tbDate"
-                 Background="#E0E0E0"></TextBox>
+        <DatePicker Grid.Row="2" Grid.Column="0"
+                    Grid.ColumnSpan="2" Margin="0, 30, 0, 0"
+                    HorizontalAlignment="Center"
+                    FontSize="18"
+                    Width="200"
+                    VerticalContentAlignment="Center" Height="45" 
+                    x:Name="datePicker" 
+                    />
 
         <Button Grid.Row="4" Grid.Column="0"
                 Height="40" Width="225"

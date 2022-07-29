@@ -21,7 +21,6 @@ namespace Gaant_Chart.Models
         {
             this.rowid = rowid;
         }
-
         public Task(int typeInd, DateTime plannedStartDate, DateTime plannedEndDate)
         {
             this.typeInd = typeInd;

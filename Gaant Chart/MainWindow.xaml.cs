@@ -12,6 +12,8 @@ using TextBox = System.Windows.Controls.TextBox;
 using Label = System.Windows.Controls.Label;
 using MessageBox = System.Windows.MessageBox;
 using Gaant_Chart.Components;
+using System.Windows.Input;
+using Gaant_Chart.Views;
 
 namespace Gaant_Chart
 {
@@ -66,7 +68,6 @@ namespace Gaant_Chart
                 canvasGraph.load();
             };
         }
-
         private void createAdminPasswordBox()
         {
             adminPasswordTxt = new PasswordTextBox();
@@ -74,13 +75,13 @@ namespace Gaant_Chart
 
             mainGrid.Children.Add(textbox);
             Grid.SetRow(textbox, 0);
-            Grid.SetColumn(textbox, 6);
+            Grid.SetColumn(textbox, 5);
             textbox.VerticalAlignment = VerticalAlignment.Top;
-            textbox.Margin = new Thickness(0, 35, 150, 0);
+            textbox.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+            textbox.Margin = new Thickness(0, 10, 150, 0);
             textbox.Width = 100;
             textbox.Height = 20;
         }
-
         private void displayCurrentModel()
         {
             Model model = data.currentModel;
@@ -88,7 +89,6 @@ namespace Gaant_Chart
             txtDisplayModelName.Text = data.currentModel.modelName;
             initTaskBarWithModel();
         }
-
         private void displayCurrentUser()
         {
             DateTime now = DateTime.Now;
@@ -110,7 +110,6 @@ namespace Gaant_Chart
             userLabel.Content = "Current User: " +  greeting + " " + data.currentUser.name;
             setTaskBarWithUser();
         }
-
         private void setTaskComponentsReadOnly()
         {
             foreach(TextBox textBox in taskBarTextBoxes)
@@ -184,18 +183,41 @@ namespace Gaant_Chart
                     else if(innerObj.GetType() == typeof(TextBox))
                     {
                         TextBox textBox = innerObj as TextBox;
+                        textBox.Tag = i;
+                        textBox.PreviewMouseDown += textBoxMouseDown;
+                        textBox.PreviewMouseUp += textBoxMouseUp;
                         taskBarTextBoxes.Add(textBox);
                     }
                 }
                 i++;
             }
         }
-        
+        private TextBox textBoxMouseDowned;
+        private Boolean mouseDownFlag = false;
+        private void textBoxMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            textBoxMouseDowned = sender as TextBox;
+            mouseDownFlag = true;
+        }
+        private void textBoxMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            TextBox textBoxMouseUped = sender as TextBox;
+            if(mouseDownFlag && textBoxMouseUped == textBoxMouseDowned)
+            {
+                Task task = data.currentModel.tasks[(int)textBoxMouseUped.Tag];
+                EditTask win2 = new EditTask(task);
+                win2.ShowDialog();
+                if(!win2.exitEarlyFlag)
+                {
+                    setTaskBarWithModel();
+                    canvasGraph.updateTaskPositions();
+                }
+            }
+        }
         private void initTaskBarWithModel()
         {
             setTaskBarWithModel();
         }
-
         private void resetTaskbarWithoutModel()
         {
             SolidColorBrush uncompletedColor = new SolidColorBrush(Color.FromRgb(237, 241, 86));
@@ -213,7 +235,6 @@ namespace Gaant_Chart
             renderedChecks = true;
             
         }
-        
         private void resetTaskBarWithoutUser()
         {
             User user = data.currentUser;
@@ -231,7 +252,6 @@ namespace Gaant_Chart
             }
             renderedChecks = true;
         }
-
         private void setTaskBarWithModel()
         {
             SolidColorBrush completedColor = new SolidColorBrush(Color.FromRgb(230, 255, 230));
@@ -270,7 +290,6 @@ namespace Gaant_Chart
 
             renderedChecks = true;
         }
-
         public void setTaskBarWithUser()
         {
             User user = data.currentUser;
@@ -296,7 +315,6 @@ namespace Gaant_Chart
 
             renderedChecks = true;
         }
-
         private void System_Checked(object sender, RoutedEventArgs e)
         {
             CheckBox checkbox = sender as CheckBox;
@@ -351,7 +369,6 @@ namespace Gaant_Chart
 
             setTaskBarWithModel();
         }
-
         private void System_Unchecked(object sender, RoutedEventArgs e)
         {
 
@@ -383,19 +400,16 @@ namespace Gaant_Chart
         {
             return data.currentModel != null;
         }
-
         private Boolean isCurrentUser()
         {
             return data.currentUser != null;
         }
-
         private void btnRegNewModel_clicked(object sender, RoutedEventArgs e)
         {
             RegNewModel win2 = new RegNewModel();
             win2.ShowDialog();
             if(!win2.earlyExit) displayCurrentModel();
         }
-
         private void btnEditCurrentModel_Click(object sender, RoutedEventArgs e)
         {
             if(data.users.Count == 0)
@@ -407,7 +421,6 @@ namespace Gaant_Chart
             win2.ShowDialog();
             if (!win2.earlyExit) displayCurrentUser();
         }
-
         private void btnLoadExistingModel_Click(object sender, RoutedEventArgs e)
         {
             List<ModelTag> modelTags = MainWindow.myDatabase.getModelTags();
@@ -420,7 +433,6 @@ namespace Gaant_Chart
             }
             else MessageBox.Show("No Models Created");
         }
-
         private void adminBtn_Click(object sender, RoutedEventArgs e)
         {
             String password = adminPasswordTxt.password;
@@ -447,17 +459,14 @@ namespace Gaant_Chart
             }
             adminPasswordTxt.textbox.Text = "";
         }
-
         private void zoomInBtn_Click(object sender, RoutedEventArgs e)
         {
             canvasGraph.addDays(-1);
         }
-
         private void zoomOutBtn_Click(object sender, RoutedEventArgs e)
         {
             canvasGraph.addDays(1);
         }
-
         private void help_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start(new ProcessStartInfo
@@ -466,7 +475,6 @@ namespace Gaant_Chart
                 UseShellExecute = true
             });
         }
-
         private void clearModel_Click(object sender, RoutedEventArgs e)
         {
             data.currentModel = null;
@@ -475,7 +483,6 @@ namespace Gaant_Chart
             canvasGraph.clearModel();
 
         }
-
         private void importBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -523,12 +530,10 @@ namespace Gaant_Chart
                 displayCurrentModel();
             }
         }
-
         private void resetPosition_Click(object sender, RoutedEventArgs e)
         {
             canvasGraph.resetPosition();
         }
-
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
 

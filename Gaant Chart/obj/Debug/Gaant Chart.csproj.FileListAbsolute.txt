@@ -97,3 +97,5 @@ C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\Syncfusion.XlsIO.B
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\Syncfusion.Compression.Base.xml
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\bin\Debug\Syncfusion.XlsIO.Base.xml
 C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\Gaant Chart.csproj.AssemblyReference.cache
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\Views\EditTask.g.cs
+C:\Users\chris\source\repos\Gaant-Chart\Gaant Chart\obj\Debug\Views\EditTask.baml

@@ -72,7 +72,7 @@ namespace Gaant_Chart
                 Label label = new Label();
                 label.Content = name;
                 label.Tag = id;
-                label.FontSize = 18;
+                label.FontSize = 17;
                 label.Width = 250;
                 label.Height = 45;
                 label.Padding = new Thickness(7, 0, 0, 0);
