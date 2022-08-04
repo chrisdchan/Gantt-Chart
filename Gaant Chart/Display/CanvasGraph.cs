@@ -74,10 +74,9 @@ namespace Gaant_Chart
         {
             MainWindow.grid.Children.Add(canvas);
 
-            Grid.SetColumn(canvas, 5);
+            Grid.SetColumn(canvas, 3);
             Grid.SetRow(canvas, 1);
-            Grid.SetRowSpan(canvas, 15);
-            canvas.Margin = new Thickness(10, 65, 10, 25);
+            Grid.SetRowSpan(canvas, 2);
         }
         private void initMapFunctions()
         {
@@ -105,12 +104,12 @@ namespace Gaant_Chart
                 font: () => taskLabelSize.font() * 0.9
                 );
             plannedTaskSize = (
-                height: () => (borders.bottom() - borders.tick()) / N_TASK_TYPES,
-                top: typeId => borders.tick() + typeId * plannedTaskSize.height()
+                height: () => taskLabelSize.height() * 0.98,
+                top: typeId => borders.tick() + (typeId + .01) * taskLabelSize.height()
                 );
             completedTaskSize = (
-                height: () => plannedTaskSize.height() * 0.85,
-                top: typeId => plannedTaskSize.top(typeId) + plannedTaskSize.height() * 0.075
+                height: () => taskLabelSize.height() * 0.75,
+                top: typeId => borders.tick() + (typeId + 0.125) * taskLabelSize.height()
                 );
             dateSize = (
                 width: () => canvas.ActualHeight * 0.175,
@@ -357,7 +356,7 @@ namespace Gaant_Chart
 
             return line;
         }
-        public void updateTaskPositions()
+        private void updateTaskPositions()
         {
             foreach(TaskDisplay taskDisplay in completedTaskDisplays)
             {
@@ -485,6 +484,12 @@ namespace Gaant_Chart
                 TaskDisplay taskDisplay = new TaskDisplay(task.startDate.Value, task.endDate.Value, task.typeInd);
                 initCompletedTask(taskDisplay);
             }
+        }
+        public void updateCompletedTask(Task task)
+        {
+            TaskDisplay taskDisplay = completedTaskDisplays[task.typeInd];
+            taskDisplay.endDate = task.endDate.Value;
+            updateCompletedTask(taskDisplay);
         }
         private void clearTaskBlocks()
         {

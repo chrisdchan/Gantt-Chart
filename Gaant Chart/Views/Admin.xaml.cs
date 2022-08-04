@@ -1,4 +1,5 @@
 ﻿using Gaant_Chart.Models;
+using Gaant_Chart.Structures;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -43,8 +44,6 @@ namespace Gaant_Chart
             deletedCurrentModel = false;
             updatedCurrentUser = false;
         }
-
-
         private void createUserBtn_Click(object sender, RoutedEventArgs e)
         {
             String name = nameTxt.Text;
@@ -53,9 +52,8 @@ namespace Gaant_Chart
                 MessageBox.Show("Name cannot be blank");
                 return;
             }
-            
-            Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
 
+            Boolean reqPass = (bool)reqPassCheckBox.IsChecked;
             String password = passwordTxt.Text;
             if(password == String.Empty && reqPass)
             {
@@ -64,6 +62,8 @@ namespace Gaant_Chart
             }
 
             String initials = initialsTxt.Text;
+            
+
             String category;
             if (addUserCategoryComboBox.SelectedItem == null)
                 category = null;
@@ -72,10 +72,43 @@ namespace Gaant_Chart
 
             Boolean[] authorization = setAuthorization();
 
+
+            (List<long> ids, double score) = data.userTrie.findSimilar(name.ToLower());
+            if(score == name.Length * 2)
+            {
+                MessageBox.Show("User Already Exists");
+                nameTxt.Text = "";
+                passwordTxt.Text = "";
+                initialsTxt.Text = "";
+                reqPassCheckBox.IsChecked = false;
+                return;
+            }
+            else if(score > 0)
+            {
+                foreach(long id in ids)
+                {
+                    MessageBoxResult res = MessageBox.Show("There exits a similar user: " + data.users[id].name + ". Is this a different person? ", "Similar User", MessageBoxButton.YesNoCancel);
+
+                    if(res == MessageBoxResult.Yes)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        nameTxt.Text = "";
+                        passwordTxt.Text = "";
+                        initialsTxt.Text = "";
+                        reqPassCheckBox.IsChecked = false;
+                        return;
+                    }
+                }
+            }
+
             User user = new User(name, initials, password, reqPass, category, authorization);
 
-            if(!MainWindow.myDatabase.isUserExist(user))
-                MainWindow.myDatabase.insertUser(user);
+            MainWindow.myDatabase.insertUser(user);
+            data.addUser(user);
+            MessageBox.Show("User added");
 
             nameTxt.Text = "";
             passwordTxt.Text = "";
@@ -88,8 +121,37 @@ namespace Gaant_Chart
             }
 
 
-            data.users.Add(user.rowid, user);
+        }
+        private void addUserNameTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string name = nameTxt.Text;
+            if (name.Length < 1)
+            {
+                initialsTxt.Text = "";
+                return;
+            }
 
+            string[] words = name.Split(' ');
+            String initials = "";
+            foreach(string word in words)
+            {
+                if(word.Length > 0)
+                {
+                    initials += Char.ToUpper(word[0]);
+                }
+            }
+
+            Boolean areValidInitials = !data.checkSimilarInitialsExist(initials);
+            int i = 1;
+            if (!areValidInitials) initials += "1";
+            while(!areValidInitials)
+            {
+                initials = initials.Remove(initials.Length - 1).Insert(initials.Length - 1, i.ToString());
+                areValidInitials = !data.checkSimilarInitialsExist(initials);
+                i++;
+            }
+
+            initialsTxt.Text = initials;
         }
         private void initAuthorizationCheckBoxes()
         {
@@ -224,7 +286,7 @@ namespace Gaant_Chart
             {
                 User user = kvp.Value;
                 ComboBoxItem comboboxitem = new ComboBoxItem();
-                comboboxitem.Content = user.name;
+                comboboxitem.Content = user.name + " (" + user.initials + ") ";
                 comboboxitem.Tag = user;
                 editUserCombobox.Items.Add(comboboxitem);
             }
@@ -336,5 +398,6 @@ namespace Gaant_Chart
             }
             isEditCategoryResetOn = true;
         }
+
     }
 }

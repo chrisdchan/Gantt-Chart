@@ -46,10 +46,10 @@
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" 
                         Grid.ColumnSpan="3" Margin="10, 0, 0, 0">
                 <Label Content="Full Name" VerticalAlignment="Center"/>
-                <TextBox x:Name="nameTxt" Width="100" Height="25" />
+                <TextBox x:Name="nameTxt" Width="100" Height="25" TextChanged="addUserNameTxt_TextChanged"/>
                 <Label Content="Initials" VerticalAlignment="Center" 
                        Margin="25, 0, 0, 0"/>
-                <TextBox x:Name="initialsTxt" Width="100" Height="25"/>
+                <TextBox x:Name="initialsTxt" Width="100" Height="25" IsHitTestVisible="False"/>
             </StackPanel>
            
 

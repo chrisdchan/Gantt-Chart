@@ -14,7 +14,7 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0"
+        <Label Grid.Row="0" Name="labelHeader"
                FontWeight="Bold" FontSize="30"
                HorizontalAlignment="Center" VerticalAlignment="Center"
             Content="Login"></Label>

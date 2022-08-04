@@ -67,7 +67,7 @@ namespace Gaant_Chart.Models
         private void setTasks()
         {
             int MINUTES_IN_DAY = 1439;
-            lastCompletedTaskId = 0;
+            lastCompletedTaskId = -1;
 
             Func<DateTime, DateTime> toStartOfDay = date => date.AddMinutes(-date.TimeOfDay.TotalMinutes);
             Func<DateTime, DateTime> toEndOfDay = date => date.AddMinutes(MINUTES_IN_DAY - date.TimeOfDay.TotalMinutes);
@@ -140,7 +140,7 @@ namespace Gaant_Chart.Models
                     }
 
                     MainWindow.myDatabase.insertUser(user);
-                    data.users.Add(user.rowid, user);
+                    data.addUser(user);
                 }
 
                 initalsUserDict.Add(initals, user);

@@ -17,11 +17,20 @@ namespace Gaant_Chart
         public Login()
         {
             InitializeComponent();
+            displayUsers(null);
+            createPasswordTextBox();
+            earlyExit = true;
+        }
 
-            displayUsers();
+        public Login(User user)
+        {
+            InitializeComponent();
+            displayUsers(user);
             createPasswordTextBox();
             earlyExit = true;
 
+            labelHeader.Content = "Login Required to modify or complete task";
+            labelHeader.FontSize = 20;
         }
         private void createPasswordTextBox()
         {
@@ -38,7 +47,7 @@ namespace Gaant_Chart
 
             textbox.KeyDown += textbox_KeyDown;
         }
-        private void displayUsers()
+        private void displayUsers(User startUser)
         {
             foreach(var item in data.users)
             {
@@ -49,6 +58,11 @@ namespace Gaant_Chart
                 newComboBoxItem.FontSize = 18;
                 newComboBoxItem.Tag = user;
                 comboBox.Items.Add(newComboBoxItem);
+
+                if(startUser != null && user == startUser)
+                {
+                    comboBox.SelectedItem = newComboBoxItem;
+                }
             }
         }
         private void cancelBtn_Click(object sender, RoutedEventArgs e)

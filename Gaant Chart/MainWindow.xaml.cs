@@ -31,20 +31,31 @@ namespace Gaant_Chart
         public static EventHandler LoadExistingModelEvent { get; set; }
         public static Grid grid { get; set; }
         private List<CheckBox> taskBarCheckBoxes { get; set; }
-        private List <TextBox> taskBarTextBoxes { get; set; }
-
-        private List<DockPanel> dockPanels { get; set; }
+        private List<TextBox> taskBarTextBoxes { get; set; }
+        private List<DockPanel> taskDockPanels { get; set; }
         private CanvasGraph canvasGraph { get; set; }
-
 
         private Boolean renderedChecks = true;
 
         private String ADMIN_PASSWORD = "physics123!";
 
+        private SolidColorBrush taskTextBoxColor = new SolidColorBrush(Colors.LightGray);
+        private SolidColorBrush taskCheckBoxUncompletedColor = new SolidColorBrush(Color.FromRgb(237, 241, 86));
+        private SolidColorBrush taskCheckBoxCompletedColor = new SolidColorBrush(Color.FromRgb(230, 255, 230));
+
+        public int fontSize { get; set; }
+
+        public double topRightButtonFont { get; set; }
+        public double topLeftButtonFont { get; set; }
+        public (double assemblies, double groupTask, double progress, double userHeader) headerFonts { get; set; }
+
+        private List<System.Windows.Controls.Control> elements { get; set; }
+
         private PasswordTextBox adminPasswordTxt;
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
 
             // create database connection
             myDatabase = new DbConnection();
@@ -54,33 +65,60 @@ namespace Gaant_Chart
             // Cache user data from database
             data.initUsers();
 
-
             // set up the canvas
             canvasGraph = new CanvasGraph();
 
             createTaskBar();
             createAdminPasswordBox();
-            initTaskBarLists();
             setTaskComponentsReadOnly();
+            initButtons();
 
             Loaded += delegate
             {
                 canvasGraph.load();
+                setBindings();
             };
+        }
+
+        private void initButtons()
+        {
+            elements = new List<System.Windows.Controls.Control> {
+                btnRegModel,
+                btnEditCurrentModel,
+                btnLoadExistingModel,
+                btnImportModel,
+                adminBtn,
+                btnHelp,
+                labelProgTracker,
+                btnZoomIn,
+                btnZoomOut,
+                btnResetPos,
+                userLabel,
+                labelProgTracker,
+                txtDisplayModelName,
+                labelAssemblies,
+                label1,
+                label2,
+                label3,
+                label4
+            };
+        }
+        private void setBindings()
+        { 
+            foreach(System.Windows.Controls.Control element in elements)
+            {
+                element.FontSize = Math.Min(element.ActualWidth * 0.1, element.ActualHeight * 0.4);
+            }
         }
         private void createAdminPasswordBox()
         {
             adminPasswordTxt = new PasswordTextBox();
             TextBox textbox = adminPasswordTxt.textbox;
 
-            mainGrid.Children.Add(textbox);
+            adminPanelGrid.Children.Add(textbox);
             Grid.SetRow(textbox, 0);
-            Grid.SetColumn(textbox, 5);
-            textbox.VerticalAlignment = VerticalAlignment.Top;
-            textbox.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
-            textbox.Margin = new Thickness(0, 10, 150, 0);
-            textbox.Width = 100;
-            textbox.Height = 20;
+            Grid.SetColumn(textbox, 2);
+            textbox.KeyDown += adminPasswordBoxKeyDown;
         }
         private void displayCurrentModel()
         {
@@ -119,79 +157,48 @@ namespace Gaant_Chart
         }
         private void createTaskBar()
         {
-            Grid grid = mainGrid;
-            foreach(String taskname in data.allTasks)
-            {
-                CheckBox checkbox = new CheckBox();
-                checkbox.Content = taskname;
-                checkbox.Checked += new RoutedEventHandler(System_Checked);
-                checkbox.Unchecked += new RoutedEventHandler(System_Unchecked);
-
-                TextBox textbox = new TextBox();
-                textbox.Width = 200;
-                textbox.Margin = new Thickness(0, 0, 5, 0);
-                textbox.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
-                textbox.Background = new SolidColorBrush(Colors.LightGray);
-
-                DockPanel dockpanel = new DockPanel();
-                dockpanel.Background = new SolidColorBrush(Color.FromRgb(237, 241, 86));
-                dockpanel.Margin = new Thickness(5, 2.5, 5, 2.5);
-
-                dockpanel.Children.Add(checkbox);
-                dockpanel.Children.Add(textbox);
-
-                taskBarStackPanel.Children.Add(dockpanel);
-            }
-
-            foreach((String groupname, int index) in data.taskLabelGroups)
-            {
-                Label label = new Label();
-                label.Content = groupname;
-
-                if(groupname == "Assemblies")
-                {
-                    label.FontWeight = FontWeights.Bold;
-                }
-
-                taskBarStackPanel.Children.Insert(index, label);
-            }
-            
-        }
-        private void initTaskBarLists()
-        {
             taskBarTextBoxes = new List<TextBox>();
             taskBarCheckBoxes = new List<CheckBox>();
-            dockPanels = new List<DockPanel>();
+            taskDockPanels = new List<DockPanel>();
 
-            int i = 0;
-
-            foreach(Object outerObj in taskBarStackPanel.Children)
+            for(int i = 0; i < data.allTasks.Length; i++)
             {
-                if(outerObj.GetType() != typeof(DockPanel)) continue;
-
-                DockPanel dockPanel = outerObj as DockPanel;
-                dockPanels.Add(dockPanel);
-
-                foreach(Object innerObj in dockPanel.Children)
-                {
-                    if(innerObj.GetType() == typeof(CheckBox))
-                    {
-                        CheckBox checkBox = innerObj as CheckBox;
-                        checkBox.Tag = i; 
-                        taskBarCheckBoxes.Add(checkBox);
-                    }
-                    else if(innerObj.GetType() == typeof(TextBox))
-                    {
-                        TextBox textBox = innerObj as TextBox;
-                        textBox.Tag = i;
-                        textBox.PreviewMouseDown += textBoxMouseDown;
-                        textBox.PreviewMouseUp += textBoxMouseUp;
-                        taskBarTextBoxes.Add(textBox);
-                    }
-                }
-                i++;
+                createTaskCheckBox(i);
+                createTaskTextBox(i);
             }
         }
+        private void createTaskCheckBox(int i)
+        {
+            CheckBox checkbox = new CheckBox();
+            checkbox.Content = data.allTasks[i];
+            checkbox.Tag = i;
+            checkbox.Checked += new RoutedEventHandler(System_Checked);
+            checkbox.Unchecked += new RoutedEventHandler(System_Unchecked);
+
+            DockPanel dockPanel = new DockPanel();
+            dockPanel.Background = taskCheckBoxUncompletedColor;
+            dockPanel.Children.Add(checkbox);
+            taskDockPanels.Add(dockPanel);
+
+            taskBarGrid.Children.Add(dockPanel);
+            taskBarCheckBoxes.Add(checkbox);
+            Grid.SetColumn(dockPanel, 0);
+            Grid.SetRow(dockPanel, data.taskGridRow[i]);
+        }
+        private void createTaskTextBox(int i)
+        {
+            TextBox textbox = new TextBox();
+            textbox.Background = taskTextBoxColor;
+            textbox.Tag = i;
+            textbox.PreviewMouseDown += textBoxMouseDown;
+            textbox.PreviewMouseUp += textBoxMouseUp;
+
+            taskBarGrid.Children.Add(textbox);
+            taskBarTextBoxes.Add(textbox);
+            Grid.SetColumn(textbox, 1);
+            Grid.SetRow(textbox, data.taskGridRow[i]);
+        }
+
         private TextBox textBoxMouseDowned;
         private Boolean mouseDownFlag = false;
         private void textBoxMouseDown(object sender, MouseButtonEventArgs e)
@@ -202,16 +209,27 @@ namespace Gaant_Chart
         private void textBoxMouseUp(object sender, MouseButtonEventArgs e)
         {
             TextBox textBoxMouseUped = sender as TextBox;
+
+            int taskTypeId = (int)textBoxMouseUped.Tag;
+
+            if(taskTypeId > data.currentModel.lastCompletedTaskId)
+            {
+                MessageBox.Show("You cannot edit an uncompleted task");
+                return;
+            }
+
             if(mouseDownFlag && textBoxMouseUped == textBoxMouseDowned)
             {
-                Task task = data.currentModel.tasks[(int)textBoxMouseUped.Tag];
+                Task task = data.currentModel.tasks[taskTypeId];
                 EditTask win2 = new EditTask(task);
                 win2.ShowDialog();
                 if(!win2.exitEarlyFlag)
                 {
                     setTaskBarWithModel();
-                    canvasGraph.updateTaskPositions();
+                    canvasGraph.updateCompletedTask(task);
                 }
+                if (win2.changedUserFlag)
+                    displayCurrentUser();
             }
         }
         private void initTaskBarWithModel()
@@ -225,7 +243,7 @@ namespace Gaant_Chart
 
             for (int i = 0; i < data.allTasks.Length; i++)
             {
-                DockPanel dockpanel = dockPanels[i];
+                DockPanel dockpanel = taskDockPanels[i];
                 CheckBox checkbox = taskBarCheckBoxes[i];
                 TextBox textbox = taskBarTextBoxes[i];
                 dockpanel.Background = uncompletedColor;
@@ -254,9 +272,6 @@ namespace Gaant_Chart
         }
         private void setTaskBarWithModel()
         {
-            SolidColorBrush completedColor = new SolidColorBrush(Color.FromRgb(230, 255, 230));
-            SolidColorBrush uncompletedColor = new SolidColorBrush(Color.FromRgb(237, 241, 86));
-
             renderedChecks = false;
 
             Model model = data.currentModel;
@@ -264,20 +279,20 @@ namespace Gaant_Chart
 
             for(int i = 0; i < data.allTasks.Length; i++)
             {
-                DockPanel dockpanel = dockPanels[i];
+                DockPanel dockpanel = taskDockPanels[i];
                 CheckBox checkbox = taskBarCheckBoxes[i];
                 TextBox textbox = taskBarTextBoxes[i];
-                Models.Task task = model.tasks[i];
+                Task task = model.tasks[i];
 
                 if (task.completed)
                 {
-                    dockpanel.Background = completedColor;
+                    dockpanel.Background = taskCheckBoxCompletedColor;
                     checkbox.IsChecked = true;
                     textbox.Text =  task.completedUser.name + " | " + ((DateTime)task.endDate).ToString("M/d/y");
                 }
                 else
                 {
-                    dockpanel.Background = uncompletedColor;
+                    dockpanel.Background = taskCheckBoxUncompletedColor;
                     checkbox.IsChecked = false;
                     textbox.Text = "";
                 }
@@ -330,15 +345,7 @@ namespace Gaant_Chart
 
             if (!renderedChecks) return;
 
-            if(!isCurrentUser())
-            {
-                MessageBox.Show("No User Logged In");
-                checkbox.IsChecked = false;
-                return;
-            }
-
-            User user = data.currentUser;
-            if (!user.authorization[taskTypeId])
+            if (isCurrentUser() && !data.currentUser.authorization[taskTypeId])
             {
                 MessageBox.Show("User is not authorized to complete task");
                 checkbox.IsChecked = false;
@@ -366,6 +373,9 @@ namespace Gaant_Chart
             {
                 canvasGraph.addCompletedTask(task);
             }
+
+            if (win2.changedUserFlag)
+                displayCurrentUser();
 
             setTaskBarWithModel();
         }
@@ -433,7 +443,7 @@ namespace Gaant_Chart
             }
             else MessageBox.Show("No Models Created");
         }
-        private void adminBtn_Click(object sender, RoutedEventArgs e)
+        private void handleAdminRequest()
         {
             String password = adminPasswordTxt.password;
             if(password.ToLower() == ADMIN_PASSWORD)
@@ -458,6 +468,18 @@ namespace Gaant_Chart
                 MessageBox.Show("Wrong Password");
             }
             adminPasswordTxt.textbox.Text = "";
+
+        }
+        private void adminBtn_Click(object sender, RoutedEventArgs e)
+        {
+            handleAdminRequest();
+        }
+        private void adminPasswordBoxKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                handleAdminRequest();
+            }
         }
         private void zoomInBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -536,6 +558,7 @@ namespace Gaant_Chart
         }
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            setBindings();
 
         }
     }

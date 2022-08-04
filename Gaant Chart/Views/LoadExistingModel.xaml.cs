@@ -19,7 +19,7 @@ namespace Gaant_Chart
         private SolidColorBrush BLACK = new SolidColorBrush(Colors.Black);
         private SolidColorBrush GRAY = new SolidColorBrush(Colors.Gray);
  
-        private ModelNameTrie trie { get; set; }
+        private Trie trie { get; set; }
         public LoadExistingModel(List<ModelTag> modelTags)
         {
             InitializeComponent();
@@ -27,7 +27,7 @@ namespace Gaant_Chart
 
             if (modelTags == null) return;
 
-            trie = new ModelNameTrie();
+            trie = new Trie();
 
             foreach(ModelTag modelTag in modelTags)
             {

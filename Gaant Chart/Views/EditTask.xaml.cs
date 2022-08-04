@@ -1,4 +1,5 @@
-﻿using Gaant_Chart.Models;
+﻿using Gaant_Chart.DataStructures;
+using Gaant_Chart.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,17 +25,32 @@ namespace Gaant_Chart.Views
         private Model model { get; set; }
 
         public Boolean exitEarlyFlag = true;
+        public Boolean changedUserFlag = false;
         public EditTask(Models.Task task)
         {
             InitializeComponent();
-            addUsersToComboBox();
-
             this.task = task;
+
+            addUsersToComboBox();
             model = data.currentModel;
             header.Text = "Edit " + task.name;
+
+            setDefaultValues();
+
         }
+        private void setDefaultValues()
+        {
+            (DateTime defaultEndDate, int hours, int minutes, int dayPeriod) = Conversions.toDateUI(task.endDate.Value);
+
+            datePicker.SelectedDate = defaultEndDate;
+            hoursTxt.Text = hours.ToString();
+            minutesTxt.Text = minutes.ToString();
+            timeComboBox.SelectedIndex = dayPeriod;
+        }
+
         private void addUsersToComboBox()
         {
+            ComboBoxItem selectedUser = null;
             foreach(KeyValuePair<long, User> kvp in data.users)
             {
                 User user = kvp.Value;
@@ -44,10 +60,22 @@ namespace Gaant_Chart.Views
                 comboBoxItem.Content = user.name;
                 comboBoxItem.Tag = user;
                 selectUserComboBox.Items.Add(comboBoxItem);
+
+                if(data.currentUser == user)
+                {
+                    selectedUser = comboBoxItem;
+                }
             }
+
+            selectUserComboBox.SelectedItem = selectedUser;
         }
         private void submitBtn_Click(object sender, RoutedEventArgs e)
         {
+            if(selectUserComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("No User selected");
+                return;
+            }
             User user = (selectUserComboBox.SelectedItem as ComboBoxItem).Tag as User;
 
             if(datePicker.SelectedDate == null)
@@ -100,7 +128,6 @@ namespace Gaant_Chart.Views
                 datePicker.SelectedDate = null;
                 return;
             }
-
             if(task.typeInd != 0 && endDate < model.tasks[task.typeInd - 1].endDate)
             {
                 DateTime lastCompleted = (DateTime)model.tasks[task.typeInd - 1].endDate;
@@ -116,6 +143,7 @@ namespace Gaant_Chart.Views
                 {
                     MessageBox.Show("INVALID DATE: Cannot complete a task after the next task is completed (" +
                         nextCompleted.ToString() + ")");
+                    return;
                 }
             }
 
@@ -125,27 +153,15 @@ namespace Gaant_Chart.Views
 
             this.Close();
         }
-        private DateTime computeStartDate(DateTime endDate)
-        {
-            DateTime startDate;
-            if(model.lastCompletedTaskId == -1 || model.lastCompletedTaskId == 0)
-            { 
-                startDate = model.startDate;
-            }
-            else
-            {
-                startDate = (DateTime)model.tasks[model.lastCompletedTaskId].endDate.Value;
-                if((endDate - startDate).TotalDays < 0.5)
-                {
-                    startDate = ((DateTime)model.tasks[model.lastCompletedTaskId].endDate).AddDays(-1);
-                }
-            }
-            return startDate;
-        }
         private void updateTaskLocally(DateTime endDate, User user)
         {
-            DateTime startDate = computeStartDate(endDate);
-            task.complete(user, startDate, endDate);
+            if(task.startDate > endDate)
+            {
+                task.startDate = endDate.AddDays(-1);
+            }
+
+            task.endDate = endDate;
+            task.completedUser = user;
         }
         private void updateDatabase()
         {
@@ -154,6 +170,27 @@ namespace Gaant_Chart.Views
         private void cancelBtn_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+        private void selectUserComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBoxItem comboBoxItem = selectUserComboBox.SelectedItem as ComboBoxItem;
+            User user = comboBoxItem.Tag as User;
+
+            if(user != data.currentUser && user.reqPass)
+            {
+                Login loginWin = new Login(user);
+                loginWin.ShowDialog();
+
+                changedUserFlag = !loginWin.earlyExit;
+
+                foreach(ComboBoxItem item in selectUserComboBox.Items)
+                {
+                    if(data.currentUser == item.Tag)
+                    {
+                        selectUserComboBox.SelectedItem = item;
+                    }
+                }
+            }
         }
     }
 }

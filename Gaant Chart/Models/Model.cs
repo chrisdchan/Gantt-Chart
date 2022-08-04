@@ -11,7 +11,17 @@ namespace Gaant_Chart.Models
 
         public DateTime lastUpdated { get; set; }
         public Task[] tasks { get; set; }
-        public int lastCompletedTaskId { get; set; }
+
+        private int _lastCompletedTaskId;
+        public int lastCompletedTaskId {
+            get { return _lastCompletedTaskId;  }
+            set
+            {
+                if (value >= 0 && !tasks[value].completed)
+                    throw new Exception("Last Task not completed");
+                else
+                    _lastCompletedTaskId = value;
+            } }
 
         // FROM RegModel
         public Model(string modelName, DateTime startDate)

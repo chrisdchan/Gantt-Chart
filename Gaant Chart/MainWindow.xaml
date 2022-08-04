@@ -5,145 +5,221 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Gaant_Chart"
         mc:Ignorable="d"
-        Height="800" Width="1000"
+        Height="1080" Width="1920"
         SizeChanged="Window_SizeChanged"
         Title="MainWindow">
     <Grid x:Name="mainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="7.5*"/>
+            <ColumnDefinition Width="0.1*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="0.1*"/>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="0.1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2.5*"/>
-            <RowDefinition Height="4*"/>
+            <RowDefinition Height="2*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="0.1*"/>
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0"
-               Grid.ColumnSpan="3"
-               Content="Current Model ID" FontWeight="Bold"
-               Margin="15 0 0 0"
-               Height="30"
-               VerticalAlignment="Top"></Label>
-        <StackPanel Grid.Row="0" Grid.Column="0"
-                   Grid.ColumnSpan="4" Height="30"
-                    Orientation="Horizontal" VerticalAlignment="Bottom">
-            <TextBox 
-                Background="#BEB8FE"
-                Margin="15 0 5 0"  IsHitTestVisible="False"
-                Width="200" Name="txtDisplayModelName">
-            </TextBox>
-            <Button 
-                Width="25" x:Name="clearModel" Click="clearModel_Click"
-                Content="X">
+        <Grid
+            Grid.Row="0" Grid.RowSpan="2"
+            Grid.Column="1" Grid.ColumnSpan="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.5*"/>
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+            </Grid.RowDefinitions>
+            <Label Content="Current Model ID"
+                Grid.Row="0" Grid.RowSpan="1"
+                Grid.Column="0" Grid.ColumnSpan="1"
+                VerticalAlignment="Center" HorizontalContentAlignment="Left"
+                FontSize="18" FontWeight="Bold"/>
+            <Grid 
+                Grid.Row="2" Grid.RowSpan="1"
+                Grid.Column="0" Grid.ColumnSpan="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="0.2*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox 
+                    Name="txtDisplayModelName"
+                    Grid.Column="0"
+                    Background="#BEB8FE"
+                    IsHitTestVisible="False"/>
+                <Button
+                    Grid.Column="2"
+                    x:Name="clearModel" Click="clearModel_Click"
+                    Content="X"/>
+            </Grid>
 
-            </Button>
-        </StackPanel>
+            <Button Content="Register New Model" x:Name="btnRegModel"
+                Grid.Row="4"
+                Grid.Column="0" Grid.ColumnSpan="2"
+                Click="btnRegNewModel_clicked"/>
+            <Button Content="Load Existing Model Tracker" x:Name="btnLoadExistingModel"
+                Grid.Row="6" Grid.ColumnSpan="2"
+                Grid.Column="0"
+                Click="btnLoadExistingModel_Click"/>
+            <Button Content="Login" x:Name="btnEditCurrentModel"
+                Grid.Row="8" Grid.ColumnSpan="2"
+                Grid.Column="0"
+                Click="btnEditCurrentModel_Click"/>
+            <Button x:Name="btnImportModel"  Content="Import from Excel"
+                Grid.Row="8"
+                Grid.Column="3" 
+                Background="#F4E6FF"
+                Click="importBtn_Click"/>
+        </Grid>
 
-        <Label x:Name="userLabel" FontWeight="Bold"
-            Width="500" Height="50"
-            Content="" FontSize="20" 
-            HorizontalAlignment="Left"
-            Margin="0, 20, 20, 20"
-            Grid.Row="0" Grid.Column="5"/>
+        <Grid
+            Grid.Row="0"
+            Grid.Column="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="0.8*"/>
+                <RowDefinition Height="0.5*"/>
+            </Grid.RowDefinitions>
 
-        <Button Content="Admin Only" Grid.Row="0" Grid.Column="6"
-                x:Name="adminBtn" Click="adminBtn_Click"
-                 HorizontalAlignment="Right" Height="20"
-                 VerticalAlignment="Top"
-                 Width="100" Margin="0 35 150 0"></Button>
+            <Grid x:Name="adminPanelGrid"
+                Grid.Row="1"
+                Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="9*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="2.5*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="0.2*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Label x:Name="userLabel" 
+                    Grid.Row="0" Grid.RowSpan="3"
+                    Grid.Column="0"
+                    FontWeight="Bold"/>
 
-        <Button Content="Help" Grid.Row="0" Grid.Column="6"
-                 HorizontalAlignment="Right" Height="20"
-                 Click="help_Click"
-                 VerticalAlignment="Top" Background="#FCBEA3"
-                 Width="100" Margin="0 35 25 0"></Button>
-
-        <StackPanel Grid.Row="1" Grid.Column="0"
-                    Grid.ColumnSpan="3" Grid.RowSpan="1"
-                    Margin="10">
-            <Button 
-                Margin="5"
-                Height="30"
-                Content="Register New Model"
-                Click="btnRegNewModel_clicked"></Button>
-            <Button 
-                Margin="5" 
-                Height="30"
-                Content="Load Existing Model Tracker"
-                x:Name="btnLoadExistingModel"
-                Click="btnLoadExistingModel_Click"
-                ></Button>
-            <Button
-                Height="35"
-                Margin="5 10 5 0"
-                Content="Edit Current Model Tracker"
-                x:Name="btnEditCurrentModel"
-                Click="btnEditCurrentModel_Click"></Button>
-        </StackPanel>
-
-        <Button 
-            x:Name="importBtn"
-            Grid.Column="3" Grid.Row="1"
-            Grid.ColumnSpan="2" 
-            Margin="5,105, 5, 0"
-            Height="25"
-            VerticalAlignment="Top"
-            Background="#F4E6FF"
-            Click="importBtn_Click"
-            Content="Import from Excel"/>
-
-        <Label
-            Grid.Row="0"  Grid.RowSpan="2" Grid.Column="6"
-            Margin="5 0 5 50"
-            Height="40"
-            VerticalAlignment="Center"
-            FontWeight="Bold" FontSize="15"
-            Content="Progress Tracker Chart"></Label>
-        <DockPanel HorizontalAlignment="Right"
-                    Grid.Row="0" Grid.Column="6"
-                    Grid.RowSpan="2"
-                    Height="40"
-                     Margin="5 10 5 0">
-            <Button Content="Zoom In" Width="75" Height="25"
-                    Margin="10, 0, 10, 0"
+                <Button Content="Admin Only"  x:Name="adminBtn"
+                        Grid.Row="2"
+                        Grid.Column="2"
+                        Click="adminBtn_Click"/>
+                <Button Content="Help" Name="btnHelp"
+                        Grid.Row="2"
+                        Grid.Column="4"
+                        Background="#FCBEA3"
+                        Click="help_Click"/>
+            </Grid>
+            <Grid
+                Grid.Row="3"
+                Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width=".1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width=".1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Progress Tracker Chart" Name="labelProgTracker"
+                    Grid.Column="0"
                     VerticalContentAlignment="Center"
-                    Click="zoomInBtn_Click" HorizontalAlignment="Center"></Button> 
-            <Button Content="Zoom Out" Width="75" Height="25" 
-                    Margin="10, 0, 10, 0"
-                    VerticalContentAlignment="Center"
-                    HorizontalAlignment="left" Click="zoomOutBtn_Click"></Button>
-            <Button Content="Reset Position" Width="100" Height="25"
-                    Margin="10, 0, 10, 0" Click="resetPosition_Click"/>
-        </DockPanel>
+                    FontWeight="Bold"/>
+                <Button Content="Zoom In" Name="btnZoomIn"
+                        Grid.Column="2"
+                        VerticalContentAlignment="Center"
+                        Click="zoomInBtn_Click"/>
+                <Button Content="Zoom Out" x:Name="btnZoomOut"
+                        Grid.Column="4"
+                        Click="zoomOutBtn_Click"></Button>
+                <Button Content="Reset Position" x:Name="btnResetPos"
+                        Grid.Column="6"
+                        Click="resetPosition_Click"/>
+            </Grid>
+        </Grid>
 
-        <Rectangle Grid.Column="5" Grid.Row="1"
-            Grid.RowSpan="15"
-            Margin="10 65 10 25"
+        <Rectangle 
+            Grid.Row="1" Grid.RowSpan="2"
+            Grid.Column="3"
             Fill="Black"></Rectangle>
 
-        <StackPanel Grid.Row="2" Grid.Column="0"
-                    Grid.ColumnSpan="5" Grid.RowSpan="13"
-                    x:Name="taskBarStackPanel"
-                    Margin="10 0 0 0">
-        </StackPanel>
+        <Grid x:Name="taskBarGrid"
+            Grid.Row="2"
+            Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Label Content="Assemblies" Name="labelAssemblies"
+                   Grid.Row="0" Grid.Column="0"
+                   VerticalContentAlignment="Center"
+                   FontWeight="Bold"/>
+            <Label Content="Segmentation Tasks" Name="label1"
+                   Grid.Row="1" Grid.Column="0"
+                   VerticalContentAlignment="Center"/>
+            <Label Content="Segmentation Review and Approval" Name="label2"
+                   Grid.Row="12" Grid.Column="0"
+                   VerticalContentAlignment="Center"/>
+            <Label Content="Mesh Preperation and Export to Physics" Name="label3"
+                   Grid.Row="23" Grid.Column="0"
+                   VerticalContentAlignment="Center"/>
+            <Label Content="Physics Modeling and Reports" Name="label4"
+                   Grid.Row="28" Grid.Column="0"
+                   VerticalContentAlignment="Center"/>
+        </Grid>
 
     </Grid>
 </Window>

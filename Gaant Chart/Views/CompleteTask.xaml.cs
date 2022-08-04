@@ -1,6 +1,9 @@
-﻿using Gaant_Chart.Models;
+﻿using Gaant_Chart.DataStructures;
+using Gaant_Chart.Models;
 using System;
+using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Gaant_Chart
 {
@@ -15,17 +18,18 @@ namespace Gaant_Chart
 
         private Models.Task task;
 
-        private User user;
-
         public Boolean earlyExit;
+
+        public Boolean changedUserFlag = false;
 
         public CompleteTask(Task task)
         {
             InitializeComponent();
 
             model = data.currentModel;
-            user = data.currentUser;
             this.task = task;
+
+            header.Text = task.name;
 
             if (task.assignedUser != null)
                 assignedTxtBlk.Text = "Assigned to " + task.assignedUser.name;
@@ -33,11 +37,60 @@ namespace Gaant_Chart
                 assignedTxtBlk.Text = "Unassigned Task";
 
             earlyExit = true;
+
+            initRecommendedTime();
+            addUsersToComboBox();
+
+        }
+        private void addUsersToComboBox()
+        {
+            ComboBoxItem selectedUser = null;
+            foreach(KeyValuePair<long, User> kvp in data.users)
+            {
+                User user = kvp.Value;
+                ComboBoxItem comboBoxItem = new ComboBoxItem();
+                comboBoxItem.Height = 30;
+                comboBoxItem.FontSize = 16;
+                comboBoxItem.Content = user.name;
+                comboBoxItem.Tag = user;
+                selectUserComboBox.Items.Add(comboBoxItem);
+
+                if(data.currentUser == user)
+                {
+                    selectedUser = comboBoxItem;
+                }
+            }
+            selectUserComboBox.SelectedItem = selectedUser;
+        }
+
+        private void initRecommendedTime()
+        {
+            (DateTime date, int hour, int minute, int dayPeriod) = Conversions.toDateUI(computeRecommendedEndDate());
+            datePicker.SelectedDate = date;
+            hoursTxt.Text = hour.ToString();
+            minutesTxt.Text = minute.ToString();
+            timeComboBox.SelectedIndex = dayPeriod;
+
+        }
+        private DateTime computeRecommendedEndDate()
+        {
+            DateTime recommendation;
+            int duration = data.taskSettingsDuration[task.typeInd];
+
+            if(task.typeInd == 0)
+            {
+                recommendation = model.startDate.AddDays(duration);
+            }
+            else
+            {
+                recommendation = model.tasks[model.lastCompletedTaskId].endDate.Value.AddDays(duration);
+            }
+            return recommendation;
         }
         private DateTime computeStartDate()
         {
             DateTime startDate;
-            if(model.lastCompletedTaskId == -1 || model.lastCompletedTaskId == 0)
+            if(model.lastCompletedTaskId == -1)
             { 
                 startDate = model.startDate;
             }
@@ -123,7 +176,7 @@ namespace Gaant_Chart
             if(task.typeInd == 0 && endDate < model.startDate)
             {
                 MessageBox.Show("INVALID DATE: Cannot complete a task before the model start date (" + model.startDate.ToString() + ")");
-                datePicker.SelectedDate = null;
+                datePicker.SelectedDate = model.startDate;
                 return;
             }
 
@@ -131,26 +184,33 @@ namespace Gaant_Chart
             {
                 DateTime lastCompleted = (DateTime)model.tasks[task.typeInd - 1].endDate;
                 MessageBox.Show("INVALID DATE: Cannot complete a task before a prerequisite task was completed (" + lastCompleted.ToString() + ")");
-                datePicker.SelectedDate = null;
+                datePicker.SelectedDate = lastCompleted;
                 return;
             }
 
+            if(selectUserComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("No User selected");
+                return;
+            }
 
-            completeTaskLocally();
+            User user = (selectUserComboBox.SelectedItem as ComboBoxItem).Tag as User;
+
+            completeTaskLocally(user);
             updateDatabase();
 
             earlyExit = false;
 
             this.Close();
         }
-        private void completeTaskLocally()
+        private void completeTaskLocally(User user)
         {
             startDate = computeStartDate();
             model.completeTask(user, task.typeInd, startDate, endDate);
         }
         private void updateDatabase()
         {
-            MainWindow.myDatabase.completeTask(task.rowid, startDate, endDate);
+            MainWindow.myDatabase.completeTask(task);
             if(task.typeInd == data.allTasks.Length - 1)
             {
                 MainWindow.myDatabase.completeModel(model);
@@ -159,6 +219,54 @@ namespace Gaant_Chart
         private void cancelBtn_Click(object sender, RoutedEventArgs e)
         {
             this.Close();   
+        }
+
+        Boolean overRideSelect = false;
+        private void selectUserComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (overRideSelect) return;
+            ComboBoxItem comboBoxItem = selectUserComboBox.SelectedItem as ComboBoxItem;
+            User user = comboBoxItem.Tag as User;
+
+            if(user != data.currentUser && user.reqPass)
+            {
+                Login loginWin = new Login(user);
+                loginWin.ShowDialog();
+
+                changedUserFlag = !loginWin.earlyExit;
+
+                if (!loginWin.earlyExit)
+                    setUserSelected(user);
+                else
+                    setUserToCurrent();
+            }
+
+            if(!user.authorization[task.typeInd])
+            {
+                MessageBox.Show("User is not authorized to complete this task");
+                overRideSelect = true;
+                selectUserComboBox.SelectedItem = null;
+                overRideSelect = false;
+                return;
+            }
+        }
+
+        private void setUserSelected(User user)
+        {
+            overRideSelect = true;
+            foreach(ComboBoxItem item in selectUserComboBox.Items)
+                if(data.currentUser == item.Tag) selectUserComboBox.SelectedItem = item;
+            overRideSelect = false;
+        }
+
+        private void setUserToCurrent()
+        {
+            overRideSelect = true;
+            if(data.currentUser != null)
+                setUserSelected(data.currentUser);
+            else
+                selectUserComboBox.SelectedItem = null;
+            overRideSelect = false;
         }
     }
 }

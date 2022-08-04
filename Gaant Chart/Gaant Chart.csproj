@@ -104,9 +104,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Components\PasswordTextBox.cs" />
+    <Compile Include="DataStructures\Conversions.cs" />
     <Compile Include="Display\CanvasGraph.cs" />
     <Compile Include="Display\TaskDisplay.cs" />
-    <Compile Include="DataStructures\ModelNameTrie.cs" />
+    <Compile Include="DataStructures\Trie.cs" />
     <Compile Include="Utilities\ExcelReader.cs" />
     <Compile Include="Views\Admin.xaml.cs">
       <DependentUpon>Admin.xaml</DependentUpon>

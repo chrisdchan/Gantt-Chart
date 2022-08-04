@@ -1,4 +1,5 @@
 ﻿using Gaant_Chart.Models;
+using Gaant_Chart.Structures;
 using System;
 using System.Collections.Generic;
 using System.Windows.Shapes;
@@ -33,6 +34,24 @@ namespace Gaant_Chart
             "Report Generated"
         };
 
+        public static int[] taskGridRow =
+        {
+            2,
+            4,
+            6,
+            8,
+            10,
+            13,
+            15,
+            17,
+            19,
+            21,
+            24,
+            26,
+            29,
+            31
+        };
+
         public static List<(String, int)> taskLabelGroups = new List<(String, int)>
         {
             ("Assemblies", 0),
@@ -59,6 +78,7 @@ namespace Gaant_Chart
         };
 
         public static Dictionary<long, User> users { get; set; }
+        public static Trie userTrie { get; set; }
 
         public static int[] taskSettingsDuration =
         {
@@ -84,6 +104,14 @@ namespace Gaant_Chart
         public static void initUsers()
         {
             users = MainWindow.myDatabase.getUsers();
+            userTrie = new Trie();
+            foreach(var kvp in users) userTrie.insert(kvp.Value.name.ToLower(), kvp.Key);
+        }
+
+        public static void addUser(User user)
+        {
+            userTrie.insert(user.name.ToLower(), user.rowid);
+            users.Add(user.rowid, user);
         }
         public static User getUser(String name)
         {
@@ -101,6 +129,21 @@ namespace Gaant_Chart
         {
             if (users == null) throw new Exception("Calling getUser before users is initialized");
         }
+
+        public static Boolean checkSimilarInitialsExist(string initials)
+        {
+            foreach(var kvp in users)
+            {
+                User user = kvp.Value;
+                if(user.initials.ToLower() == initials.ToLower())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
         
     }
 }
